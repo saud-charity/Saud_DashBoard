@@ -3,96 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة تحكم الموظف</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 30px;
-      background: #f4f6f8;
-    }
-    h1 { margin-bottom: 30px; color: #333; }
-    #menuContainer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-    }
-    .menu-btn {
-      padding: 12px 20px;
-      font-size: 1em;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      background: #3498db;
-      color: #fff;
-      transition: 0.2s;
-      min-width: 200px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .menu-btn:hover {
-      background: #217dbb;
-      transform: translateY(-2px);
-    }
-    #pdfViewer {
-      width: 90%;
-      height: 600px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin: 20px auto;
-      display: none;
-    }
-  </style>
+  <title>💼 لوحة تحكم الموظف</title>
 </head>
 <body>
-
-<h1>💼 لوحة تحكم الموظف</h1>
-<div id="menuContainer"></div>
-<iframe id="pdfViewer"></iframe>
-
-<script>
-const staffMenu = [
-  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
-  { title: "جداول الحلقة الثالثة", type: "pdf", filename: "cycle3.pdf" },
-  { title: "جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
-  { title: "جداول المناوبة", type: "pdf", filename: "duties.pdf" },
-  { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
-  { title: "السياسات", type: "submenu", role: "staff" },
-  { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
-  { title: "الغياب والحضور اليومي", type: "external", url: "https://emiratesschoolsese-my.sharepoint.com/" },
-  { title: "رحلتي", type: "external", url: "https://idh.ese.gov.ae/" },
-  { title: "المنهل", type: "external", url: "https://sis.ese.gov.ae/" },
-  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.ese.gov.ae/" }
-];
-
-const container = document.getElementById("menuContainer");
-const pdfViewer = document.getElementById("pdfViewer");
-
-staffMenu.forEach(item => {
-  const btn = document.createElement("button");
-  btn.className = "menu-btn";
-  btn.textContent = item.title;
-
-  btn.onclick = () => {
-    switch(item.type) {
-      case "pdf":
-        // ✅ عرض PDF داخل pdf.js viewer
-        pdfViewer.src = `/pdfjs/web/viewer.html?file=/pdfs/${item.filename}`;
-        pdfViewer.style.display = "block";
-        pdfViewer.scrollIntoView({ behavior: "smooth" });
-        break;
-      case "submenu":
-        window.location.href = `/policies.html?role=${item.role}`;
-        break;
-      case "external":
-        window.open(item.url, "_blank");
-        break;
-    }
-  };
-
-  container.appendChild(btn);
-});
-</script>
-
+  <h1>💼 لوحة تحكم الموظف</h1>
+  <div id="menuContainer"></div>
+  <iframe id="pdfViewer"></iframe>
+  <script src="js/main.js" defer></script>
 </body>
 </html>
