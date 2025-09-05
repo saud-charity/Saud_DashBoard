@@ -84,13 +84,13 @@ const studentPolicies = [
   { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" },
   { title: "سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
   { title: "سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-  { title: "اللائحة السلوكية", filename: "Behavior_Policy.pdf" },
-  { title: "قانون وديمة", filename: "Behavior_Policy1.pdf" },
+  { title: "اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
+  { title: "قانون وديمة", filename: "Behaviour_Policy1.pdf" },
   { title: "الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
   { title: "دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
   { title: "دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
   { title: "دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "leave_policy.pdf" }
+  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" }
 ];
 
 const staffPolicies = [
@@ -98,13 +98,13 @@ const staffPolicies = [
   { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" },
   { title: "سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
   { title: "سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-  { title: "اللائحة السلوكية", filename: "Behavior_Policy.pdf" },
-  { title: "قانون وديمة", filename: "Behavior_Policy1.pdf" },
+  { title: "اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
+  { title: "قانون وديمة", filename: "Behaviour_Policy1.pdf" },
   { title: "الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
   { title: "دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
   { title: "دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
   { title: "دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "leave_policy.pdf" },
+  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
   { title: "الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" }
 ];
 
