@@ -3,6 +3,8 @@
 // ================================
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
+  if (!container) return; // 🔑 الحل: تجاهل الصفحات اللي ما فيها container
+
   container.innerHTML = "";
 
   if (!role) {
@@ -39,8 +41,6 @@ async function loadMenu(role) {
         case "submenu":
           btn.onclick = () => window.location.href = `/policies.html?role=${role}`;
           break;
-        default:
-          console.warn("نوع عنصر غير معروف:", item);
       }
 
       container.appendChild(btn);
@@ -52,41 +52,37 @@ async function loadMenu(role) {
   }
 }
 
-// ================================
-// ✅ فتح PDF في نافذة جديدة
-// ================================
+// ✅ فتح PDF
 function openPdf(filename) {
   if (!filename) return;
   window.open(`/api/pdfs/${filename}`, "_blank");
 }
 
-// ================================
-// ✅ اختيار دور المستخدم
-// ================================
+// ✅ اختيار الدور
 function selectRole(role) {
   sessionStorage.setItem("role", role);
-
-  const rolePages = {
-    staff: "staff_login.html",
-    student: "student_menu.html"
-  };
-
-  const page = rolePages[role];
-  if (page) {
-    window.location.href = page;
-  } else {
-    alert("الدور غير معروف!");
-  }
+  const rolePages = { staff: "staff_menu.html", student: "student_menu.html" };
+  window.location.href = rolePages[role] || "/";
 }
-
-// ✅ اجعل selectRole متاحة عالمياً للأزرار في HTML
 window.selectRole = selectRole;
 
-// ================================
 // ✅ تحميل القائمة عند تحميل الصفحة
-// ================================
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const role = params.get("role") || sessionStorage.getItem("role");
   loadMenu(role);
+
+  const studentBtn = document.getElementById("studentBtn");
+  const staffBtn = document.getElementById("staffBtn");
+  if (studentBtn) studentBtn.onclick = () => selectRole("student");
+  if (staffBtn) staffBtn.onclick = () => window.location.href = "staff_login.html";
 });
+
+// ✅ تسجيل Service Worker
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("✅ Service Worker مسجل بنجاح"))
+      .catch(err => console.error("❌ فشل تسجيل Service Worker:", err));
+  });
+}

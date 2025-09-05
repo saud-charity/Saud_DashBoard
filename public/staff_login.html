@@ -108,6 +108,7 @@
       const password = document.getElementById("password").value.trim();
       const res = await apiPost("/api/login", { username, password });
       if (res.success) {
+        sessionStorage.setItem("role", "staff"); // نحفظ الدور
         location.href = "/staff_menu.html";
       } else {
         showError(res.message || "خطأ غير معروف");
