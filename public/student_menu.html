@@ -14,17 +14,32 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
-    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
+    #pdfViewer {
+      width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px;
+      margin: 20px auto; display: none;
+    }
   </style>
 </head>
 <body>
+  <h1>🎓 لوحة تحكم الطالب/ولي الأمر</h1>
+  <div id="menuContainer"></div>
+  <iframe id="pdfViewer"></iframe>
 
-<h1>🎓 لوحة تحكم الطالب/ولي الأمر</h1>
-<div id="menuContainer"></div>
-<iframe id="pdfViewer"></iframe>
-
-<script src="/js/pdf-viewer.js"></script>
 <script>
+function isMobile() {
+  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+function openPdfSmart(filename) {
+  if (isMobile()) {
+    window.open(`/pdfs/${filename}`, "_blank");
+  } else {
+    const pdfViewer = document.getElementById("pdfViewer");
+    pdfViewer.src = `/pdfjs/web/viewer.html?file=/pdfs/${filename}`;
+    pdfViewer.style.display = "block";
+    pdfViewer.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
 const studentMenu = [
   { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
   { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
@@ -37,25 +52,21 @@ const studentMenu = [
 ];
 
 const container = document.getElementById("menuContainer");
-PDFViewer.init("pdfViewer");
 
 studentMenu.forEach(item => {
   const btn = document.createElement("button");
   btn.className = "menu-btn";
   btn.textContent = item.title;
-
   btn.onclick = () => {
     switch(item.type) {
-      case "pdf": PDFViewer.open(item.filename); break;
+      case "pdf": openPdfSmart(item.filename); break;
       case "page": window.location.href = item.path; break;
       case "submenu": window.location.href = `/policies.html?role=${item.role}`; break;
       case "external": window.open(item.url, "_blank"); break;
     }
   };
-
   container.appendChild(btn);
 });
 </script>
-
 </body>
 </html>
