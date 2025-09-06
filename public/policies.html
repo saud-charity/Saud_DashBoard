@@ -3,80 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📄 السياسات والأدلة</title>
+  <title>السياسات</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/js/pdf-helper.js"></script>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f6f8; text-align: center; padding: 30px; }
     h2 { margin-bottom: 25px; color: #333; }
     #policiesContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
-    .menu-btn {
-      padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px;
-      background: #3498db; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: 0.2s; min-width: 200px;
-    }
+    .menu-btn { padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px;
+      background: #3498db; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; min-width: 200px; }
     .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
-    #pdfViewer {
-      width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px;
-      margin: 20px auto; display: none;
-    }
+    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
   </style>
 </head>
 <body>
-<h2>📄 السياسات والأدلة</h2>
+
+<h2>السياسات</h2>
 <div id="policiesContainer"></div>
 <iframe id="pdfViewer"></iframe>
 
 <script>
-function isMobile() {
-  return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-function openPdfSmart(filename) {
-  if (isMobile()) {
-    window.open(`/pdfs/${filename}`, "_blank");
-  } else {
-    const pdfViewer = document.getElementById("pdfViewer");
-    pdfViewer.src = `/pdfjs/web/viewer.html?file=/pdfs/${filename}`;
-    pdfViewer.style.display = "block";
-    pdfViewer.scrollIntoView({ behavior: "smooth" });
-  }
-}
-
 const params = new URLSearchParams(window.location.search);
 const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
 const container = document.getElementById("policiesContainer");
 
+function showMsg(html) {
+  container.innerHTML = html;
+}
+
 async function loadPolicies() {
   if (!role) {
-    container.innerHTML = `
+    showMsg(`
       <p>لم يتم تحديد الدور.</p>
-      <button class="menu-btn" onclick="window.location.href='/'">العودة للصفحة الرئيسية</button>`;
+      <button class="menu-btn" onclick="window.location.href='/'">العودة للصفحة الرئيسية</button>
+    `);
     return;
   }
-  container.innerHTML = "<p>جارٍ التحميل…</p>";
+
+  showMsg("<p>جارٍ التحميل…</p>");
 
   try {
     const res = await fetch(`/api/policies/${role}`);
     if (!res.ok) {
-      container.innerHTML = `<p>تعذر تحميل السياسات (${res.status})</p>`;
+      const text = await res.text();
+      showMsg(`<p>تعذر تحميل السياسات (${res.status})</p><small>${text}</small>`);
       return;
     }
+
     const policies = await res.json();
     if (!Array.isArray(policies) || policies.length === 0) {
-      container.innerHTML = "<p>لا توجد سياسات متاحة حالياً.</p>";
+      showMsg("<p>لا توجد سياسات متاحة حالياً.</p>");
       return;
     }
+
     container.innerHTML = "";
+
     policies.forEach(p => {
       const btn = document.createElement("button");
       btn.textContent = p.title;
       btn.className = "menu-btn";
-      btn.onclick = () => openPdfSmart(p.filename);
+      btn.onclick = () => openPdfSmart(p.filename, "pdfViewer");
       container.appendChild(btn);
     });
+
   } catch (err) {
-    container.innerHTML = `<p>تعذر تحميل السياسات</p><small>${err?.message || err}</small>`;
+    showMsg(`<p>تعذر تحميل السياسات</p><small>${err?.message || err}</small>`);
   }
 }
+
 loadPolicies();
 </script>
+
 </body>
 </html>
