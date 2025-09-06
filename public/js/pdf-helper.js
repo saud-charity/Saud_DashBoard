@@ -1,4 +1,4 @@
-// 📄 public/js/pdf-helper.js
+// 📄 pdf-helper.js
 function openPdfSmart(filename, viewerId = "pdfViewer") {
   if (!filename) {
     alert("❌ لم يتم تحديد الملف");
@@ -12,7 +12,7 @@ function openPdfSmart(filename, viewerId = "pdfViewer") {
     // 📱 على الموبايل → افتح الملف في تبويب جديد
     window.open(fileUrl, "_blank");
   } else {
-    // 💻 على الكمبيوتر → حاول تعرضه في pdf.js داخل iframe
+    // 💻 على الكمبيوتر → حاول عرض الملف في pdf.js داخل iframe
     const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
     const pdfViewer = document.getElementById(viewerId);
 

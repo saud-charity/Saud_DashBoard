@@ -4,91 +4,24 @@
   <meta charset="UTF-8">
   <title>تقرير الطالب</title>
   <style>
-    body {
-      font-family: "Cairo", Arial, sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    header {
-      background: linear-gradient(90deg, #0066cc, #004080);
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    label {
-      font-weight: bold;
-    }
-    input {
-      padding: 10px;
-      width: 200px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-right: 10px;
-    }
-    button {
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background-color: #004080;
-    }
-    .info-box {
-      background: #f1f7ff;
-      border: 1px solid #d0e4ff;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 20px 0;
-      font-size: 16px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
-    th {
-      background-color: #0066cc;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    .back-btn {
-      margin-top: 20px;
-      background-color: #6c757d;
-    }
-    .back-btn:hover {
-      background-color: #495057;
-    }
+    body { font-family: Cairo, Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 0; color: #333; }
+    header { background: linear-gradient(90deg, #0066cc, #004080); color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+    .container { max-width: 900px; margin: 30px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    label { font-weight: bold; }
+    input { padding: 10px; width: 200px; border: 1px solid #ccc; border-radius: 6px; margin-right: 10px; }
+    button { background-color: #0066cc; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; transition: background 0.3s; }
+    button:hover { background-color: #004080; }
+    .info-box { background: #f1f7ff; border: 1px solid #d0e4ff; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+    th { background-color: #0066cc; color: white; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    .back-btn { margin-top: 20px; background-color: #6c757d; }
+    .back-btn:hover { background-color: #495057; }
   </style>
 </head>
 <body>
   <header>📊 تقرير الطالب</header>
-
   <div class="container">
     <label>أدخل رقم الهوية:</label>
     <input type="text" id="studentId" placeholder="784xxxxxxxxxxxx">
@@ -110,53 +43,48 @@
       </thead>
       <tbody></tbody>
     </table>
-
   </div>
 
   <script>
     async function loadReport() {
       const id = document.getElementById("studentId").value.trim();
-      if (!id) {
-        alert("من فضلك أدخل رقم هوية الطالب");
-        return;
-      }
+      if (!id) return alert("من فضلك أدخل رقم هوية الطالب");
 
-      const res = await fetch("/api/report/" + id);
-      if (!res.ok) {
-        alert("الطالب غير موجود");
-        return;
-      }
+      try {
+        const res = await fetch(`/api/report/${id}`);
+        if (!res.ok) return alert("الطالب غير موجود");
 
-      const data = await res.json();
+        const data = await res.json();
 
-      // عرض بيانات الطالب
-      const infoDiv = document.getElementById("studentInfo");
-      infoDiv.style.display = "block";
-          infoDiv.innerHTML = `
-           <div style="display:flex; gap:40px;">
+        const infoDiv = document.getElementById("studentInfo");
+        infoDiv.style.display = "block";
+        infoDiv.innerHTML = `
+          <div style="display:flex; gap:40px;">
             <p><b>الاسم:</b> ${data.student["الاسم"] || "-"}</p>
             <p><b>الشعبة:</b> ${data.student["الشعبة"] || "-"}</p>
-           </div>
-           `;
+          </div>`;
 
-      // عرض المواد
-      const tbody = document.querySelector("#subjectsTable tbody");
-      tbody.innerHTML = "";
-      data.subjects.forEach(sub => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${sub.name}</td>
-          <td>${sub.formative || "-"}</td>
-          <td>${sub.academic || "-"}</td>
-          <td>${sub.participation || "-"}</td>
-          <td>${sub.alef || "-"}</td>
-          <td>${sub.behavior || "-"}</td>
-          <td>${sub.commitment || "-"}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+        const tbody = document.querySelector("#subjectsTable tbody");
+        tbody.innerHTML = "";
+        data.subjects.forEach(sub => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${sub.name}</td>
+            <td>${sub.formative || "-"}</td>
+            <td>${sub.academic || "-"}</td>
+            <td>${sub.participation || "-"}</td>
+            <td>${sub.alef || "-"}</td>
+            <td>${sub.behavior || "-"}</td>
+            <td>${sub.commitment || "-"}</td>`;
+          tbody.appendChild(tr);
+        });
 
-      document.getElementById("subjectsTable").style.display = "table";
+        document.getElementById("subjectsTable").style.display = "table";
+
+      } catch (err) {
+        alert("تعذر تحميل التقرير");
+        console.error(err);
+      }
     }
   </script>
 </body>

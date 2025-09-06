@@ -1,9 +1,9 @@
 // ================================
-// ✅ تحميل القائمة حسب الدور
+// ✅ Load menu for a specific role
 // ================================
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
-  if (!container) return; // 🔑 الحل: تجاهل الصفحات اللي ما فيها container
+  if (!container) return;
 
   container.innerHTML = "";
 
@@ -17,7 +17,6 @@ async function loadMenu(role) {
     if (!res.ok) throw new Error("خطأ في تحميل القائمة");
 
     const menu = await res.json();
-
     if (!menu || menu.length === 0) {
       container.innerHTML = "<p>لا توجد عناصر في القائمة</p>";
       return;
@@ -30,7 +29,7 @@ async function loadMenu(role) {
 
       switch (item.type) {
         case "pdf":
-          btn.onclick = () => openPdf(item.filename);
+          btn.onclick = () => openPdfSmart(item.filename);
           break;
         case "page":
           btn.onclick = () => window.location.href = item.path;
@@ -52,37 +51,60 @@ async function loadMenu(role) {
   }
 }
 
-// ✅ فتح PDF
-function openPdf(filename) {
-  if (!filename) return;
-  window.open(`/api/pdfs/${filename}`, "_blank");
+// ================================
+// ✅ Open PDF smartly (desktop/mobile)
+// ================================
+function openPdfSmart(filename, viewerId = "pdfViewer") {
+  if (!filename) return alert("❌ لم يتم تحديد الملف");
+
+  const fileUrl = `/pdfs/${filename}`;
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    window.open(fileUrl, "_blank");
+  } else {
+    const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
+    const pdfViewer = document.getElementById(viewerId);
+    if (pdfViewer) {
+      pdfViewer.src = viewerUrl;
+      pdfViewer.style.display = "block";
+      pdfViewer.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.open(viewerUrl, "_blank");
+    }
+  }
 }
 
-// ✅ اختيار الدور
+// ================================
+// ✅ Role selection
+// ================================
 function selectRole(role) {
   sessionStorage.setItem("role", role);
-  const rolePages = { staff: "staff_menu.html", student: "student_menu.html" };
+  const rolePages = { student: "student_menu.html", staff: "staff_login.html" };
   window.location.href = rolePages[role] || "/";
 }
+
 window.selectRole = selectRole;
 
-// ✅ تحميل القائمة عند تحميل الصفحة
+// ================================
+// ✅ DOMContentLoaded
+// ================================
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const role = params.get("role") || sessionStorage.getItem("role");
+
   loadMenu(role);
 
   const studentBtn = document.getElementById("studentBtn");
   const staffBtn = document.getElementById("staffBtn");
+
   if (studentBtn) studentBtn.onclick = () => selectRole("student");
   if (staffBtn) staffBtn.onclick = () => window.location.href = "staff_login.html";
-});
 
-// ✅ تسجيل Service Worker
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
+  // Service Worker registration
+  if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js")
       .then(() => console.log("✅ Service Worker مسجل بنجاح"))
       .catch(err => console.error("❌ فشل تسجيل Service Worker:", err));
-  });
-}
+  }
+});
