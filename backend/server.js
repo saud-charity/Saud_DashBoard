@@ -42,10 +42,13 @@ app.get("/api/report/:id", (req, res) => {
 // ✅ قوائم الطلاب
 const studentMenu = [
   { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
-  { title: " جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
+  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
   { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
-  { title: "تقرير طالب", type: "page", path: "/report.html" },
-  { title: "السياسات والأدلة", type: "submenu", role: "student" }
+  { title: "تقرير متابعة الطالب", type: "page", path: "/report.html" },
+  { title: "السياسات والأدلة", type: "submenu", role: "student" },
+  { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
+  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.ese.gov.ae/" },
+  { title: "وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" }
 ];
 
 // ✅ قوائم الموظفين
@@ -55,7 +58,11 @@ const staffMenu = [
   { title: "جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
   { title: "جداول المناوبة", type: "pdf", filename: "duties.pdf" },
   { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
-  { title: "السياسات والأدلة", type: "submenu", role: "staff" }
+  { title: "السياسات والأدلة", type: "submenu", role: "staff" },
+  { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
+  { title: "المنهل", type: "external", url: "https://sis.ese.gov.ae/" },
+  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.ese.gov.ae/" },
+  { title: "رحلتي", type: "external", url: "https://idh.ese.gov.ae/" }
 ];
 
 // ✅ API للقوائم
@@ -80,32 +87,32 @@ app.get("/api/pdfs/:filename", (req, res) => {
 
 // ✅ السياسات
 const studentPolicies = [
-  { title: "سياسة التقييم", filename: "Assessment_Policy.pdf" },
-  { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" },
-  { title: "سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
-  { title: "سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
   { title: "اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-  { title: "قانون وديمة", filename: "Behaviour_Policy1.pdf" },
   { title: "الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
+   { title: "سياسة التقييم", filename: "Assessment_Policy.pdf" },
+  { title: "سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
+  { title: "قانون وديمة", filename: "Behaviour_Policy1.pdf" },
   { title: "دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
   { title: "دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
   { title: "دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" }
+  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" }و
+  { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
 ];
 
 const staffPolicies = [
-  { title: "سياسة التقييم", filename: "Assessment_Policy.pdf" },
-  { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" },
-  { title: "سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
-  { title: "سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
   { title: "اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-  { title: "قانون وديمة", filename: "Behaviour_Policy1.pdf" },
   { title: "الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
+  { title: "سياسة التقييم", filename: "Assessment_Policy.pdf" },
+  { title: "سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
+  { title: "قانون وديمة", filename: "Behaviour_Policy1.pdf" },
   { title: "دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
   { title: "دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
   { title: "دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
   { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
-  { title: "الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" }
+  { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
 ];
 
 app.get("/api/policies/:role", (req, res) => {
