@@ -96,7 +96,7 @@ const studentPolicies = [
   { title: "دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
   { title: "دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
   { title: "دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" }و
+  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
   { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
 ];
 
