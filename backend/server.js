@@ -4,15 +4,23 @@ const fs = require("fs");
 const cors = require("cors");
 const xlsx = require("xlsx");
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ نخلي Express يخدم الملفات من المجلد public (الموجود خارج backend)
+// ✅ نخلي Express يخدم الملفات من المجلد public (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "../public")));
 
-// ✅ نخلي الصفحة الرئيسية index.html
+// ✅ نخلي مجلد pdfs يفتح من /pdfs
+app.use("/pdfs", express.static(path.join(__dirname, "../public/pdfs")));
+
+// ✅ نخلي مجلد js يفتح من /js
+app.use("/js", express.static(path.join(__dirname, "../public/js")));
+
+// ✅ نخلي مجلد pdf.js يفتح بشكل صحيح
+app.use("/pdfjs", express.static(path.join(__dirname, "../public/pdfjs")));
+
+// ✅ الصفحة الرئيسية
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
