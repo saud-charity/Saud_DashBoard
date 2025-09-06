@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>السياسات</title>
+  <title>السياسات والأدلة</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -42,25 +42,93 @@
       margin: 20px auto;
       display: none;
     }
+    #pdfControls {
+      display: none;
+      margin: 15px;
+      gap: 10px;
+      justify-content: center;
+    }
+    #pdfControls button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #2ecc71;
+      color: #fff;
+      transition: 0.2s;
+    }
+    #pdfControls button:hover {
+      background: #27ae60;
+    }
+    #pdfControls button:nth-child(2) {
+      background: #e67e22;
+    }
+    #pdfControls button:nth-child(2):hover {
+      background: #ca6512;
+    }
+    #pdfControls button:nth-child(3) {
+      background: #e74c3c;
+    }
+    #pdfControls button:nth-child(3):hover {
+      background: #c0392b;
+    }
   </style>
 </head>
 <body>
 
-<h2>السياسات</h2>
+<h2>📑 السياسات والأدلة</h2>
 <div id="policiesContainer"></div>
+
+<!-- عناصر عرض PDF -->
+<div id="pdfControls">
+  <button onclick="PDFViewer.download()">⬇ تحميل</button>
+  <button onclick="PDFViewer.print()">🖨 طباعة</button>
+  <button onclick="PDFViewer.close()">⏪ رجوع</button>
+</div>
 <iframe id="pdfViewer"></iframe>
 
 <script>
+// ==================================================
+// دالة PDF مشتركة
+// ==================================================
+const PDFViewer = {
+  file: null,
+  iframe: document.getElementById("pdfViewer"),
+  controls: document.getElementById("pdfControls"),
+  show: function(filename) {
+    this.file = filename;
+    this.iframe.src = `/pdfjs/web/viewer.html?file=/pdfs/${filename}`;
+    this.iframe.style.display = "block";
+    this.controls.style.display = "flex";
+    this.iframe.scrollIntoView({ behavior: "smooth" });
+  },
+  download: function() {
+    if (this.file) window.open(`/pdfs/${this.file}`, "_blank");
+  },
+  print: function() {
+    if (this.file) {
+      const win = window.open(`/pdfs/${this.file}`, "_blank");
+      win.addEventListener("load", () => win.print());
+    }
+  },
+  close: function() {
+    this.iframe.src = "";
+    this.iframe.style.display = "none";
+    this.controls.style.display = "none";
+  }
+};
+
+// ==================================================
+// تحميل السياسات من API
+// ==================================================
 const params = new URLSearchParams(window.location.search);
 const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
 const container = document.getElementById("policiesContainer");
-const pdfViewer = document.getElementById("pdfViewer");
 
 function showMsg(html) {
   container.innerHTML = html;
 }
 
-// تحميل السياسات
 async function loadPolicies() {
   if (!role) {
     showMsg(`
@@ -87,17 +155,11 @@ async function loadPolicies() {
     }
 
     container.innerHTML = "";
-
     policies.forEach(p => {
       const btn = document.createElement("button");
       btn.textContent = p.title;
       btn.className = "menu-btn";
-      btn.onclick = () => {
-        // ✅ تحميل الملف باستخدام pdf.js viewer
-        pdfViewer.src = `/pdfjs/web/viewer.html?file=/pdfs/${p.filename}`;
-        pdfViewer.style.display = "block";
-        pdfViewer.scrollIntoView({ behavior: "smooth" });
-      };
+      btn.onclick = () => PDFViewer.show(p.filename);
       container.appendChild(btn);
     });
 
