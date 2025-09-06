@@ -17,18 +17,16 @@
   </style>
 </head>
 <body>
-
+<script src="/js/pdf-helper.js"></script>
 <h1>💼 لوحة تحكم الموظف</h1>
 <div id="menuContainer"></div>
 <iframe id="pdfViewer"></iframe>
-
 <script>
    const role = sessionStorage.getItem("role");
    if (role !== "staff") {
      window.location.href = "/staff_login.html";
    }
 </script>
-<script src="/js/pdf-helper.js"></script>
 <script>
 const staffMenu = [
   { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
