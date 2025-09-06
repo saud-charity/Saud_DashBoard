@@ -1,16 +1,24 @@
-<script>
+// ✅ كائن موحد لعرض الـ PDF
 const PDFViewer = {
   file: null,
-  iframe: document.getElementById("pdfViewer"),
+  iframe: null,
   controls: null,
+
+  init: function(iframeId = "pdfViewer") {
+    this.iframe = document.getElementById(iframeId);
+  },
 
   open: function(filename) {
     this.file = filename;
+    if (!this.iframe) {
+      console.error("❌ لم يتم العثور على iframe لعرض PDF");
+      return;
+    }
+
     this.iframe.src = `/pdfjs/web/viewer.html?file=/pdfs/${filename}`;
     this.iframe.style.display = "block";
     this.iframe.scrollIntoView({ behavior: "smooth" });
 
-    // إضافة أزرار التحكم إذا مش موجودة
     if (!this.controls) {
       this.controls = document.createElement("div");
       this.controls.style.margin = "15px";
@@ -26,7 +34,7 @@ const PDFViewer = {
     if (this.file) {
       const link = document.createElement("a");
       link.href = `/pdfs/${this.file}`;
-      link.download = this.file;   // 🔽 يجبر الموبايل على تنزيل الملف
+      link.download = this.file;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -35,9 +43,9 @@ const PDFViewer = {
 
   print: function() {
     if (this.file) {
-      // 📱 على الموبايل: يفتح الملف في تبويب جديد والمستخدم يطبع من القائمة
+      // الكمبيوتر: زر الطباعة يعمل مباشرة
+      // الموبايل: يفتح الملف في تبويب جديد والطباعة من قائمة المتصفح
       window.open(`/pdfs/${this.file}`, "_blank");
     }
   }
 };
-</script>

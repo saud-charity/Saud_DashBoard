@@ -8,107 +8,60 @@
     body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f4f6f8; }
     h1 { margin-bottom: 30px; color: #333; }
     #menuContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
-    .menu-btn { padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px; background: #3498db; color: #fff; transition: 0.2s; min-width: 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .menu-btn {
+      padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px;
+      background: #3498db; color: #fff; transition: 0.2s; min-width: 200px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
     .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
-    .action-btn { margin: 5px; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; }
-    .download { background: #28a745; color: #fff; }
-    .print { background: #ffc107; color: #000; }
-    .back { background: #dc3545; color: #fff; }
+    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
   </style>
 </head>
 <body>
 
-<h1 id="pageTitle">💼 لوحة تحكم الموظف</h1>
+<h1>💼 لوحة تحكم الموظف</h1>
 <div id="menuContainer"></div>
+<iframe id="pdfViewer"></iframe>
 
+<script src="/js/pdf-viewer.js"></script>
 <script>
-  // ✅ التحقق من تسجيل الدخول
-  const role = sessionStorage.getItem("role");
-  if (role !== "staff") {
-    window.location.href = "/staff_login.html";
-  }
-</script>
+const role = sessionStorage.getItem("role");
+if (role !== "staff") {
+  window.location.href = "/staff_login.html";
+}
 
-<script>
-  // ✅ الدالة المشتركة لعرض PDF
-  (function () {
-    let currentPDF = null;
+const staffMenu = [
+  { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
+  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
+  { title: "جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
+  { title: "جداول المناوبة", type: "pdf", filename: "duties.pdf" },
+  { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
+  { title: "السياسات والأدلة", type: "submenu", role: "staff" },
+  { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
+  { title: "المنهل", type: "external", url: "https://sis.ese.gov.ae/" },
+  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.ese.gov.ae/" },
+  { title: "رحلتي", type: "external", url: "https://idh.ese.gov.ae/" }
+];
 
-    function initPDFViewer() {
-      if (document.getElementById("pdfContainer")) return;
-      const container = document.createElement("div");
-      container.id = "pdfContainer";
-      container.style.display = "none";
-      container.innerHTML = `
-        <div style="margin-bottom:15px;">
-          <button class="action-btn download" onclick="PDFViewer.download()">⬇ تحميل</button>
-          <button class="action-btn print" onclick="PDFViewer.print()">🖨 طباعة</button>
-          <button class="action-btn back" onclick="PDFViewer.back()">🔙 رجوع</button>
-        </div>
-        <iframe id="pdfViewer" style="width:95%; height:600px; border:1px solid #ccc; border-radius:8px;"></iframe>
-      `;
-      document.body.appendChild(container);
+const container = document.getElementById("menuContainer");
+PDFViewer.init("pdfViewer");
+
+staffMenu.forEach(item => {
+  const btn = document.createElement("button");
+  btn.className = "menu-btn";
+  btn.textContent = item.title;
+
+  btn.onclick = () => {
+    switch(item.type) {
+      case "pdf": PDFViewer.open(item.filename); break;
+      case "page": window.location.href = item.path; break;
+      case "submenu": window.location.href = `/policies.html?role=${item.role}`; break;
+      case "external": window.open(item.url, "_blank"); break;
     }
+  };
 
-    window.PDFViewer = {
-      show(file) {
-        initPDFViewer();
-        currentPDF = file;
-        document.getElementById("menuContainer").style.display = "none";
-        document.getElementById("pageTitle").style.display = "none";
-        document.getElementById("pdfContainer").style.display = "block";
-        document.getElementById("pdfViewer").src = `/pdfjs/web/viewer.html?file=${file}`;
-      },
-      download() {
-        if (!currentPDF) return;
-        const a = document.createElement("a");
-        a.href = currentPDF;
-        a.download = currentPDF.split("/").pop();
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      },
-      print() {
-        if (!currentPDF) return;
-        const win = window.open(currentPDF, "_blank");
-        win.onload = () => { win.focus(); win.print(); };
-      },
-      back() {
-        document.getElementById("menuContainer").style.display = "flex";
-        document.getElementById("pageTitle").style.display = "block";
-        document.getElementById("pdfContainer").style.display = "none";
-        document.getElementById("pdfViewer").src = "";
-        currentPDF = null;
-      }
-    };
-  })();
-
-  // ✅ قائمة الموظف
-  const staffMenu = [
-    { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
-    { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
-    { title: "جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
-    { title: "جداول المناوبة", type: "pdf", filename: "duties.pdf" },
-    { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
-    { title: "السياسات والأدلة", type: "submenu", role: "staff" },
-    { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
-    { title: "المنهل", type: "external", url: "https://sis.ese.gov.ae/" },
-    { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.ese.gov.ae/" },
-    { title: "رحلتي", type: "external", url: "https://idh.ese.gov.ae/" }
-  ];
-
-  const container = document.getElementById("menuContainer");
-
-  staffMenu.forEach(item => {
-    const btn = document.createElement("button");
-    btn.className = "menu-btn";
-    btn.textContent = item.title;
-    btn.onclick = () => {
-      if (item.type === "pdf") PDFViewer.show(`/pdfs/${item.filename}`);
-      else if (item.type === "page") window.location.href = item.path;
-      else if (item.type === "submenu") window.location.href = `/policies.html?role=${item.role}`;
-      else if (item.type === "external") window.open(item.url, "_blank");
-    };
-    container.appendChild(btn);
-  });
+  container.appendChild(btn);
+});
 </script>
 
 </body>
