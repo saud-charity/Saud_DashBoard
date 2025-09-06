@@ -42,6 +42,23 @@
       margin: 20px auto;
       display: none;
     }
+    #pdfControls {
+      margin: 10px;
+      display: none;
+    }
+    #pdfControls button {
+      margin: 5px;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #2ecc71;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #pdfControls button:hover {
+      background: #27ae60;
+    }
   </style>
 </head>
 <body>
@@ -49,13 +66,17 @@
 <h1>💼 لوحة تحكم الموظف</h1>
 <div id="menuContainer"></div>
 <iframe id="pdfViewer"></iframe>
+<div id="pdfControls">
+  <button onclick="downloadPDF()">⬇️ تحميل</button>
+  <button onclick="printPDF()">🖨️ طباعة</button>
+</div>
 
 <script>
    const role = sessionStorage.getItem("role");
    if (role !== "staff") {
      window.location.href = "/staff_login.html";
      return;
-}
+   }
 </script>
 <script>
 const staffMenu = [
@@ -73,6 +94,9 @@ const staffMenu = [
 
 const container = document.getElementById("menuContainer");
 const pdfViewer = document.getElementById("pdfViewer");
+const pdfControls = document.getElementById("pdfControls");
+
+let currentPDF = "";
 
 staffMenu.forEach(item => {
   const btn = document.createElement("button");
@@ -82,12 +106,13 @@ staffMenu.forEach(item => {
   btn.onclick = () => {
     switch(item.type) {
       case "pdf":
-        // ✅ عرض PDF داخل pdf.js viewer
-        pdfViewer.src = `/pdfjs/web/viewer.html?file=/pdfs/${item.filename}`;
+        currentPDF = `/pdfs/${item.filename}`;
+        pdfViewer.src = `/pdfjs/web/viewer.html?file=${currentPDF}`;
         pdfViewer.style.display = "block";
+        pdfControls.style.display = "block";
         pdfViewer.scrollIntoView({ behavior: "smooth" });
         break;
-          case "page":
+      case "page":
         window.location.href = item.path;
         break;
       case "submenu":
@@ -101,6 +126,23 @@ staffMenu.forEach(item => {
 
   container.appendChild(btn);
 });
+
+function downloadPDF() {
+  const a = document.createElement("a");
+  a.href = currentPDF;
+  a.download = currentPDF.split("/").pop();
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function printPDF() {
+  const win = window.open(currentPDF, "_blank");
+  win.onload = () => {
+    win.focus();
+    win.print();
+  };
+}
 </script>
 
 </body>
