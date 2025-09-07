@@ -1,39 +1,37 @@
+// 📄 pdf-helper.js
 function openPdfSmart(filename, viewerId = "pdfViewer") {
+  console.log("openPdfSmart called with:", filename, "viewerId:", viewerId);
+
   if (!filename) {
     alert("❌ لم يتم تحديد الملف");
     return;
   }
 
   const fileUrl = `/pdfs/${filename}`;
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const mobileControls = document.getElementById("mobileControls");
-  const pdfViewer = document.getElementById(viewerId);
+  const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
+
+  // Detect mobile
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   if (isMobile) {
-    // 📱 Mobile → open in new tab
+    console.log("📱 Mobile detected → opening native viewer:", fileUrl);
+    // Mobile → rely on native browser PDF handling (download/print in browser UI)
     window.open(fileUrl, "_blank");
-    // show mobile controls if needed
-    if (mobileControls) mobileControls.style.display = "block";
-  } else {
-    // 💻 Desktop → embed in iframe
-    const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
-    if (pdfViewer) {
-      pdfViewer.src = viewerUrl;
-      pdfViewer.style.display = "block";
-      pdfViewer.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.open(viewerUrl, "_blank");
-    }
+    return;
   }
 
-  // Mobile Back button
-  const backBtn = document.getElementById("backBtn");
-  if (backBtn) backBtn.onclick = () => window.history.back();
-
-  // Mobile Close button
-  const closeBtn = document.getElementById("closeBtn");
-  if (closeBtn) closeBtn.onclick = () => {
-    if (pdfViewer) pdfViewer.style.display = "none";
-    if (mobileControls) mobileControls.style.display = "none";
-  };
+  // 💻 Desktop → use PDF.js viewer inside iframe
+  const pdfViewer = document.getElementById(viewerId);
+  if (pdfViewer) {
+    console.log("✅ Desktop detected → loading in iframe:", viewerUrl);
+    pdfViewer.src = viewerUrl;
+    pdfViewer.style.display = "block";
+    pdfViewer.scrollIntoView({ behavior: "smooth" });
+  } else {
+    console.warn("⚠️ No iframe found → fallback open in new tab:", viewerUrl);
+    window.open(viewerUrl, "_blank");
+  }
 }
+
+// ✅ Export globally
+window.openPdfSmart = openPdfSmart;
