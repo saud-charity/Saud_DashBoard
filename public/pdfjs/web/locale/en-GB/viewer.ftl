@@ -613,3 +613,14 @@ pdfjs-editor-add-signature-edit-button-label = Edit description
 ## Edit signature description dialog
 
 pdfjs-editor-edit-signature-dialog-title = Edit description
+
+## Comment editor buttons (missing in en-GB)
+pdfjs-editor-edit-comment-actions-button = Actions
+pdfjs-editor-edit-comment-actions-button-label = Comment actions
+pdfjs-editor-edit-comment-actions-edit-button-label = Edit
+pdfjs-editor-edit-comment-actions-delete-button-label = Delete
+pdfjs-editor-edit-comment-close-button = Close
+pdfjs-editor-edit-comment-close-button-label = Close comment editor
+pdfjs-editor-edit-comment-manager-text-input = Enter your comment
+pdfjs-editor-edit-comment-manager-cancel-button = Cancel
+pdfjs-editor-edit-comment-manager-save-button = Save
