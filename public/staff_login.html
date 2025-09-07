@@ -2,98 +2,64 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>تسجيل دخول الموظف</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎓 لوحة تحكم الموظف</title>
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/pdf-helper.js" defer></script>
   <style>
-    body {
-      font-family: Tahoma, Arial, sans-serif;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f4f6f8; }
+    h1 { margin-bottom: 30px; color: #333; }
+    #menuContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+    .menu-btn {
+      padding: 12px 20px; font-size: 1em; cursor: pointer;
+      border: none; border-radius: 8px;
+      background: #2ecc71; color: #fff;
+      min-width: 200px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
     }
-    .login-container {
-      background: #fff;
-      padding: 40px 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      width: 360px;
-      text-align: center;
-    }
-    .login-container h2 { margin-bottom: 20px; color: #333; font-size: 22px; }
-    .login-form label { display: block; text-align: right; margin-bottom: 6px; font-weight: bold; }
-    .login-form input {
-      width: 100%; padding: 10px 12px; margin-bottom: 15px;
-      border: 1px solid #ccc; border-radius: 8px;
-      font-size: 14px; transition: border 0.3s;
-    }
-    .login-form input:focus { border-color: #007bff; outline: none; }
-    .login-form button {
-      width: 100%; padding: 12px; background: #007bff;
-      color: #fff; border: none; border-radius: 10px;
-      font-size: 16px; cursor: pointer; transition: background 0.3s;
-    }
-    .login-form button:hover { background: #0056b3; }
-    .error {
-      display: none;
-      background: #f8d7da;
-      color: #721c24;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #f5c6cb;
-      font-size: 14px;
-    }
+    .menu-btn:hover { background: #27ae60; transform: translateY(-2px); }
+    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>تسجيل دخول الموظف</h2>
-    <div id="error" class="error"></div>
-    <form id="loginForm" class="login-form" dir="rtl">
-      <label for="username">اسم المستخدم:</label>
-      <input type="text" id="username" placeholder="أدخل اسم المستخدم" required />
-      <label for="password">كلمة المرور:</label>
-      <input type="password" id="password" placeholder="أدخل كلمة المرور" required />
-      <button type="submit">تسجيل الدخول</button>
-    </form>
-  </div>
+  <h1>🎓 لوحة تحكم الموظف</h1>
+  <div id="menuContainer"></div>
+  <iframe id="pdfViewer"></iframe>
 
   <script>
-    const loginForm = document.getElementById("loginForm");
-    const errorDiv = document.getElementById("error");
+    const role = "staff";
 
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-
+    async function loadMenu() {
+      const container = document.getElementById("menuContainer");
       try {
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password })
+        const res = await fetch(`/api/menu/${role}`);
+        if (!res.ok) throw new Error("تعذر تحميل القائمة");
+
+        const menu = await res.json();
+        container.innerHTML = "";
+        menu.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "menu-btn";
+          btn.textContent = item.title;
+
+          btn.onclick = () => {
+            switch(item.type) {
+              case "pdf": openPdfSmart(item.filename, "pdfViewer"); break;
+              case "page": window.location.href = item.path; break;
+              case "submenu": window.location.href = `/policies.html?role=${role}`; break;
+              case "external": window.open(item.url, "_blank"); break;
+            }
+          };
+
+          container.appendChild(btn);
         });
-        const data = await res.json();
-
-        if (data.success) {
-          sessionStorage.setItem("role", "staff");
-          window.location.href = "/staff_menu.html";
-        } else {
-          showError(data.message || "خطأ غير معروف");
-        }
       } catch (err) {
-        showError("تعذر الاتصال بالخادم");
-        console.error(err);
+        container.innerHTML = `<p>تعذر تحميل القائمة: ${err.message}</p>`;
       }
-    });
-
-    function showError(msg) {
-      errorDiv.innerText = msg;
-      errorDiv.style.display = "block";
     }
+
+    document.addEventListener("DOMContentLoaded", loadMenu);
   </script>
 </body>
 </html>
