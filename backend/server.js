@@ -48,6 +48,7 @@ const studentMenu = [
   { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
   { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
   { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
+  { title: "أرقام التواصل", type: "pdf", filename: "contact_numbers.pdf" },
   { title: "تقرير متابعة الطالب", type: "page", path: "/report.html" },
   { title: "السياسات والأدلة", type: "submenu", role: "student" },
   { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
