@@ -53,7 +53,7 @@
           container.appendChild(btn);
         });
       } catch (err) {
-        container.innerHTML = `<p>❌ ${err.message}</p>`;
+        container.innerHTML = `<p>تعذر تحميل القائمة: ${err.message}</p>`;
       }
     }
 

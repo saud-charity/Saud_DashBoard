@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📚 لوحة تحكم الطالب</title>
+  <title>🎓 لوحة تحكم الطالب/ولي الأمر</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
   <style>
@@ -18,11 +18,11 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       transition: 0.2s;
     }
-    .menu-btn:hover { background: #2980b9; transform: translateY(-2px); }
+    .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
   </style>
 </head>
 <body>
-  <h1>📚 لوحة تحكم الطالب</h1>
+  <h1>🎓 لوحة تحكم الطالب/ولي الأمر</h1>
   <div id="menuContainer"></div>
 
   <script>
@@ -53,7 +53,7 @@
           container.appendChild(btn);
         });
       } catch (err) {
-        container.innerHTML = `<p>❌ ${err.message}</p>`;
+        container.innerHTML = `<p>تعذر تحميل القائمة: ${err.message}</p>`;
       }
     }
 

@@ -3,46 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📑 السياسات والأدلة</title>
+  <title>📚 السياسات والأدلة</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #fafafa; }
-    h1 { margin-bottom: 20px; }
-    ul { list-style: none; padding: 0; max-width: 600px; margin: auto; }
-    li { background: #fff; margin: 8px 0; padding: 12px; border-radius: 6px;
-         box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-    li:hover { background: #f0f0f0; }
+    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f4f6f8; }
+    h1 { margin-bottom: 30px; color: #333; }
+    #policiesContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+    .policy-btn {
+      padding: 12px 20px; font-size: 1em; cursor: pointer;
+      border: none; border-radius: 8px;
+      background: #e67e22; color: #fff;
+      min-width: 200px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+    .policy-btn:hover { background: #d35400; transform: translateY(-2px); }
   </style>
 </head>
 <body>
-  <h1>📑 السياسات والأدلة</h1>
-  <ul id="policyList"></ul>
+  <h1>📚 السياسات والأدلة</h1>
+  <div id="policiesContainer"></div>
 
   <script>
-    async function loadPolicies() {
-      const params = new URLSearchParams(window.location.search);
-      const role = params.get("role") || "student";
+    // استرجاع الدور من الرابط (student أو staff)
+    const urlParams = new URLSearchParams(window.location.search);
+    const role = urlParams.get("role") || "student";
 
-      const list = document.getElementById("policyList");
+    async function loadPolicies() {
+      const container = document.getElementById("policiesContainer");
       try {
         const res = await fetch(`/api/policies/${role}`);
         if (!res.ok) throw new Error("تعذر تحميل السياسات");
 
         const policies = await res.json();
-        list.innerHTML = "";
-        policies.forEach(policy => {
-          const li = document.createElement("li");
-          li.textContent = policy.title;
-          li.onclick = () => openPdfSmart(policy.filename);
-          list.appendChild(li);
-        });
-      } catch (err) {
-        list.innerHTML = `<p>❌ ${err.message}</p>`;
-      }
-    }
+        container.innerHTML = "";
+        policies.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "policy-btn";
+          btn.textContent = item.title;
 
-    document.addEventListener("DOMContentLoaded", loadPolicies);
-  </script>
-</body>
-</html>
+          btn.onclick = () => {
+            openPdfSmart(item.filename); // فتح PDF في تبويب جديد
+          };
+
+          container.appendChild(btn);
