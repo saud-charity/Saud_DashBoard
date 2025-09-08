@@ -1,65 +1,59 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎓 لوحة تحكم الطالب/ولي الأمر</title>
-  <link rel="stylesheet" href="/style.css">
-  <script src="/js/pdf-helper.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f4f6f8; }
-    h1 { margin-bottom: 30px; color: #333; }
-    #menuContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
-    .menu-btn { padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px;
-      background: #3498db; color: #fff; transition: 0.2s; min-width: 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
-    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 لوحة تحكم الطالب</title>
+<link rel="stylesheet" href="/css/style.css">
+<script src="/js/pdf-helper.js" defer></script>
+<style>
+body { font-family: Arial; text-align: center; padding: 30px; background: #f4f6f8; }
+h1 { margin-bottom: 30px; color: #333; }
+#menuContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+.menu-btn { padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px;
+    background: #3498db; color: #fff; min-width: 200px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; }
+.menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
+#pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
+</style>
 </head>
 <body>
-  <script src="/js/pdf-helper.js"></script>
-  <h1>🎓 لوحة تحكم الطالب/ولي الأمر</h1>
-  <div id="menuContainer"></div>
-  <iframe id="pdfViewer"></iframe>
+<h1>🎓 لوحة تحكم الطالب</h1>
+<div id="menuContainer"></div>
+<iframe id="pdfViewer"></iframe>
+
 <script>
-const studentMenu = [
-  { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
-  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
-  { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
-  { title: "تقرير متابعة الطالب", type: "page", path: "/report.html" },
-  { title: "السياسات والأدلة", type: "submenu", role: "student" },
-  { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
-  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.ese.gov.ae/" },
-  { title: "وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" }
-];
+const role = "student";
 
-const container = document.getElementById("menuContainer");
+async function loadMenu() {
+  const container = document.getElementById("menuContainer");
+  try {
+    const res = await fetch(`/api/menu/${role}`);
+    if (!res.ok) throw new Error("تعذر تحميل القائمة");
+    const menu = await res.json();
+    container.innerHTML = "";
 
-studentMenu.forEach(item => {
-  const btn = document.createElement("button");
-  btn.className = "menu-btn";
-  btn.textContent = item.title;
+    menu.forEach(item => {
+      const btn = document.createElement("button");
+      btn.className = "menu-btn";
+      btn.textContent = item.title;
 
-  btn.onclick = () => {
-    switch(item.type) {
-      case "pdf":
-        openPdfSmart(item.filename, "pdfViewer");
-        break;
-      case "page":
-        window.location.href = item.path;
-        break;
-      case "submenu":
-        window.location.href = `/policies.html?role=${item.role}`;
-        break;
-      case "external":
-        window.open(item.url, "_blank");
-        break;
-    }
-  };
+      btn.onclick = () => {
+        switch(item.type) {
+          case "pdf": openPdfSmart(item.filename); break;
+          case "page": window.location.href = item.path; break;
+          case "submenu": window.location.href = `/policies.html?role=${role}`; break;
+          case "external": window.open(item.url, "_blank"); break;
+        }
+      };
 
-  container.appendChild(btn);
-});
+      container.appendChild(btn);
+    });
+  } catch (err) {
+    container.innerHTML = `<p>تعذر تحميل القائمة: ${err.message}</p>`;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadMenu);
 </script>
-
 </body>
 </html>

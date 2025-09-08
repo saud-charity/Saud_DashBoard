@@ -6,13 +6,26 @@ function openPdfSmart(filename) {
     return;
   }
 
-  // 👇 نستخدم API السيرفر لضمان فتح الملف بشكل صحيح
   const fileUrl = `/api/pdfs/${filename}`;
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-  // 🔹 افتح الملف في تبويب جديد سواء كمبيوتر أو موبايل
-  const newTab = window.open(fileUrl, "_blank");
+  if (isMobile) {
+    // على الموبايل → افتح الملف مباشرة في نافذة جديدة
+    const newWindow = window.open(fileUrl, "_blank");
+    if (!newWindow) {
+      alert("❌ المتصفح منع فتح الملف. تأكد من السماح للنوافذ المنبثقة.");
+    }
+  } else {
+    // على الكمبيوتر → افتح باستخدام pdf.js داخل iframe
+    const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
+    const pdfViewer = document.getElementById("pdfViewer");
 
-  if (!newTab) {
-    alert("❌ لم يتمكن المتصفح من فتح الملف. تأكد من عدم وجود حظر النوافذ المنبثقة.");
+    if (pdfViewer) {
+      pdfViewer.src = viewerUrl;
+      pdfViewer.style.display = "block";
+      pdfViewer.scrollIntoView({ behavior: "smooth" });
+    } else {
+      window.open(viewerUrl, "_blank");
+    }
   }
 }
