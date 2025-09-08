@@ -148,3 +148,68 @@ function loadStudentsFromExcel() {
     console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH);
     return {};
   }
+
+  const workbook = xlsx.readFile(EXCEL_PATH);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = xlsx.utils.sheet_to_json(sheet, { defval: "-" });
+
+  const students = {};
+  rows.forEach(row => {
+    const idKeys = ["ID", "Id", "id", "الهوية", "رقم الهوية", "NationalID"];
+    let id = idKeys.map(k => row[k]).find(v => v && String(v).trim() !== "");
+    if (!id) return;
+    id = String(id).trim();
+
+    const nameKeys = ["الاسم", "اسم", "Name", "student_name"];
+    const classKeys = ["الشعبة", "Class", "الفصل"];
+    const name =
+      nameKeys.map(k => row[k]).find(v => v && String(v).trim() !== "") || "-";
+    const className =
+      classKeys.map(k => row[k]).find(v => v && String(v).trim() !== "") || "-";
+
+    const allCols = Object.keys(row).slice(4); // skip first columns
+    const subjects = SUBJECTS.map((sub, i) => {
+      const base = i * 6;
+      return {
+        name: sub,
+        formative: row[allCols[base]] || "-",
+        academic: row[allCols[base + 1]] || "-",
+        participation: row[allCols[base + 2]] || "-",
+        alef: row[allCols[base + 3]] || "-",
+        behavior: row[allCols[base + 4]] || "-",
+        commitment: row[allCols[base + 5]] || "-"
+      };
+    });
+
+    students[id] = {
+      student: { "الاسم": name.trim(), "الشعبة": className.trim() },
+      subjects
+    };
+  });
+
+  return students;
+}
+
+let studentReports = loadStudentsFromExcel();
+console.log(`✅ Loaded ${Object.keys(studentReports).length} student reports.`);
+
+app.get("/api/report/:id", (req, res) => {
+  const id = String(req.params.id).trim();
+  const report = studentReports[id];
+  if (!report) return res.status(404).send("❌ الطالب غير موجود");
+  res.json(report);
+});
+
+// Reload students dynamically
+app.post("/api/reload-students", (req, res) => {
+  studentReports = loadStudentsFromExcel();
+  res.json({ ok: true, count: Object.keys(studentReports).length });
+});
+
+// -----------------------------
+// ✅ Start server
+// -----------------------------
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`✅ Server running at http://localhost:${PORT}`)
+);
