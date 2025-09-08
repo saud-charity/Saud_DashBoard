@@ -36,4 +36,48 @@
 </head>
 <body>
   <h1>📑 السياسات والأدلة</h1>
-  <div id="policiesContainer"><
+  <div id="policiesContainer"></div>
+  <button class="back-btn" onclick="goBack()">⬅️ رجوع</button>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const role = urlParams.get("role") || "student";
+
+    async function loadPolicies() {
+      const container = document.getElementById("policiesContainer");
+      try {
+        const res = await fetch(`/api/policies/${role}`);
+        if (!res.ok) throw new Error("تعذر تحميل السياسات");
+
+        const policies = await res.json();
+        container.innerHTML = "";
+
+        policies.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "policy-btn";
+          btn.textContent = item.title;
+
+          btn.onclick = () => {
+            console.log("Opening policy:", item);
+            openPdfSmart(item.filename);
+          };
+
+          container.appendChild(btn);
+        });
+      } catch (err) {
+        container.innerHTML = `<p>تعذر تحميل السياسات: ${err.message}</p>`;
+      }
+    }
+
+    function goBack() {
+      if (role === "staff") {
+        window.location.href = "/staff_menu.html";
+      } else {
+        window.location.href = "/student_menu.html";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadPolicies);
+  </script>
+</body>
+</html>

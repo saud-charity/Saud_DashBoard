@@ -14,7 +14,6 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/pdfs", express.static(path.join(__dirname, "../public/pdfs")));
 app.use("/js", express.static(path.join(__dirname, "../public/js")));
-app.use("/pdfjs", express.static(path.join(__dirname, "../public/pdfjs")));
 
 // -----------------------------
 // ✅ Home page
