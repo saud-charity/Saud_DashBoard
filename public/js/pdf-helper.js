@@ -1,50 +1,18 @@
-// ✅ pdf-helper.js
+// 📄 pdf-helper.js
 
-// فتح ملف PDF مع أزرار التحميل والطباعة
-window.openPdfWithControls = function (filename, viewerId, controlsId, printBtnId, downloadBtnId) {
+function openPdfSmart(filename) {
   if (!filename) {
     alert("❌ لم يتم تحديد الملف");
     return;
   }
 
-  // 👇 التغيير المهم: استعمال /pdfs بدلاً من /api/pdfs
-  const fileUrl = `/pdfs/${filename}`;
-  const viewer = document.getElementById(viewerId);
-  const controls = document.getElementById(controlsId);
-  const printBtn = document.getElementById(printBtnId);
-  const downloadBtn = document.getElementById(downloadBtnId);
+  // 👇 نستخدم API السيرفر لضمان فتح الملف بشكل صحيح
+  const fileUrl = `/api/pdfs/${filename}`;
 
-  if (!viewer) {
-    window.open(fileUrl, "_blank");
-    return;
+  // 🔹 افتح الملف في تبويب جديد سواء كمبيوتر أو موبايل
+  const newTab = window.open(fileUrl, "_blank");
+
+  if (!newTab) {
+    alert("❌ لم يتمكن المتصفح من فتح الملف. تأكد من عدم وجود حظر النوافذ المنبثقة.");
   }
-
-  // ✅ عرض الملف داخل iframe
-  viewer.src = fileUrl;
-  viewer.style.display = "block";
-
-  // ✅ إظهار أزرار التحكم
-  if (controls) controls.style.display = "block";
-
-  // زر الطباعة
-  if (printBtn) {
-    printBtn.onclick = () => {
-      const newTab = window.open(fileUrl, "_blank");
-      if (newTab) {
-        newTab.addEventListener("load", () => newTab.print());
-      }
-    };
-  }
-
-  // زر التنزيل
-  if (downloadBtn) {
-    downloadBtn.onclick = () => {
-      const a = document.createElement("a");
-      a.href = fileUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    };
-  }
-};
+}
