@@ -1,31 +1,22 @@
-// 📄 pdf-helper.js
+function openPdfSmart(filename){
+  if(!filename){ alert("❌ لم يتم تحديد الملف"); return; }
 
-function openPdfSmart(filename) {
-  if (!filename) {
-    alert("❌ لم يتم تحديد الملف");
-    return;
-  }
-
-  const fileUrl = `/api/pdfs/${filename}`;
+  const url = `/pdfs/${filename}`;
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
-  if (isMobile) {
-    // على الموبايل → افتح الملف مباشرة في نافذة جديدة
-    const newWindow = window.open(fileUrl, "_blank");
-    if (!newWindow) {
-      alert("❌ المتصفح منع فتح الملف. تأكد من السماح للنوافذ المنبثقة.");
-    }
+  if(isMobile){
+    // 📱 موبايل → فتح في تبويب جديد
+    window.open(url,"_blank");
   } else {
-    // على الكمبيوتر → افتح باستخدام pdf.js داخل iframe
-    const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
-    const pdfViewer = document.getElementById("pdfViewer");
-
-    if (pdfViewer) {
-      pdfViewer.src = viewerUrl;
-      pdfViewer.style.display = "block";
-      pdfViewer.scrollIntoView({ behavior: "smooth" });
+    // 💻 كمبيوتر → iframe مع pdf.js
+    const viewerUrl=`/pdfjs/web/viewer.html?file=${encodeURIComponent(url)}`;
+    const iframe=document.getElementById("pdfViewer");
+    if(iframe){
+      iframe.src=viewerUrl;
+      iframe.style.display="block";
+      iframe.scrollIntoView({behavior:"smooth"});
     } else {
-      window.open(viewerUrl, "_blank");
+      window.open(viewerUrl,"_blank");
     }
   }
 }
