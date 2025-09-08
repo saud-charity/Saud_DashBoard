@@ -1,16 +1,16 @@
-// 📄 pdf-helper.js
-function openPdfSmart(filename) {
+// ✅ pdf-helper.js
+window.openPdfSmart = function(filename) {
   if (!filename) {
     alert("❌ لم يتم تحديد الملف");
     return;
   }
 
-  const fileUrl = `/pdfs/${filename}`;
+  const fileUrl = `/api/pdfs/${filename}`;
 
-  // افتح الملف في تبويب جديد مباشرة عند الضغط على الزر
-  const newWindow = window.open(fileUrl, "_blank");
-  
-  if (!newWindow) {
-    alert("⚠️ المتصفح منع فتح نافذة جديدة. الرجاء السماح بالنوافذ المنبثقة.");
+  // حاول فتح التبويب مباشرة
+  const newTab = window.open(fileUrl, "_blank");
+
+  if (!newTab || newTab.closed || typeof newTab.closed === "undefined") {
+    alert("⚠️ المتصفح منع فتح النافذة الجديدة. الرجاء السماح بالنوافذ المنبثقة.");
   }
-}
+};
