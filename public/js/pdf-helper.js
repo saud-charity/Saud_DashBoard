@@ -1,13 +1,14 @@
 // ✅ pdf-helper.js
 
-// فتح ملف PDF مع إظهار أزرار التحكم (تحميل + طباعة)
+// فتح ملف PDF مع أزرار التحميل والطباعة
 window.openPdfWithControls = function (filename, viewerId, controlsId, printBtnId, downloadBtnId) {
   if (!filename) {
     alert("❌ لم يتم تحديد الملف");
     return;
   }
 
-  const fileUrl = `/api/pdfs/${filename}`;
+  // 👇 التغيير المهم: استعمال /pdfs بدلاً من /api/pdfs
+  const fileUrl = `/pdfs/${filename}`;
   const viewer = document.getElementById(viewerId);
   const controls = document.getElementById(controlsId);
   const printBtn = document.getElementById(printBtnId);
