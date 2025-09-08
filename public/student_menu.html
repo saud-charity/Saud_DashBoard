@@ -17,18 +17,13 @@
       min-width: 200px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       transition: 0.2s;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
     }
     .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
-    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; pointer-events: auto; }
   </style>
 </head>
 <body>
   <h1>🎓 لوحة تحكم الطالب/ولي الأمر</h1>
   <div id="menuContainer"></div>
-  <iframe id="pdfViewer"></iframe>
 
   <script>
     const role = "student";
@@ -41,32 +36,20 @@
 
         const menu = await res.json();
         container.innerHTML = "";
-
         menu.forEach(item => {
           const btn = document.createElement("button");
           btn.className = "menu-btn";
           btn.textContent = item.title;
 
-          const handleClick = () => {
+          btn.onclick = () => {
+            console.log("Clicked:", item);
             switch(item.type) {
-              case "pdf":
-                openPdfSmart(item.filename, "pdfViewer");
-                break;
-              case "page":
-                window.location.href = item.path;
-                break;
-              case "submenu":
-                window.location.href = `/policies.html?role=${role}`;
-                break;
-              case "external":
-                window.open(item.url, "_blank");
-                break;
+              case "pdf": openPdfSmart(item.filename); break;
+              case "page": window.location.href = item.path; break;
+              case "submenu": window.location.href = `/policies.html?role=${role}`; break;
+              case "external": window.open(item.url, "_blank"); break;
             }
           };
-
-          // Attach both click and touch events for mobile
-          btn.addEventListener("click", handleClick);
-          btn.addEventListener("touchend", handleClick);
 
           container.appendChild(btn);
         });

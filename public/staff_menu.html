@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💼 لوحة تحكم الموظف</title>
+  <title>👩‍🏫 لوحة تحكم المعلم/الإداري</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
   <style>
@@ -13,23 +13,20 @@
     .menu-btn {
       padding: 12px 20px; font-size: 1em; cursor: pointer;
       border: none; border-radius: 8px;
-      background: #3498db; color: #fff;
+      background: #2ecc71; color: #fff;
       min-width: 200px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       transition: 0.2s;
     }
-    .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
-    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
+    .menu-btn:hover { background: #27ae60; transform: translateY(-2px); }
   </style>
 </head>
 <body>
-  <h1>💼 لوحة تحكم الموظف</h1>
+  <h1>👩‍🏫 لوحة تحكم المعلم/الإداري</h1>
   <div id="menuContainer"></div>
-  <iframe id="pdfViewer"></iframe>
 
   <script>
-    const role = sessionStorage.getItem("role");
-    if (role !== "staff") window.location.href = "/staff_login.html";
+    const role = "staff";
 
     async function loadMenu() {
       const container = document.getElementById("menuContainer");
@@ -45,8 +42,9 @@
           btn.textContent = item.title;
 
           btn.onclick = () => {
+            console.log("Clicked:", item);
             switch(item.type) {
-              case "pdf": openPdfSmart(item.filename, "pdfViewer"); break;
+              case "pdf": openPdfSmart(item.filename); break;
               case "page": window.location.href = item.path; break;
               case "submenu": window.location.href = `/policies.html?role=${role}`; break;
               case "external": window.open(item.url, "_blank"); break;
