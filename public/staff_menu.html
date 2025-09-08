@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>👩‍🏫 لوحة تحكم المعلم/الإداري</title>
+  <title>🎓 لوحة تحكم الموظف</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
   <style>
@@ -22,7 +22,7 @@
   </style>
 </head>
 <body>
-  <h1>👩‍🏫 لوحة تحكم المعلم/الإداري</h1>
+  <h1>🎓 لوحة تحكم الموظف</h1>
   <div id="menuContainer"></div>
 
   <script>
@@ -42,7 +42,6 @@
           btn.textContent = item.title;
 
           btn.onclick = () => {
-            console.log("Clicked:", item);
             switch(item.type) {
               case "pdf": openPdfSmart(item.filename); break;
               case "page": window.location.href = item.path; break;
@@ -54,7 +53,7 @@
           container.appendChild(btn);
         });
       } catch (err) {
-        container.innerHTML = `<p>تعذر تحميل القائمة: ${err.message}</p>`;
+        container.innerHTML = `<p>❌ ${err.message}</p>`;
       }
     }
 

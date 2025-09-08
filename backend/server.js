@@ -14,6 +14,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/pdfs", express.static(path.join(__dirname, "../public/pdfs")));
 app.use("/js", express.static(path.join(__dirname, "../public/js")));
+app.use("/pdfjs", express.static(path.join(__dirname, "../public/pdfjs")));
 
 // -----------------------------
 // ✅ Home page
@@ -35,7 +36,9 @@ const STAFF_USERS = [
 // -----------------------------
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  const user = STAFF_USERS.find(u => u.username === username && u.password === password);
+  const user = STAFF_USERS.find(
+    u => u.username === username && u.password === password
+  );
   if (user) return res.json({ success: true });
   res.json({ success: false, message: "اسم المستخدم أو كلمة المرور خاطئة" });
 });
@@ -79,16 +82,21 @@ app.get("/api/menu/:role", (req, res) => {
 });
 
 // -----------------------------
-// ✅ PDF protection
+// ✅ PDF protection (inline view)
 // -----------------------------
-app.get("/api/pdfs/:filename", (req, res) => {
-  const { filename } = req.params;
+app.get("/pdfs/:filename", (req, res) => {
+  const filename = req.params.filename;
   const safeName = /^[a-zA-Z0-9_.-]+\.pdf$/;
   if (!safeName.test(filename)) return res.status(400).send("اسم ملف غير صالح");
 
   const filePath = path.join(__dirname, "../public/pdfs", filename);
   if (!fs.existsSync(filePath)) return res.status(404).send("الملف غير موجود");
 
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename="${path.basename(filename)}"`
+  );
   res.sendFile(filePath);
 });
 
@@ -105,13 +113,13 @@ const studentPolicies = [
   { title: "دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
   { title: "دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
   { title: "دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
+  { title: "دليل ولي الأمر للطفولة المبكرة", filename: "Parents_Guide_to_Early_Childhood.pdf" },
   { title: "سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
 ];
 
 const staffPolicies = [
   { title: "الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
-  ...studentPolicies // staff has all student policies + Ethics
+  ...studentPolicies
 ];
 
 app.get("/api/policies/:role", (req, res) => {
@@ -140,64 +148,3 @@ function loadStudentsFromExcel() {
     console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH);
     return {};
   }
-
-  const workbook = xlsx.readFile(EXCEL_PATH);
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rows = xlsx.utils.sheet_to_json(sheet, { defval: "-" });
-
-  const students = {};
-  rows.forEach(row => {
-    const idKeys = ["ID", "Id", "id", "الهوية", "رقم الهوية", "NationalID"];
-    let id = idKeys.map(k => row[k]).find(v => v && String(v).trim() !== "");
-    if (!id) return;
-    id = String(id).trim();
-
-    const nameKeys = ["الاسم", "اسم", "Name", "student_name"];
-    const classKeys = ["الشعبة", "Class", "الفصل"];
-    const name = nameKeys.map(k => row[k]).find(v => v && String(v).trim() !== "") || "-";
-    const className = classKeys.map(k => row[k]).find(v => v && String(v).trim() !== "") || "-";
-
-    const allCols = Object.keys(row).slice(4); // skip first columns
-    const subjects = SUBJECTS.map((sub, i) => {
-      const base = i * 6;
-      return {
-        name: sub,
-        formative: row[allCols[base]] || "-",
-        academic: row[allCols[base + 1]] || "-",
-        participation: row[allCols[base + 2]] || "-",
-        alef: row[allCols[base + 3]] || "-",
-        behavior: row[allCols[base + 4]] || "-",
-        commitment: row[allCols[base + 5]] || "-"
-      };
-    });
-
-    students[id] = {
-      student: { "الاسم": name.trim(), "الشعبة": className.trim() },
-      subjects
-    };
-  });
-
-  return students;
-}
-
-let studentReports = loadStudentsFromExcel();
-console.log(`✅ Loaded ${Object.keys(studentReports).length} student reports.`);
-
-app.get("/api/report/:id", (req, res) => {
-  const id = String(req.params.id).trim();
-  const report = studentReports[id];
-  if (!report) return res.status(404).send("❌ الطالب غير موجود");
-  res.json(report);
-});
-
-// Reload students dynamically
-app.post("/api/reload-students", (req, res) => {
-  studentReports = loadStudentsFromExcel();
-  res.json({ ok: true, count: Object.keys(studentReports).length });
-});
-
-// -----------------------------
-// ✅ Start server
-// -----------------------------
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));

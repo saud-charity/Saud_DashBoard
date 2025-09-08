@@ -7,73 +7,38 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f9f9f9; }
-    h1 { margin-bottom: 30px; color: #333; }
-    #policiesContainer { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-    .policy-btn {
-      padding: 12px 20px; font-size: 1em; cursor: pointer;
-      border: none; border-radius: 8px;
-      background: #e67e22; color: #fff;
-      min-width: 250px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: 0.2s;
-    }
-    .policy-btn:hover { background: #d35400; transform: translateY(-2px); }
-
-    .back-btn {
-      margin-top: 30px;
-      padding: 10px 18px;
-      font-size: 0.9em;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      background: #7f8c8d; color: #fff;
-      box-shadow: 0 3px 5px rgba(0,0,0,0.1);
-      transition: 0.2s;
-    }
-    .back-btn:hover { background: #606c6d; }
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #fafafa; }
+    h1 { margin-bottom: 20px; }
+    ul { list-style: none; padding: 0; max-width: 600px; margin: auto; }
+    li { background: #fff; margin: 8px 0; padding: 12px; border-radius: 6px;
+         box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+    li:hover { background: #f0f0f0; }
   </style>
 </head>
 <body>
   <h1>📑 السياسات والأدلة</h1>
-  <div id="policiesContainer"></div>
-  <button class="back-btn" onclick="goBack()">⬅️ رجوع</button>
+  <ul id="policyList"></ul>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const role = urlParams.get("role") || "student";
-
     async function loadPolicies() {
-      const container = document.getElementById("policiesContainer");
+      const params = new URLSearchParams(window.location.search);
+      const role = params.get("role") || "student";
+
+      const list = document.getElementById("policyList");
       try {
         const res = await fetch(`/api/policies/${role}`);
         if (!res.ok) throw new Error("تعذر تحميل السياسات");
 
         const policies = await res.json();
-        container.innerHTML = "";
-
-        policies.forEach(item => {
-          const btn = document.createElement("button");
-          btn.className = "policy-btn";
-          btn.textContent = item.title;
-
-          btn.onclick = () => {
-            console.log("Opening policy:", item);
-            openPdfSmart(item.filename);
-          };
-
-          container.appendChild(btn);
+        list.innerHTML = "";
+        policies.forEach(policy => {
+          const li = document.createElement("li");
+          li.textContent = policy.title;
+          li.onclick = () => openPdfSmart(policy.filename);
+          list.appendChild(li);
         });
       } catch (err) {
-        container.innerHTML = `<p>تعذر تحميل السياسات: ${err.message}</p>`;
-      }
-    }
-
-    function goBack() {
-      if (role === "staff") {
-        window.location.href = "/staff_menu.html";
-      } else {
-        window.location.href = "/student_menu.html";
+        list.innerHTML = `<p>❌ ${err.message}</p>`;
       }
     }
 
