@@ -7,12 +7,45 @@
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
   <style>
-    body{font-family:Arial,sans-serif;text-align:center;padding:30px;background:#f4f6f8}
-    h1{margin-bottom:30px;color:#333}
-    #menuContainer{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
-    .menu-btn{padding:12px 20px;font-size:1em;cursor:pointer;border:none;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,0.1);min-width:200px;transition:.2s}
-    .menu-btn:hover{transform:translateY(-2px)}
-    #pdfViewer{width:90%;height:600px;border:1px solid #ccc;border-radius:8px;margin:20px auto;display:none}
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+      background: #f4f6f8;
+    }
+    h1 {
+      margin-bottom: 30px;
+      color: #333;
+    }
+    #menuContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+    .menu-btn {
+      padding: 12px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      min-width: 200px;
+      transition: .2s;
+      background: white;
+    }
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      background: #eef2f7;
+    }
+    #pdfViewer {
+      width: 90%;
+      height: 600px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 20px auto;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -21,5 +54,4 @@
   <iframe id="pdfViewer"></iframe>
 
   <script>
-    const params=new URLSearchParams(window.location.search);
-    const role=(params.get("role")||sessionStorage.getItem("
+    const par

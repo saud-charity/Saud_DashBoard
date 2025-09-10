@@ -1,68 +1,101 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول</title>
-<link rel="stylesheet" href="/css/style.css">
-<style>
-body { font-family: Arial; text-align: center; padding: 50px; background: #f4f6f8; }
-h2 { margin-bottom: 25px; color: #333; }
-form { display: inline-block; text-align: left; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-label { display: block; margin-top: 15px; }
-input { width: 250px; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-button { margin-top: 20px; padding: 12px 20px; width: 100%; border: none; border-radius: 8px; background: #2ecc71; color: white; font-size: 1em; cursor: pointer; }
-button:hover { background: #27ae60; }
-#errorMsg { color: red; margin-top: 10px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔑 تسجيل دخول الموظف</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 320px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #3498db;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #217dbb;
+    }
+    .error {
+      color: #e74c3c;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+  </style>
 </head>
 <body>
-<h2>تسجيل الدخول</h2>
-<form id="loginForm">
-  <label>اسم المستخدم:
-    <input type="text" id="username" required>
-  </label>
-  <label>كلمة المرور:
-    <input type="password" id="password" required>
-  </label>
-  <button type="submit">دخول</button>
-  <div id="errorMsg"></div>
-</form>
+  <div class="login-box">
+    <h2>🔑 تسجيل دخول الموظف</h2>
+    <input type="text" id="username" placeholder="اسم المستخدم">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button onclick="login()">دخول</button>
+    <p id="errorMsg" class="error"></p>
+  </div>
 
-<script>
-const form = document.getElementById("loginForm");
-const errorDiv = document.getElementById("errorMsg");
+  <script>
+    async function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const errorMsg = document.getElementById("errorMsg");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  errorDiv.textContent = "";
+      errorMsg.textContent = "";
 
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
+      if (!username || !password) {
+        errorMsg.textContent = "⚠️ يرجى إدخال اسم المستخدم وكلمة المرور";
+        return;
+      }
 
-  try {
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
 
-    const data = await res.json();
-    if (data.success) {
-      // حفظ الدور في sessionStorage
-      const role = (username === "admin" || username === "staff") ? "staff" : "student";
-      sessionStorage.setItem("role", role);
+        const data = await res.json();
 
-      // الانتقال إلى صفحة المينيو المناسبة
-      if (role === "staff") window.location.href = "/staff_menu.html";
-      else window.location.href = "/student_menu.html";
-    } else {
-      errorDiv.textContent = data.message || "خطأ في تسجيل الدخول";
+        if (data.success) {
+          sessionStorage.setItem("role", "staff");
+          window.location.href = "/menu.html?role=staff";
+        } else {
+          errorMsg.textContent = data.message || "❌ فشل تسجيل الدخول";
+        }
+      } catch (err) {
+        errorMsg.textContent = "⚠️ حدث خطأ أثناء الاتصال بالخادم";
+      }
     }
-  } catch (err) {
-    errorDiv.textContent = "حدث خطأ: " + (err.message || err);
-  }
-});
-</script>
+  </script>
 </body>
 </html>
