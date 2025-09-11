@@ -12,8 +12,7 @@ function openPdfSmart(filename) {
 
   if (isMobile) {
     // على الموبايل: افتح الملف مباشرة (browser native viewer يدعم print/download)
-    // const newTab = window.open(pdfStaticUrl, "_blank");
-    const newTab = window.open(pdfStaticUrl");
+    const newTab = window.open(pdfStaticUrl, "_blank");
     if (!newTab) alert("⚠️ المتصفح منع فتح النافذة الجديدة. فعّل النوافذ المنبثقة للموقع.");
     return;
   }
