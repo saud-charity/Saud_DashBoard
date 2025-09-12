@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم</title>
+  <title>🎓 لوحة التحكم</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
   <style>
@@ -28,8 +28,20 @@
       transition: 0.2s;
     }
     .menu-btn:hover { background: #27ae60; transform: translateY(-2px); }
-    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none; }
-    #pdfControls { margin: 10px auto; display: none; justify-content: center; gap: 10px; }
+    #pdfViewer {
+      width: 90%;
+      height: 600px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 20px auto;
+      display: none;
+    }
+    #pdfControls {
+      margin: 10px auto;
+      display: none;
+      justify-content: center;
+      gap: 10px;
+    }
     .control-btn {
       padding: 10px 20px;
       font-size: 0.9em;
@@ -46,70 +58,66 @@
 </head>
 <body>
 
-  <h1 id="title">🎓 لوحة التحكم</h1>
+<h1 id="title">🎓 لوحة التحكم</h1>
+<div id="menuContainer"></div>
 
-  <div id="menuContainer"></div>
+<iframe id="pdfViewer"></iframe>
+<div id="pdfControls">
+  <button id="downloadBtn" class="control-btn download-btn">⬇️ تحميل</button>
+  <button id="printBtn" class="control-btn print-btn">🖨️ طباعة</button>
+</div>
 
-  <iframe id="pdfViewer"></iframe>
-  <div id="pdfControls">
-    <button id="downloadBtn" class="control-btn download-btn">⬇️ تحميل</button>
-    <button id="printBtn" class="control-btn print-btn">🖨️ طباعة</button>
-  </div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
+const container = document.getElementById("menuContainer");
 
-  <script>
-    // تحديد الدور من الرابط أو الجلسة
-    const params = new URLSearchParams(window.location.search);
-    const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
+function showMsg(html){ container.innerHTML = html; }
 
-    const container = document.getElementById("menuContainer");
+async function loadMenu() {
+  if(!role){
+    showMsg(`<p>لم يتم تحديد الدور.</p><button class="menu-btn" onclick="window.location.href='/'">العودة للصفحة الرئيسية</button>`);
+    return;
+  }
 
-    function showMsg(html) { container.innerHTML = html; }
+  try {
+    const res = await fetch(`/api/menu/${role}`);
+    if(!res.ok) throw new Error("تعذر تحميل القائمة");
+    const menu = await res.json();
+    container.innerHTML = "";
 
-    async function loadMenu() {
-      if (!role) {
-        showMsg(`<p>لم يتم تحديد الدور.</p><button class="menu-btn" onclick="window.location.href='/'">العودة للصفحة الرئيسية</button>`);
-        return;
-      }
+    menu.forEach(item=>{
+      const btn = document.createElement("button");
+      btn.className = "menu-btn";
+      btn.textContent = item.title;
 
-      try {
-        const res = await fetch(`/api/menu/${role}`);
-        if (!res.ok) throw new Error("تعذر تحميل القائمة");
+      btn.onclick = () => {
+        switch(item.type){
+          case "pdf":
+            openPdfWithControls(item.filename);
+            break;
+          case "page":
+            window.location.href = item.path;
+            break;
+          case "submenu":
+            window.location.href = `/policies.html?role=${role}`;
+            break;
+          case "external":
+            window.open(item.url, "_blank");
+            break;
+        }
+      };
 
-        const menu = await res.json();
-        container.innerHTML = "";
+      container.appendChild(btn);
+    });
 
-        menu.forEach(item => {
-          const btn = document.createElement("button");
-          btn.className = "menu-btn";
-          btn.textContent = item.title;
+  } catch(err){
+    showMsg(`<p>تعذر تحميل القائمة: ${err.message}</p>`);
+  }
+}
 
-          btn.onclick = () => {
-            switch(item.type){
-              case "pdf":
-                openPdfWithControls(item.filename);
-                break;
-              case "page":
-                window.location.href = item.path;
-                break;
-              case "submenu":
-                window.location.href = `/policies.html?role=${role}`;
-                break;
-              case "external":
-                window.open(item.url, "_blank");
-                break;
-            }
-          };
-
-          container.appendChild(btn);
-        });
-
-      } catch(err){
-        showMsg(`<p>تعذر تحميل القائمة: ${err.message}</p>`);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", loadMenu);
-  </script>
+document.addEventListener("DOMContentLoaded", loadMenu);
+</script>
 
 </body>
 </html>
