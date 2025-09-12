@@ -15,6 +15,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use("/pdfs", express.static(path.join(__dirname, "../public/pdfs")));
 app.use("/js", express.static(path.join(__dirname, "../public/js")));
 app.use("/pdfjs", express.static(path.join(__dirname, "../public/pdfjs")));
+app.use("/css", express.static(path.join(__dirname, "../public/css")));
 
 // -----------------------------
 // ✅ Home page
@@ -82,12 +83,12 @@ app.get("/api/menu/:role", (req,res)=>{
 // -----------------------------
 // ✅ PDF protection
 // -----------------------------
-app.get("/api/pdfs/:filename",(req,res)=>{
+app.get("/api/pdfs/:filename", (req,res)=>{
   const safe = /^[a-zA-Z0-9_.-]+\.pdf$/;
   const { filename } = req.params;
   if(!safe.test(filename)) return res.status(400).send("اسم ملف غير صالح");
 
-  const filePath = path.join(__dirname,"../public/pdfs",filename);
+  const filePath = path.join(__dirname, "../public/pdfs", filename);
   if(!fs.existsSync(filePath)) return res.status(404).send("الملف غير موجود");
 
   res.sendFile(filePath);

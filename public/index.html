@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>بوابة مدرسة الشيخ سعود</title>
+  <title>بوابة مدرسة الشيخ سعود - فرع1</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="landing">
   <div class="container">
     <h1>👋 مرحباً بكم في بوابة مدرسة الشيخ سعود - فرع1</h1>
     <div class="buttons">
-      <button class="btn" id="studentBtn">دخول طالب/ولي أمر</button>
-      <button class="btn" id="staffBtn">دخول موظف</button>
+      <button class="btn" onclick="selectRole('student')">🎓 دخول طالب/ ولي أمر</button>
+      <button class="btn" onclick="selectRole('staff')">👨‍🏫 دخول موظف</button>
     </div>
   </div>
   <script src="js/main.js" defer></script>

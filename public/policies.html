@@ -1,22 +1,29 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>السياسات والأدلة</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <div class="container">
-    <h1>📄 السياسات والأدلة</h1>
-    <div id="policiesContainer"></div>
+<body class="menu">
+  <header>
+    <h1>📘 السياسات والأدلة</h1>
+  </header>
 
-    <iframe id="pdfViewer"></iframe>
-    <div id="pdfControls">
-      <button id="downloadBtn" class="control-btn download-btn">⬇️ تحميل</button>
-      <button id="printBtn" class="control-btn print-btn">🖨️ طباعة</button>
+  <main>
+    <div id="policiesContainer" class="menu-container">
+      <p>⏳ جاري التحميل...</p>
     </div>
-  </div>
-  <script src="js/main.js" defer></script>
+
+    <!-- عارض PDF -->
+    <iframe id="pdfViewer" style="display:none; width:100%; height:80vh; border:none; margin-top:20px;"></iframe>
+  </main>
+
+  <footer>
+    <button class="btn exit" onclick="window.location.href='menu.html?role='+sessionStorage.getItem('role')">🔙 عودة</button>
+  </footer>
+
+  <script src="js/policies.js" defer></script>
 </body>
 </html>
