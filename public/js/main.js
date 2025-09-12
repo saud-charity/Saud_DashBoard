@@ -104,4 +104,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
     loadMenu(role);
   }
+
+  // أزرار PDF Controls
+  const downloadBtn = document.getElementById("downloadBtn");
+  const printBtn = document.getElementById("printBtn");
+  const pdfViewer = document.getElementById("pdfViewer");
+
+  if (downloadBtn && pdfViewer) {
+    downloadBtn.onclick = () => {
+      if (!pdfViewer.src) return alert("اختر ملف أولاً");
+      window.open(pdfViewer.src, "_blank");
+    };
+  }
+
+  if (printBtn && pdfViewer) {
+    printBtn.onclick = () => {
+      if (!pdfViewer.src) return alert("اختر ملف أولاً");
+      pdfViewer.contentWindow.print();
+    };
+  }
 });
