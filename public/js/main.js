@@ -1,5 +1,17 @@
 // ================================
-// ✅ Load menu for a specific role
+// ✅ Role selection and redirection
+// ================================
+function selectRole(role) {
+  sessionStorage.setItem("role", role);
+  if (role === "student") {
+    window.location.href = "menu.html?role=student";
+  } else if (role === "staff") {
+    window.location.href = "staff_login.html";
+  }
+}
+
+// ================================
+// ✅ Load menu for menu.html
 // ================================
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
@@ -38,7 +50,7 @@ async function loadMenu(role) {
           btn.onclick = () => window.open(item.url, "_blank");
           break;
         case "submenu":
-          btn.onclick = () => window.location.href = `/policies.html?role=${role}`;
+          btn.onclick = () => window.location.href = `policies.html?role=${role}`;
           break;
       }
 
@@ -61,10 +73,8 @@ function openPdfSmart(filename, viewerId = "pdfViewer") {
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
   if (isMobile) {
-    // على الموبايل: افتح PDF في نافذة جديدة
     window.open(fileUrl, "_blank");
   } else {
-    // على الكمبيوتر: عرض PDF ضمن iframe باستخدام PDF.js
     const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
     const pdfViewer = document.getElementById(viewerId);
     if (pdfViewer) {
@@ -78,35 +88,20 @@ function openPdfSmart(filename, viewerId = "pdfViewer") {
 }
 
 // ================================
-// ✅ Role selection (دخول الطالب أو الموظف)
-// ================================
-function selectRole(role) {
-  sessionStorage.setItem("role", role);
-  // توجيه لجميع الأدوار إلى menu.html الموحد
-  window.location.href = `/menu.html?role=${role}`;
-}
-
-window.selectRole = selectRole;
-
-// ================================
 // ✅ DOMContentLoaded
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
-  const role = params.get("role") || sessionStorage.getItem("role");
-
-  loadMenu(role);
-
   const studentBtn = document.getElementById("studentBtn");
   const staffBtn = document.getElementById("staffBtn");
 
   if (studentBtn) studentBtn.onclick = () => selectRole("student");
   if (staffBtn) staffBtn.onclick = () => selectRole("staff");
 
-  // تسجيل Service Worker
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("✅ Service Worker مسجل بنجاح"))
-      .catch(err => console.error("❌ فشل تسجيل Service Worker:", err));
+  // لو نحن على menu.html نحمّل القائمة تلقائياً
+  const container = document.getElementById("menuContainer");
+  if (container) {
+    const params = new URLSearchParams(window.location.search);
+    const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
+    loadMenu(role);
   }
 });
