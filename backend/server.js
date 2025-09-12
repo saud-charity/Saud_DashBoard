@@ -20,7 +20,7 @@ app.use("/pdfjs", express.static(path.join(__dirname, "../public/pdfjs")));
 // ✅ Home page
 // -----------------------------
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public", "index.html"));
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 // -----------------------------
@@ -36,18 +36,21 @@ const STAFF_USERS = [
 // -----------------------------
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
-  const user = STAFF_USERS.find(u => u.username===username && u.password===password);
+  const user = STAFF_USERS.find(u => u.username === username && u.password === password);
   if(user) return res.json({ success: true });
   res.json({ success: false, message: "اسم المستخدم أو كلمة المرور خاطئة" });
 });
 
 // -----------------------------
-// ✅ Menu definitions
+// ✅ Dynamic menus
 // -----------------------------
-const studentMenu = [
+const baseMenu = [
   { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
   { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
-  { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
+  { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" }
+];
+
+const studentMenuExtras = [
   { title: "أرقام التواصل", type: "pdf", filename: "contact_numbers.pdf" },
   { title: "تقرير متابعة الطالب", type: "page", path: "/report.html" },
   { title: "السياسات والأدلة", type: "submenu", role: "student" },
@@ -56,12 +59,9 @@ const studentMenu = [
   { title: "وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" }
 ];
 
-const staffMenu = [
-  { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle2.pdf" },
-  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle3.pdf" },
+const staffMenuExtras = [
   { title: "جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
   { title: "جداول المناوبة", type: "pdf", filename: "duties.pdf" },
-  { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
   { title: "السياسات والأدلة", type: "submenu", role: "staff" },
   { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
   { title: "المنهل", type: "external", url: "https://sis.ese.gov.ae/" },
@@ -72,17 +72,17 @@ const staffMenu = [
 // -----------------------------
 // ✅ Menu API
 // -----------------------------
-app.get("/api/menu/:role", (req,res)=>{
+app.get("/api/menu/:role", (req, res) => {
   const { role } = req.params;
-  if(role==="student") return res.json(studentMenu);
-  if(role==="staff") return res.json(staffMenu);
+  if(role === "student") return res.json([...baseMenu, ...studentMenuExtras]);
+  if(role === "staff") return res.json([...baseMenu, ...staffMenuExtras]);
   res.status(400).send("دور غير معروف");
 });
 
 // -----------------------------
 // ✅ PDF protection
 // -----------------------------
-app.get("/api/pdfs/:filename", (req,res)=>{
+app.get("/api/pdfs/:filename", (req, res) => {
   const safe = /^[a-zA-Z0-9_.-]+\.pdf$/;
   const { filename } = req.params;
   if(!safe.test(filename)) return res.status(400).send("اسم ملف غير صالح");
@@ -115,7 +115,7 @@ const staffPolicies = [
   ...studentPolicies
 ];
 
-app.get("/api/policies/:role",(req,res)=>{
+app.get("/api/policies/:role", (req,res)=>{
   const { role } = req.params;
   if(role==="student") return res.json(studentPolicies);
   if(role==="staff") return res.json(staffPolicies);
@@ -125,8 +125,8 @@ app.get("/api/policies/:role",(req,res)=>{
 // -----------------------------
 // ✅ Excel student reports
 // -----------------------------
-const EXCEL_PATH = path.join(__dirname,"data","students.xlsx");
-const subjects=["اللغة العربية","اللغة الإنجليزية","التربية الإسلامية","الرياضيات","العلوم","الدراسات الاجتماعية","التصميم والتكنولوجيا"];
+const EXCEL_PATH = path.join(__dirname, "data", "students.xlsx");
+const subjects = ["اللغة العربية","اللغة الإنجليزية","التربية الإسلامية","الرياضيات","العلوم","الدراسات الاجتماعية","التصميم والتكنولوجيا"];
 
 function loadStudentsFromExcel(){
   if(!fs.existsSync(EXCEL_PATH)) return {};

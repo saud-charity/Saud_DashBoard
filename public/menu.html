@@ -1,133 +1,97 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <script src="/js/pdf-helper.js" defer></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <title>🎓 لوحة التحكم</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f4f6f8 }
-    h1 { margin-bottom: 30px; color: #333 }
-    #menuContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px }
-    .menu-btn { padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 200px; transition: .2s }
-    .menu-btn:hover { transform: translateY(-2px) }
-    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none }
-    .btn-group { margin: 10px auto; }
+    body {
+      font-family: Tahoma, sans-serif;
+      direction: rtl;
+      text-align: center;
+      padding: 20px;
+    }
+    .menu-btn {
+      display: block;
+      width: 90%;
+      margin: 8px auto;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    .menu-btn:hover {
+      background-color: #0056b3;
+    }
+    #pdfViewer {
+      width: 90%;
+      height: 600px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 20px auto;
+      display: none;
+    }
+    #pdfControls {
+      display: none;
+      margin: 10px;
+    }
+    #pdfControls button {
+      margin: 0 5px;
+    }
   </style>
 </head>
 <body>
-  <h1 id="title">🎓 لوحة التحكم</h1>
+  <h1>🎓 لوحة التحكم</h1>
+  <div id="menuContainer"></div>
 
-  <!-- نسخة الكمبيوتر -->
-  <div id="menuContainer" class="d-none d-md-flex"></div>
-  <iframe id="pdfViewer" class="d-none d-md-block"></iframe>
+  <!-- مكان عرض الملف -->
+  <iframe id="pdfViewer"></iframe>
 
-  <!-- نسخة الموبايل -->
-  <div class="btn-group d-block d-md-none" role="group">
-    <div class="btn-group" role="group">
-      <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton1"
-        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        اختر ملف PDF
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="mobileMenu"></div>
-    </div>
-    <div class="btn-group float-right" role="group" aria-label="Basic example" style="background-color: white;">
-      <button type="button" class="btn btn-outline-info" onclick="refreshPdf()">
-        <i class="fas fa-redo"></i>
-      </button>
-      <button type="button" class="btn btn-outline-info" onclick="downloadPdf()">
-        <i class="fas fa-arrow-alt-circle-down"></i>
-      </button>
-    </div>
+  <!-- أزرار التحكم -->
+  <div id="pdfControls">
+    <button id="downloadBtn" class="btn btn-primary">⬇️ تحميل</button>
+    <button id="printBtn" class="btn btn-danger">🖨️ طباعة</button>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
-    const container = document.getElementById("menuContainer");
-    const mobileMenu = document.getElementById("mobileMenu");
     let currentPdf = null;
 
-    function showMsg(html) {
-      container.innerHTML = html;
-      mobileMenu.innerHTML = `<span class="dropdown-item disabled">${html}</span>`;
+    function openPdf(filename) {
+      currentPdf = filename;
+      const viewer = document.getElementById("pdfViewer");
+      viewer.src = "/pdfs/" + filename;
+      viewer.style.display = "block";
+      document.getElementById("pdfControls").style.display = "block";
     }
 
-    async function loadPolicies() {
-      if (!role) {
-        showMsg(`<p>لم يتم تحديد الدور.</p>`);
-        return;
-      }
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      if (!currentPdf) return alert("اختر ملف أولاً");
+      window.open("/pdfs/" + currentPdf, "_blank");
+    });
 
-      showMsg("<p>جارٍ التحميل…</p>");
+    document.getElementById("printBtn").addEventListener("click", () => {
+      if (!currentPdf) return alert("اختر ملف أولاً");
+      const win = window.open("/pdfs/" + currentPdf, "_blank");
+      win.onload = () => win.print();
+    });
 
-      try {
-        const res = await fetch(`/api/policies/${role}`);
-        if (!res.ok) {
-          const text = await res.text();
-          showMsg(`<p>تعذر تحميل الملفات (${res.status})</p><small>${text}</small>`);
-          return;
-        }
-
-        const policies = await res.json();
-        if (!Array.isArray(policies) || policies.length === 0) {
-          showMsg("<p>لا توجد ملفات متاحة حالياً.</p>");
-          return;
-        }
-
-        container.innerHTML = "";
-        mobileMenu.innerHTML = "";
-
-        policies.forEach((p, i) => {
-          // نسخة الكمبيوتر
+    // 🔹 جلب القائمة من السيرفر
+    fetch("/api/menu")
+      .then(res => res.json())
+      .then(files => {
+        const container = document.getElementById("menuContainer");
+        files.forEach(f => {
           const btn = document.createElement("button");
-          btn.textContent = p.title;
           btn.className = "menu-btn";
-          btn.onclick = () => openPdfWithControls(p.filename, "pdfViewer");
+          btn.textContent = f.title;
+          btn.onclick = () => openPdf(f.filename);
           container.appendChild(btn);
-
-          // نسخة الموبايل
-          const a = document.createElement("a");
-          a.className = "dropdown-item";
-          a.href = "#";
-          a.innerHTML = `<span class="badge badge-info">${i+1}</span> ${p.title}`;
-          a.onclick = () => {
-            currentPdf = `/pdfs/${p.filename}`;
-            window.open(currentPdf, "_blank");
-          };
-          mobileMenu.appendChild(a);
         });
-
-      } catch (err) {
-        showMsg(`<p>تعذر تحميل الملفات</p><small>${err?.message || err}</small>`);
-      }
-    }
-
-    function refreshPdf() {
-      if (currentPdf) {
-        window.open(currentPdf, "_blank");
-      } else {
-        alert("اختر ملف أولاً");
-      }
-    }
-
-    function downloadPdf() {
-      if (currentPdf) {
-        const link = document.createElement("a");
-        link.href = currentPdf;
-        link.download = currentPdf.split("/").pop();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert("اختر ملف أولاً");
-      }
-    }
-
-    loadPolicies();
+      })
+      .catch(err => console.error("خطأ في جلب القائمة:", err));
   </script>
 </body>
 </html>
