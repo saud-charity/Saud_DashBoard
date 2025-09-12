@@ -1,126 +1,117 @@
 // ================================
-// ✅ Role selection and redirection
+// ✅ Role selection
 // ================================
 function selectRole(role) {
   sessionStorage.setItem("role", role);
-  if (role === "student") {
-    window.location.href = "menu.html?role=student";
-  } else if (role === "staff") {
-    window.location.href = "staff_login.html";
-  }
+  if(role === "student") window.location.href = "menu.html?role=student";
+  else if(role === "staff") window.location.href = "menu.html?role=staff";
 }
 
 // ================================
-// ✅ Load menu for menu.html
+// ✅ Load menu dynamically
 // ================================
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
-  if (!container) return;
-
+  if(!container) return;
   container.innerHTML = "";
 
-  if (!role) {
-    container.innerHTML = "<p>يرجى اختيار دور للمتابعة</p>";
-    return;
-  }
+  if(!role) return container.innerHTML = "<p>يرجى اختيار دور للمتابعة</p>";
 
   try {
     const res = await fetch(`/api/menu/${role}`);
-    if (!res.ok) throw new Error("خطأ في تحميل القائمة");
-
+    if(!res.ok) throw new Error("تعذر تحميل القائمة");
     const menu = await res.json();
-    if (!menu || menu.length === 0) {
-      container.innerHTML = "<p>لا توجد عناصر في القائمة</p>";
-      return;
-    }
 
     menu.forEach(item => {
       const btn = document.createElement("button");
       btn.className = "menu-btn";
       btn.textContent = item.title;
 
-      switch (item.type) {
-        case "pdf":
-          btn.onclick = () => openPdfSmart(item.filename);
-          break;
-        case "page":
-          btn.onclick = () => window.location.href = item.path;
-          break;
-        case "external":
-          btn.onclick = () => window.open(item.url, "_blank");
-          break;
-        case "submenu":
-          btn.onclick = () => window.location.href = `policies.html?role=${role}`;
-          break;
-      }
-
+      btn.onclick = () => {
+        switch(item.type){
+          case "pdf": openPdf(item.filename); break;
+          case "page": window.location.href = item.path; break;
+          case "external": window.open(item.url, "_blank"); break;
+          case "submenu": window.location.href = `policies.html?role=${role}`; break;
+        }
+      };
       container.appendChild(btn);
     });
-
-  } catch (err) {
-    console.error("⚠ خطأ:", err);
-    container.innerHTML = "<p>تعذر تحميل القائمة، يرجى المحاولة لاحقًا</p>";
+  } catch(err){
+    container.innerHTML = `<p>خطأ: ${err.message}</p>`;
   }
 }
 
 // ================================
-// ✅ Open PDF smartly (desktop/mobile)
+// ✅ Load policies dynamically
 // ================================
-function openPdfSmart(filename, viewerId = "pdfViewer") {
-  if (!filename) return alert("❌ لم يتم تحديد الملف");
+async function loadPolicies(role){
+  const container = document.getElementById("policiesContainer");
+  if(!container) return;
+  container.innerHTML = "";
 
+  try{
+    const res = await fetch(`/api/policies/${role}`);
+    if(!res.ok) throw new Error("تعذر تحميل السياسات");
+    const policies = await res.json();
+
+    policies.forEach(item=>{
+      const btn = document.createElement("button");
+      btn.className = "menu-btn";
+      btn.textContent = item.title;
+      btn.onclick = ()=> openPdf(item.filename);
+      container.appendChild(btn);
+    });
+  }catch(err){
+    container.innerHTML = `<p>خطأ: ${err.message}</p>`;
+  }
+}
+
+// ================================
+// ✅ Open PDF
+// ================================
+function openPdf(filename, viewerId="pdfViewer"){
+  if(!filename) return alert("❌ لم يتم تحديد الملف");
   const fileUrl = `/pdfs/${filename}`;
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const pdfViewer = document.getElementById(viewerId);
 
-  if (isMobile) {
-    window.open(fileUrl, "_blank");
-  } else {
-    const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
-    const pdfViewer = document.getElementById(viewerId);
-    if (pdfViewer) {
-      pdfViewer.src = viewerUrl;
-      pdfViewer.style.display = "block";
-      pdfViewer.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.open(viewerUrl, "_blank");
-    }
+  if(isMobile) window.open(fileUrl, "_blank");
+  else{
+    pdfViewer.src = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
+    pdfViewer.style.display = "block";
+    pdfViewer.scrollIntoView({behavior:"smooth"});
   }
 }
 
 // ================================
-// ✅ DOMContentLoaded
+// ✅ PDF Controls
 // ================================
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", ()=>{
   const studentBtn = document.getElementById("studentBtn");
   const staffBtn = document.getElementById("staffBtn");
 
-  if (studentBtn) studentBtn.onclick = () => selectRole("student");
-  if (staffBtn) staffBtn.onclick = () => selectRole("staff");
+  if(studentBtn) studentBtn.onclick = ()=> selectRole("student");
+  if(staffBtn) staffBtn.onclick = ()=> selectRole("staff");
 
-  // لو نحن على menu.html نحمّل القائمة تلقائياً
-  const container = document.getElementById("menuContainer");
-  if (container) {
-    const params = new URLSearchParams(window.location.search);
-    const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
-    loadMenu(role);
-  }
+  const params = new URLSearchParams(window.location.search);
+  const role = params.get("role") || sessionStorage.getItem("role");
 
-  // أزرار PDF Controls
+  if(document.getElementById("menuContainer")) loadMenu(role);
+  if(document.getElementById("policiesContainer")) loadPolicies(role);
+
+  // Controls
   const downloadBtn = document.getElementById("downloadBtn");
   const printBtn = document.getElementById("printBtn");
   const pdfViewer = document.getElementById("pdfViewer");
 
-  if (downloadBtn && pdfViewer) {
-    downloadBtn.onclick = () => {
-      if (!pdfViewer.src) return alert("اختر ملف أولاً");
-      window.open(pdfViewer.src, "_blank");
-    };
-  }
+  if(downloadBtn) downloadBtn.onclick = ()=>{
+    if(!pdfViewer.src) return alert("اختر ملف أولاً");
+    window.open(pdfViewer.src, "_blank");
+  };
 
-  if (printBtn && pdfViewer) {
-    printBtn.onclick = () => {
-      if (!pdfViewer.src) return alert("اختر ملف أولاً");
-      pdfViewer.contentWindow.print();
-    };
-  }
+  if(printBtn) printBtn.onclick = ()=>{
+    if(!pdfViewer.src) return alert("اختر ملف أولاً");
+    pdfViewer.contentWindow.print();
+  };
 });
