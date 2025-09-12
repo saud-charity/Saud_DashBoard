@@ -1,5 +1,5 @@
 // ================================
-// ✅ Load menu for a specific role (students/staff)
+// ✅ Load menu for a specific role
 // ================================
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
@@ -27,23 +27,20 @@ async function loadMenu(role) {
       btn.className = "menu-btn";
       btn.textContent = item.title;
 
-      btn.onclick = () => {
-        switch (item.type) {
-          case "pdf":
-            openPdfSmart(item.filename);
-            break;
-          case "page":
-            window.location.href = item.path;
-            break;
-          case "external":
-            window.open(item.url, "_blank");
-            break;
-          case "submenu":
-            // Policies page for both roles
-            window.location.href = `/policies.html?role=${role}`;
-            break;
-        }
-      };
+      switch (item.type) {
+        case "pdf":
+          btn.onclick = () => openPdfSmart(item.filename);
+          break;
+        case "page":
+          btn.onclick = () => window.location.href = item.path;
+          break;
+        case "external":
+          btn.onclick = () => window.open(item.url, "_blank");
+          break;
+        case "submenu":
+          btn.onclick = () => window.location.href = `/policies.html?role=${role}`;
+          break;
+      }
 
       container.appendChild(btn);
     });
@@ -64,56 +61,35 @@ function openPdfSmart(filename, viewerId = "pdfViewer") {
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
   if (isMobile) {
-    // افتح PDF في نافذة جديدة على الموبايل
+    // على الموبايل: افتح PDF في نافذة جديدة
     window.open(fileUrl, "_blank");
   } else {
-    // سطح المكتب: استخدم PDF.js داخل iframe
+    // على الكمبيوتر: عرض PDF ضمن iframe باستخدام PDF.js
     const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
     const pdfViewer = document.getElementById(viewerId);
-    const pdfControls = document.getElementById("pdfControls");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const printBtn = document.getElementById("printBtn");
-
     if (pdfViewer) {
       pdfViewer.src = viewerUrl;
       pdfViewer.style.display = "block";
       pdfViewer.scrollIntoView({ behavior: "smooth" });
-
-      // إظهار أزرار التحكم
-      if (pdfControls) pdfControls.style.display = "flex";
-
-      if (downloadBtn) downloadBtn.onclick = () => {
-        const link = document.createElement("a");
-        link.href = fileUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      };
-
-      if (printBtn) printBtn.onclick = () => {
-        const printWindow = window.open(fileUrl, "_blank");
-        if (printWindow) printWindow.print();
-      };
     } else {
-      // fallback
       window.open(viewerUrl, "_blank");
     }
   }
 }
 
 // ================================
-// ✅ Role selection
+// ✅ Role selection (دخول الطالب أو الموظف)
 // ================================
 function selectRole(role) {
   sessionStorage.setItem("role", role);
-  window.location.href = "menu.html?role=" + role;
+  // توجيه لجميع الأدوار إلى menu.html الموحد
+  window.location.href = `/menu.html?role=${role}`;
 }
 
 window.selectRole = selectRole;
 
 // ================================
-// ✅ Initialize on DOMContentLoaded
+// ✅ DOMContentLoaded
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
@@ -127,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (studentBtn) studentBtn.onclick = () => selectRole("student");
   if (staffBtn) staffBtn.onclick = () => selectRole("staff");
 
-  // Register Service Worker
+  // تسجيل Service Worker
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js")
       .then(() => console.log("✅ Service Worker مسجل بنجاح"))
