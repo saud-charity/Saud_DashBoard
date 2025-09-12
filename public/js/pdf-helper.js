@@ -1,31 +1,53 @@
-// public/js/pdf-helper.js
-function openPdfSmart(filename) {
-  if (!filename) {
-    alert("❌ لم يتم تحديد الملف");
-    return;
-  }
+// pdf-helper.js
+// -----------------------------
+// Global PDF helper for web & mobile
+// -----------------------------
 
-  // نستخدم المسار الثابت (static) لكي يعمل على الموبايل والكمبيوتر
-  const pdfStaticUrl = `/pdfs/${filename}`;        // ملف ثابت
-  const apiPdfUrl = `/api/pdfs/${filename}`;       // API مؤمن (اختياري)
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const pdfViewer = document.getElementById("pdfViewer");
+const pdfControls = document.getElementById("pdfControls");
+const downloadBtn = document.getElementById("downloadBtn");
+const printBtn = document.getElementById("printBtn");
 
-  if (isMobile) {
-    // على الموبايل: افتح الملف مباشرة (browser native viewer يدعم print/download)
-    const newTab = window.open(pdfStaticUrl, "_blank");
-    if (!newTab) alert("⚠️ المتصفح منع فتح النافذة الجديدة. فعّل النوافذ المنبثقة للموقع.");
-    return;
-  }
+let currentPdfPath = "";
 
-  // على الكمبيوتر: نعرض داخل PDF.js viewer (إذا أردت إبقاؤه)
-  const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(pdfStaticUrl)}`;
-  const iframe = document.getElementById("pdfViewer");
-  if (iframe) {
-    iframe.src = viewerUrl;
-    iframe.style.display = "block";
-    iframe.scrollIntoView({ behavior: "smooth" });
-  } else {
-    // إذا لم يتوفر iframe افتح في تبويب جديد
-    window.open(viewerUrl, "_blank");
-  }
+// -----------------------------
+// Open PDF with controls
+// -----------------------------
+function openPdfWithControls(filename) {
+  if (!filename) return alert("❌ لم يتم اختيار ملف");
+
+  currentPdfPath = `/pdfs/${filename}`;
+
+  // Show iframe and controls
+  pdfViewer.style.display = "block";
+  pdfViewer.src = currentPdfPath;
+
+  if (pdfControls) pdfControls.style.display = "flex";
+}
+
+// -----------------------------
+// Download PDF
+// -----------------------------
+if (downloadBtn) {
+  downloadBtn.addEventListener("click", () => {
+    if (!currentPdfPath) return alert("❌ اختر ملف أولاً");
+    const link = document.createElement("a");
+    link.href = currentPdfPath;
+    link.download = currentPdfPath.split("/").pop();
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  });
+}
+
+// -----------------------------
+// Print PDF
+// -----------------------------
+if (printBtn) {
+  printBtn.addEventListener("click", () => {
+    if (!currentPdfPath) return alert("❌ اختر ملف أولاً");
+    const printWindow = window.open(currentPdfPath, "_blank");
+    printWindow.focus();
+    printWindow.print();
+  });
 }
