@@ -6,52 +6,128 @@
   <title>لوحة التحكم</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="/js/pdf-helper.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 30px;
-      background: #f4f6f8;
-    }
-    h1 {
-      margin-bottom: 30px;
-      color: #333;
-    }
-    #menuContainer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-    }
-    .menu-btn {
-      padding: 12px 20px;
-      font-size: 1em;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      min-width: 200px;
-      transition: .2s;
-      background: white;
-    }
-    .menu-btn:hover {
-      transform: translateY(-2px);
-      background: #eef2f7;
-    }
-    #pdfViewer {
-      width: 90%;
-      height: 600px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin: 20px auto;
-      display: none;
-    }
+    body { font-family: Arial, sans-serif; text-align: center; padding: 30px; background: #f4f6f8 }
+    h1 { margin-bottom: 30px; color: #333 }
+    #menuContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px }
+    .menu-btn { padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 200px; transition: .2s }
+    .menu-btn:hover { transform: translateY(-2px) }
+    #pdfViewer { width: 90%; height: 600px; border: 1px solid #ccc; border-radius: 8px; margin: 20px auto; display: none }
+    .btn-group { margin: 10px auto; }
   </style>
 </head>
 <body>
   <h1 id="title">🎓 لوحة التحكم</h1>
-  <div id="menuContainer"></div>
-  <iframe id="pdfViewer"></iframe>
+
+  <!-- نسخة الكمبيوتر -->
+  <div id="menuContainer" class="d-none d-md-flex"></div>
+  <iframe id="pdfViewer" class="d-none d-md-block"></iframe>
+
+  <!-- نسخة الموبايل -->
+  <div class="btn-group d-block d-md-none" role="group">
+    <div class="btn-group" role="group">
+      <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton1"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        اختر ملف PDF
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="mobileMenu"></div>
+    </div>
+    <div class="btn-group float-right" role="group" aria-label="Basic example" style="background-color: white;">
+      <button type="button" class="btn btn-outline-info" onclick="refreshPdf()">
+        <i class="fas fa-redo"></i>
+      </button>
+      <button type="button" class="btn btn-outline-info" onclick="downloadPdf()">
+        <i class="fas fa-arrow-alt-circle-down"></i>
+      </button>
+    </div>
+  </div>
 
   <script>
-    const par
+    const params = new URLSearchParams(window.location.search);
+    const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
+    const container = document.getElementById("menuContainer");
+    const mobileMenu = document.getElementById("mobileMenu");
+    let currentPdf = null;
+
+    function showMsg(html) {
+      container.innerHTML = html;
+      mobileMenu.innerHTML = `<span class="dropdown-item disabled">${html}</span>`;
+    }
+
+    async function loadPolicies() {
+      if (!role) {
+        showMsg(`<p>لم يتم تحديد الدور.</p>`);
+        return;
+      }
+
+      showMsg("<p>جارٍ التحميل…</p>");
+
+      try {
+        const res = await fetch(`/api/policies/${role}`);
+        if (!res.ok) {
+          const text = await res.text();
+          showMsg(`<p>تعذر تحميل الملفات (${res.status})</p><small>${text}</small>`);
+          return;
+        }
+
+        const policies = await res.json();
+        if (!Array.isArray(policies) || policies.length === 0) {
+          showMsg("<p>لا توجد ملفات متاحة حالياً.</p>");
+          return;
+        }
+
+        container.innerHTML = "";
+        mobileMenu.innerHTML = "";
+
+        policies.forEach((p, i) => {
+          // نسخة الكمبيوتر
+          const btn = document.createElement("button");
+          btn.textContent = p.title;
+          btn.className = "menu-btn";
+          btn.onclick = () => openPdfWithControls(p.filename, "pdfViewer");
+          container.appendChild(btn);
+
+          // نسخة الموبايل
+          const a = document.createElement("a");
+          a.className = "dropdown-item";
+          a.href = "#";
+          a.innerHTML = `<span class="badge badge-info">${i+1}</span> ${p.title}`;
+          a.onclick = () => {
+            currentPdf = `/pdfs/${p.filename}`;
+            window.open(currentPdf, "_blank");
+          };
+          mobileMenu.appendChild(a);
+        });
+
+      } catch (err) {
+        showMsg(`<p>تعذر تحميل الملفات</p><small>${err?.message || err}</small>`);
+      }
+    }
+
+    function refreshPdf() {
+      if (currentPdf) {
+        window.open(currentPdf, "_blank");
+      } else {
+        alert("اختر ملف أولاً");
+      }
+    }
+
+    function downloadPdf() {
+      if (currentPdf) {
+        const link = document.createElement("a");
+        link.href = currentPdf;
+        link.download = currentPdf.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        alert("اختر ملف أولاً");
+      }
+    }
+
+    loadPolicies();
+  </script>
+</body>
+</html>
