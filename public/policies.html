@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>📚 السياسات</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>السياسات والأدلة</title>
   <style>
     body {
       font-family: "Cairo", Arial, sans-serif;
@@ -12,84 +12,147 @@
       background: #f5f7fa;
       color: #2c3e50;
       text-align: center;
-      direction: rtl;
     }
     header {
       background: #3498db;
       color: white;
       padding: 15px;
     }
+    h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
     .container {
-      padding: 30px;
-      max-width: 800px;
+      padding: 25px;
+      max-width: 900px;
       margin: auto;
     }
     .policy-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background: #fff;
+      padding: 12px 15px;
+      margin: 8px 0;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      padding: 15px;
-      margin: 15px 0;
-      text-align: right;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .policy-title {
-      font-size: 1.1em;
-      margin-bottom: 10px;
-      color: #2c3e50;
+      font-size: 1em;
+      text-align: right;
+      flex: 1;
     }
-    .policy-actions a {
-      display: inline-block;
-      margin: 5px;
-      padding: 8px 14px;
+    .policy-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 12px;
       border-radius: 6px;
+      cursor: pointer;
       font-size: 0.95em;
       text-decoration: none;
-      transition: background 0.3s ease;
-      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
-    .policy-actions a.view { background: #3498db; }
-    .policy-actions a.view:hover { background: #217dbb; }
-    .policy-actions a.download { background: #27ae60; }
-    .policy-actions a.download:hover { background: #1e8449; }
+    .btn:hover { background: #217dbb; }
+    .btn.download { background: #f39c12; }
+    .btn.download:hover { background: #d68910; }
+    .btn.view { background: #2ecc71; }
+    .btn.view:hover { background: #27ae60; }
   </style>
 </head>
 <body>
   <header>
-    <h1>📚 السياسات</h1>
+    <h1>السياسات والأدلة</h1>
   </header>
 
-  <div class="container" id="policiesContainer"></div>
+  <div class="container" id="policiesContainer">
+    <!-- سيتم تحميل السياسات هنا -->
+  </div>
 
   <script>
-    const policies = [
+    const studentPolicies = [
       { title: "📘 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
       { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
       { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" },
       { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
       { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
       { title: "📓 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
+      { title: "📔 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
       { title: "📘 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
       { title: "📗 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
       { title: "📕 دليل ولي الأمر للطفولة المبكرة", filename: "Parents_Guide_to_Early_Childhood.pdf" },
       { title: "📙 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
     ];
 
-    const container = document.getElementById("policiesContainer");
-    policies.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "policy-item";
-      div.innerHTML = `
-        <div class="policy-title">${item.title}</div>
-        <div class="policy-actions">
-          <a class="view" href="https://docs.google.com/viewer?url=${location.origin}/pdfs/${item.filename}&embedded=true" target="_blank">
-            <i class="fas fa-eye"></i> عرض
-          </a>
-          <a class="download" href="/pdfs/${item.filename}" download>
-            <i class="fas fa-download"></i> تحميل
-          </a>
-        </div>
-      `;
-      container.appendChild(div);
+    const staffPolicies = [
+      { title: "📘 الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
+      { title: "📗 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
+      { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
+      { title: "📙 سياسة التقييم", filename: "Assessment_Policy.pdf" },
+      { title: "📒 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+      { title: "📓 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
+      { title: "📔 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
+      { title: "📘 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+      { title: "📗 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
+      { title: "📕 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
+      { title: "📙 دليل ولي الأمر للطفولة المبكرة", filename: "Parents_Guide_to_Early_Childhood.pdf" },
+      { title: "📒 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
+    ];
+
+    function getRole() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("role") || sessionStorage.getItem("role") || "student";
+    }
+
+    function loadPolicies(role) {
+      const container = document.getElementById("policiesContainer");
+      container.innerHTML = "";
+
+      const policies = role === "staff" ? staffPolicies : studentPolicies;
+
+      policies.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "policy-item";
+
+        const title = document.createElement("div");
+        title.className = "policy-title";
+        title.textContent = item.title;
+
+        const buttons = document.createElement("div");
+        buttons.className = "policy-buttons";
+
+        // زر العرض
+        const viewBtn = document.createElement("a");
+        viewBtn.className = "btn view";
+        viewBtn.href = `/pdfjs/web/viewer.html?file=/pdfs/${encodeURIComponent(item.filename)}`;
+        viewBtn.target = "_blank";
+        viewBtn.textContent = "عرض";
+
+        // زر التحميل
+        const downloadBtn = document.createElement("a");
+        downloadBtn.className = "btn download";
+        downloadBtn.href = `/pdfs/${encodeURIComponent(item.filename)}`;
+        downloadBtn.download = item.filename;
+        downloadBtn.textContent = "تحميل";
+
+        buttons.appendChild(viewBtn);
+        buttons.appendChild(downloadBtn);
+
+        div.appendChild(title);
+        div.appendChild(buttons);
+
+        container.appendChild(div);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadPolicies(getRole());
     });
   </script>
 </body>
