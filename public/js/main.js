@@ -1,27 +1,17 @@
-// ================================
-// ✅ تحميل القائمة حسب الدور
-// ================================
+let currentPdfFile = null;
+
+// ✅ تحميل القائمة
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
   if (!container) return;
 
   container.innerHTML = "";
 
-  if (!role) {
-    container.innerHTML = "<p>يرجى اختيار دور للمتابعة</p>";
-    return;
-  }
-
   try {
     const res = await fetch(`/api/menu/${role}`);
     if (!res.ok) throw new Error("خطأ في تحميل القائمة");
 
     const menu = await res.json();
-    if (!menu || menu.length === 0) {
-      container.innerHTML = "<p>لا توجد عناصر في القائمة</p>";
-      return;
-    }
-
     menu.forEach(item => {
       const btn = document.createElement("button");
       btn.className = "menu-btn";
@@ -46,64 +36,66 @@ async function loadMenu(role) {
     });
 
   } catch (err) {
-    console.error("⚠ خطأ:", err);
-    container.innerHTML = "<p>تعذر تحميل القائمة، يرجى المحاولة لاحقًا</p>";
+    container.innerHTML = "<p>❌ فشل تحميل القائمة</p>";
   }
 }
 
-// ================================
-// ✅ فتح PDF بذكاء (موبايل / كمبيوتر)
-// ================================
-function openPdfSmart(filename, viewerId = "pdfViewer") {
+// ✅ فتح PDF
+function openPdfSmart(filename) {
   if (!filename) return alert("❌ لم يتم تحديد الملف");
+  currentPdfFile = filename;
 
-  const fileUrl = `/pdfs/${filename}`;
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + filename)}`;
+  const pdfViewer = document.getElementById("pdfViewer");
+  const pdfToolbar = document.getElementById("pdfToolbar");
 
-  if (isMobile) {
-    window.open(fileUrl, "_blank");
-  } else {
-    const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
-    const pdfViewer = document.getElementById(viewerId);
-    if (pdfViewer) {
-      pdfViewer.src = viewerUrl;
-      pdfViewer.style.display = "block";
-      pdfViewer.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.open(viewerUrl, "_blank");
-    }
-  }
+  pdfViewer.src = viewerUrl;
+  pdfViewer.style.display = "block";
+  pdfToolbar.style.display = "flex";
+  pdfViewer.scrollIntoView({ behavior: "smooth" });
 }
 
-// ================================
+// ✅ تحميل PDF
+function downloadPdf() {
+  if (!currentPdfFile) return;
+  const link = document.createElement("a");
+  link.href = `/pdfs/${currentPdfFile}`;
+  link.download = currentPdfFile;
+  link.click();
+}
+
+// ✅ طباعة PDF
+function printPdf() {
+  if (!currentPdfFile) return;
+  const printWindow = window.open(
+    `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + currentPdfFile)}&print=true`,
+    "_blank"
+  );
+  if (printWindow) printWindow.focus();
+}
+
+// ✅ إغلاق PDF
+function closePdf() {
+  document.getElementById("pdfViewer").style.display = "none";
+  document.getElementById("pdfToolbar").style.display = "none";
+  document.getElementById("pdfViewer").src = "";
+}
+
 // ✅ اختيار الدور
-// ================================
 function selectRole(role) {
   sessionStorage.setItem("role", role);
-  window.location.href = `/menu.html?role=${role}`;
+  if (role === "staff") {
+    window.location.href = "/staff_login.html";
+  } else {
+    window.location.href = `/menu.html?role=${role}`;
+  }
 }
 
 window.selectRole = selectRole;
 
-// ================================
 // ✅ عند تحميل الصفحة
-// ================================
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const role = params.get("role") || sessionStorage.getItem("role");
-
-  loadMenu(role);
-
-  const studentBtn = document.getElementById("studentBtn");
-  const staffBtn = document.getElementById("staffBtn");
-
-  if (studentBtn) studentBtn.onclick = () => selectRole("student");
-  if (staffBtn) staffBtn.onclick = () => window.location.href = "/staff_login.html";
-
-  // ✅ تسجيل Service Worker (للتخزين المؤقت والـ PWA)
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("✅ Service Worker مسجل بنجاح"))
-      .catch(err => console.error("❌ فشل تسجيل Service Worker:", err));
-  }
+  if (role) loadMenu(role);
 });

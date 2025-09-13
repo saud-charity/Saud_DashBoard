@@ -1,69 +1,101 @@
-// ================================
-// ✅ Get role from URL or session
-// ================================
-const params = new URLSearchParams(window.location.search);
-const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
+let currentPdfFile = null;
 
-const container = document.getElementById("menuContainer");
-const pdfViewer = document.getElementById("pdfViewer");
-const pdfControls = document.getElementById("pdfControls");
-const downloadBtn = document.getElementById("downloadBtn");
-const printBtn = document.getElementById("printBtn");
+// ================================
+// ✅ السياسات للطلاب والموظفين
+// ================================
+const studentPolicies = [
+  { title: "📘 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
+  { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
+  { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" },
+  { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
+  { title: "📓 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
+  { title: "📔 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📘 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
+  { title: "📗 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
+  { title: "📕 دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
+  { title: "📙 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
+];
 
-if (!role) {
-  container.innerHTML = "<p>❌ لم يتم تحديد الدور.</p>";
-} else {
-  loadPolicies(role);
+const staffPolicies = [
+  { title: "📘 الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
+  { title: "📗 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
+  { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
+  { title: "📙 سياسة التقييم", filename: "Assessment_Policy.pdf" },
+  { title: "📒 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📓 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
+  { title: "📔 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
+  { title: "📘 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📗 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
+  { title: "📕 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
+  { title: "📙 دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
+  { title: "📒 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
+];
+
+// ================================
+// ✅ تحميل السياسات وعرضها
+// ================================
+function loadPolicies(role) {
+  const container = document.getElementById("policiesContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+  let policies = role === "student" ? studentPolicies : staffPolicies;
+
+  policies.forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "menu-btn";
+    btn.textContent = item.title;
+    btn.onclick = () => openPdfSmart(item.filename);
+    container.appendChild(btn);
+  });
 }
 
 // ================================
-// ✅ Load policies dynamically
+// ✅ دوال PDF
 // ================================
-async function loadPolicies(role) {
-  try {
-    const res = await fetch(`/api/policies/${role}`);
-    if (!res.ok) throw new Error("تعذر تحميل السياسات");
-
-    const policies = await res.json();
-    if (!policies || policies.length === 0) {
-      container.innerHTML = "<p>لا توجد سياسات متاحة.</p>";
-      return;
-    }
-
-    container.innerHTML = "";
-    policies.forEach(policy => {
-      const btn = document.createElement("button");
-      btn.className = "menu-btn";
-      btn.textContent = policy.title;
-      btn.onclick = () => openPdf(policy.filename);
-      container.appendChild(btn);
-    });
-
-  } catch(err) {
-    console.error(err);
-    container.innerHTML = "<p>❌ فشل تحميل السياسات</p>";
-  }
-}
-
-// ================================
-// ✅ Open PDF in viewer with controls
-// ================================
-function openPdf(filename) {
+function openPdfSmart(filename) {
   if (!filename) return alert("❌ لم يتم تحديد الملف");
+  currentPdfFile = filename;
 
-  const fileUrl = `/pdfs/${filename}`;
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + filename)}`;
+  const pdfViewer = document.getElementById("pdfViewer");
+  const pdfToolbar = document.getElementById("pdfToolbar");
 
-  if (isMobile) {
-    window.open(fileUrl, "_blank");
-  } else {
-    const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
-    pdfViewer.src = viewerUrl;
-    pdfViewer.style.display = "block";
-    pdfControls.style.display = "flex";
-
-    downloadBtn.onclick = () => window.open(fileUrl, "_blank");
-    printBtn.onclick = () => pdfViewer.contentWindow.print();
-    pdfViewer.scrollIntoView({ behavior: "smooth" });
-  }
+  pdfViewer.src = viewerUrl;
+  pdfViewer.style.display = "block";
+  pdfToolbar.style.display = "flex";
+  pdfViewer.scrollIntoView({ behavior: "smooth" });
 }
+
+function downloadPdf() {
+  if (!currentPdfFile) return;
+  const link = document.createElement("a");
+  link.href = `/pdfs/${currentPdfFile}`;
+  link.download = currentPdfFile;
+  link.click();
+}
+
+function printPdf() {
+  if (!currentPdfFile) return;
+  const printWindow = window.open(
+    `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + currentPdfFile)}&print=true`,
+    "_blank"
+  );
+  if (printWindow) printWindow.focus();
+}
+
+function closePdf() {
+  document.getElementById("pdfViewer").style.display = "none";
+  document.getElementById("pdfToolbar").style.display = "none";
+  document.getElementById("pdfViewer").src = "";
+}
+
+// ================================
+// ✅ عند تحميل الصفحة
+// ================================
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const role = params.get("role") || sessionStorage.getItem("role");
+  if (role) loadPolicies(role);
+});
