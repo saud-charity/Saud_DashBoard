@@ -1,19 +1,61 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>بوابة مدرسة الشيخ سعود - فرع1</title>
-  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: "Cairo", Arial, sans-serif;
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #3498db, #2c3e50);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 40px;
+      font-weight: bold;
+      text-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    }
+    .btn {
+      background: #fff;
+      color: #2c3e50;
+      border: none;
+      padding: 15px 35px;
+      margin: 15px;
+      border-radius: 10px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      min-width: 220px;
+    }
+    .btn:hover {
+      background: #f1f1f1;
+      transform: translateY(-3px);
+    }
+    footer {
+      margin-top: 60px;
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+  </style>
 </head>
-<body class="landing">
-  <div class="container">
-    <h1>👋 مرحباً بكم في بوابة مدرسة الشيخ سعود - فرع1</h1>
-    <div class="buttons">
-      <button class="btn" onclick="selectRole('student')">🎓 دخول طالب/ ولي أمر</button>
-      <button class="btn" onclick="selectRole('staff')">👨‍🏫 دخول موظف</button>
-    </div>
-  </div>
+<body>
+  <h1>👋 مرحباً بكم في بوابة مدرسة الشيخ سعود - فرع1</h1>
+
+  <button class="btn" id="studentBtn">🎓 دخول طالب / ولي أمر</button>
+  <button class="btn" id="staffBtn">👨‍🏫 دخول موظف</button>
+
+  <footer>© 2025 مدرسة الشيخ سعود - جميع الحقوق محفوظة</footer>
+
+  <!-- ملف الجافاسكربت -->
   <script src="js/main.js" defer></script>
 </body>
 </html>

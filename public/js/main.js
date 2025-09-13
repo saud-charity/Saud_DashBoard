@@ -1,14 +1,14 @@
 // ================================
-// ✅ Load menu for a specific role
+// ✅ تحميل القائمة حسب الدور
 // ================================
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
   if (!container) return;
 
-  container.innerHTML = "<p>⏳ جاري التحميل...</p>";
+  container.innerHTML = "";
 
   if (!role) {
-    container.innerHTML = "<p>❌ يرجى اختيار دور للمتابعة</p>";
+    container.innerHTML = "<p>يرجى اختيار دور للمتابعة</p>";
     return;
   }
 
@@ -18,11 +18,10 @@ async function loadMenu(role) {
 
     const menu = await res.json();
     if (!menu || menu.length === 0) {
-      container.innerHTML = "<p>⚠ لا توجد عناصر في القائمة</p>";
+      container.innerHTML = "<p>لا توجد عناصر في القائمة</p>";
       return;
     }
 
-    container.innerHTML = "";
     menu.forEach(item => {
       const btn = document.createElement("button");
       btn.className = "menu-btn";
@@ -53,7 +52,7 @@ async function loadMenu(role) {
 }
 
 // ================================
-// ✅ Open PDF smartly
+// ✅ فتح PDF بذكاء (موبايل / كمبيوتر)
 // ================================
 function openPdfSmart(filename, viewerId = "pdfViewer") {
   if (!filename) return alert("❌ لم يتم تحديد الملف");
@@ -77,7 +76,7 @@ function openPdfSmart(filename, viewerId = "pdfViewer") {
 }
 
 // ================================
-// ✅ Role selection
+// ✅ اختيار الدور
 // ================================
 function selectRole(role) {
   sessionStorage.setItem("role", role);
@@ -87,10 +86,24 @@ function selectRole(role) {
 window.selectRole = selectRole;
 
 // ================================
-// ✅ DOMContentLoaded
+// ✅ عند تحميل الصفحة
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const role = params.get("role") || sessionStorage.getItem("role");
-  if (role) loadMenu(role);
+
+  loadMenu(role);
+
+  const studentBtn = document.getElementById("studentBtn");
+  const staffBtn = document.getElementById("staffBtn");
+
+  if (studentBtn) studentBtn.onclick = () => selectRole("student");
+  if (staffBtn) staffBtn.onclick = () => selectRole("staff");
+
+  // ✅ تسجيل Service Worker (للتخزين المؤقت والـ PWA)
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("✅ Service Worker مسجل بنجاح"))
+      .catch(err => console.error("❌ فشل تسجيل Service Worker:", err));
+  }
 });
