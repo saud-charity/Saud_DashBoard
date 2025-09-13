@@ -1,85 +1,132 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📚 السياسات والأدلة</title>
-<link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<style>
-body {
-  font-family: "Cairo", Arial, sans-serif;
-  margin: 0; padding: 0;
-  background: linear-gradient(135deg,#f5f7fa,#e0eafc);
-  color: #2c3e50;
-  text-align: center;
-}
-h1 { margin: 20px 0; font-size: 1.8em; }
-.container { padding: 20px; max-width: 900px; margin: auto; }
-
-/* Desktop Buttons */
-.policy-btn-desktop {
-  background: linear-gradient(45deg,#9b59b6,#8e44ad);
-  color: #fff; border: none; padding: 12px 20px; margin: 6px 0;
-  border-radius: 8px; font-size: 1em; cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.policy-btn-desktop:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-
-/* Mobile Dropdown */
-.btn-group-mobile { display: block; margin: 8px 0; text-align: right; }
-.btn-group-mobile button {
-  width: 100%; background: linear-gradient(45deg,#9b59b6,#8e44ad);
-  color: #fff; border: none; padding: 12px; border-radius: 8px;
-  font-size: 1em; text-align: right; cursor: pointer;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.btn-group-mobile button i { margin-left: 10px; transition: transform 0.3s; }
-.btn-group-mobile .dropdown-menu {
-  display: none; background: #fff; border-radius: 8px;
-  margin-top: 5px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.btn-group-mobile .dropdown-menu a {
-  display: block; padding: 12px; text-decoration: none; color: #34495e;
-  transition: background 0.2s;
-}
-.btn-group-mobile .dropdown-menu a i { margin-left: 8px; }
-.btn-group-mobile .dropdown-menu a:hover { background: #ecf0f1; }
-
-/* PDF Toolbar */
-.pdf-toolbar { display: flex; justify-content: center; gap: 12px; margin: 15px 0; flex-wrap: wrap; }
-.pdf-toolbar button {
-  background: #34495e; color: #fff; border: none; padding: 10px 16px;
-  border-radius: 6px; cursor: pointer; font-size: 0.95em; transition: 0.2s;
-}
-.pdf-toolbar button:hover { background: #2c3e50; }
-
-/* PDF Viewer */
-#pdfViewer { width: 100%; height: 80vh; border: none; display: none; margin-top: 10px; }
-
-/* Responsive */
-@media(min-width:768px){
-  .policy-btn-desktop { display: block; }
-  .btn-group-mobile { display: none; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📄 السياسات والأدلة</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: "Cairo", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+      color: #2c3e50;
+      text-align: center;
+      direction: rtl;
+    }
+    .container { padding: 25px; max-width: 900px; margin: auto; }
+    .policy-btn { background: #9b59b6; color: #fff; border: none; padding: 12px 18px; margin: 6px 0; border-radius: 6px; font-size: 1em; cursor: pointer; transition: background 0.3s ease; width: 100%; }
+    .policy-btn:hover { background: #8e44ad; }
+    .pdf-toolbar { display: none; justify-content: center; gap: 15px; margin: 15px 0; }
+    .pdf-toolbar button { background: #34495e; color: white; border: none; padding: 10px 16px; border-radius: 6px; font-size: 0.95em; cursor: pointer; transition: background 0.3s ease; }
+    .pdf-toolbar button:hover { background: #2c3e50; }
+    #pdfViewer { width: 100%; height: 80vh; border: none; display: none; margin-top: 10px; }
+  </style>
 </head>
 <body>
+  <header><h1>📄 السياسات والأدلة</h1></header>
+  <div class="container">
+    <div id="policiesContainer"></div>
 
-<h1>📚 السياسات والأدلة</h1>
-<div class="container">
-  <div id="policiesContainer"></div>
+    <div id="pdfToolbar" class="pdf-toolbar">
+      <button onclick="downloadPdf()">💾 تحميل</button>
+      <button onclick="printPdf()">🖨 طباعة</button>
+      <button onclick="closePdf()">❌ إغلاق</button>
+    </div>
 
-  <!-- PDF Toolbar -->
-  <div id="pdfToolbar" class="pdf-toolbar" style="display:none;">
-    <button onclick="downloadPdf()"><i class="fas fa-download"></i> تحميل</button>
-    <button onclick="printPdf()"><i class="fas fa-print"></i> طباعة</button>
-    <button onclick="closePdf()"><i class="fas fa-times"></i> إغلاق</button>
+    <iframe id="pdfViewer"></iframe>
   </div>
 
-  <iframe id="pdfViewer"></iframe>
-</div>
+  <script>
+    let currentPdfFile = null;
 
-<script src="/js/policies-mobile.js" defer></script>
+    // ================================ 
+    // ✅ تحميل السياسات
+    // ================================
+    async function loadPolicies(role) {
+      const container = document.getElementById("policiesContainer");
+      if (!container) return;
+
+      container.innerHTML = ""; // تنظيف المحتوى
+
+      try {
+        const res = await fetch(`/api/policies/${role}`);
+        if (!res.ok) throw new Error("خطأ في تحميل السياسات");
+
+        const policies = await res.json();
+        if (!policies || policies.length === 0) {
+          container.innerHTML = "<p>❌ لا توجد سياسات متاحة</p>";
+          return;
+        }
+
+        policies.forEach(item => {
+          const btn = document.createElement("button");
+          btn.className = "policy-btn";
+          btn.textContent = item.title;
+          btn.onclick = () => openPdfSmart(item.filename);
+          container.appendChild(btn);
+        });
+
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p>❌ فشل تحميل السياسات</p>";
+      }
+    }
+
+    // ================================
+    // ✅ فتح PDF + أدوات التحميل والطباعة
+    // ================================
+    function openPdfSmart(filename) {
+      if (!filename) return alert("❌ لم يتم تحديد الملف");
+      currentPdfFile = filename;
+
+      const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + filename)}`;
+      const pdfViewer = document.getElementById("pdfViewer");
+      const pdfToolbar = document.getElementById("pdfToolbar");
+
+      pdfViewer.src = viewerUrl;
+      pdfViewer.style.display = "block";
+      pdfToolbar.style.display = "flex";
+      pdfViewer.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function downloadPdf() {
+      if (!currentPdfFile) return;
+      const link = document.createElement("a");
+      link.href = `/pdfs/${currentPdfFile}`;
+      link.download = currentPdfFile;
+      link.click();
+    }
+
+    function printPdf() {
+      if (!currentPdfFile) return;
+      const printWindow = window.open(
+        `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + currentPdfFile)}&print=true`,
+        "_blank"
+      );
+      if (printWindow) printWindow.focus();
+    }
+
+    function closePdf() {
+      document.getElementById("pdfViewer").style.display = "none";
+      document.getElementById("pdfToolbar").style.display = "none";
+      document.getElementById("pdfViewer").src = "";
+      currentPdfFile = null;
+    }
+
+    // ================================
+    // ✅ عند تحميل الصفحة
+    // ================================
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const role = params.get("role") || sessionStorage.getItem("role");
+      if (!role) {
+        document.getElementById("policiesContainer").innerHTML = "<p>❌ لم يتم تحديد الدور</p>";
+        return;
+      }
+      loadPolicies(role);
+    });
+  </script>
 </body>
 </html>
