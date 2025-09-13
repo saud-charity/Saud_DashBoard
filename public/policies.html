@@ -1,29 +1,52 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>السياسات والأدلة</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 30px;
+      text-align: center;
+    }
+    h1 { color: #333; margin-bottom: 30px; }
+    #menuContainer { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+    .menu-btn {
+      padding: 12px 20px;
+      background: #2ecc71;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      min-width: 220px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+    .menu-btn:hover { background: #27ae60; transform: translateY(-2px); }
+    #pdfViewer { width: 90%; height: 600px; margin: 20px auto; display: none; border: 1px solid #ccc; border-radius: 8px; }
+    #pdfControls { margin: 10px auto; display: none; justify-content: center; gap: 10px; }
+    .control-btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; color: white; }
+    .print-btn { background: #e74c3c; }
+    .print-btn:hover { background: #c0392b; }
+    .download-btn { background: #2980b9; }
+    .download-btn:hover { background: #2c6e9a; }
+  </style>
 </head>
-<body class="menu">
-  <header>
-    <h1>📘 السياسات والأدلة</h1>
-  </header>
+<body>
 
-  <main>
-    <div id="policiesContainer" class="menu-container">
-      <p>⏳ جاري التحميل...</p>
-    </div>
+  <h1>📂 السياسات والأدلة</h1>
+  <div id="menuContainer">جاري التحميل...</div>
 
-    <!-- عارض PDF -->
-    <iframe id="pdfViewer" style="display:none; width:100%; height:80vh; border:none; margin-top:20px;"></iframe>
-  </main>
+  <iframe id="pdfViewer"></iframe>
+  <div id="pdfControls">
+    <button id="downloadBtn" class="control-btn download-btn">⬇️ تحميل</button>
+    <button id="printBtn" class="control-btn print-btn">🖨️ طباعة</button>
+  </div>
 
-  <footer>
-    <button class="btn exit" onclick="window.location.href='menu.html?role='+sessionStorage.getItem('role')">🔙 عودة</button>
-  </footer>
-
-  <script src="js/policies.js" defer></script>
+  <script src="/js/policies.js" defer></script>
 </body>
 </html>

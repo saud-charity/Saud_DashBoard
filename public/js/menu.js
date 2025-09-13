@@ -1,6 +1,3 @@
-// ================================
-// ✅ Get role from URL or session
-// ================================
 const params = new URLSearchParams(window.location.search);
 const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
 
@@ -13,7 +10,51 @@ const printBtn = document.getElementById("printBtn");
 if (!role) {
   container.innerHTML = "<p>❌ لم يتم تحديد الدور.</p>";
 } else {
-  loadPolicies(role);
+  loadMenu(role);
+}
+
+// ================================
+// ✅ Load student menu + policies
+// ================================
+async function loadMenu(role) {
+  try {
+    const resMenu = await fetch(`/api/menu/${role}`);
+    if (!resMenu.ok) throw new Error("تعذر تحميل القائمة");
+
+    const menuItems = await resMenu.json();
+    container.innerHTML = "";
+
+    for (let item of menuItems) {
+      const btn = document.createElement("button");
+      btn.className = "menu-btn";
+      btn.textContent = item.title;
+
+      // Open item action
+      btn.onclick = async () => {
+        switch(item.type) {
+          case "pdf":
+            openPdf(item.filename);
+            break;
+          case "page":
+            window.location.href = item.path;
+            break;
+          case "external":
+            window.open(item.url, "_blank");
+            break;
+          case "submenu":
+            // Load policies dynamically
+            await loadPolicies(role);
+            break;
+        }
+      };
+
+      container.appendChild(btn);
+    }
+
+  } catch(err) {
+    console.error(err);
+    container.innerHTML = "<p>❌ فشل تحميل القائمة</p>";
+  }
 }
 
 // ================================
@@ -25,12 +66,8 @@ async function loadPolicies(role) {
     if (!res.ok) throw new Error("تعذر تحميل السياسات");
 
     const policies = await res.json();
-    if (!policies || policies.length === 0) {
-      container.innerHTML = "<p>لا توجد سياسات متاحة.</p>";
-      return;
-    }
-
     container.innerHTML = "";
+
     policies.forEach(policy => {
       const btn = document.createElement("button");
       btn.className = "menu-btn";
@@ -46,7 +83,7 @@ async function loadPolicies(role) {
 }
 
 // ================================
-// ✅ Open PDF in viewer with controls
+// ✅ Open PDF in viewer
 // ================================
 function openPdf(filename) {
   if (!filename) return alert("❌ لم يتم تحديد الملف");
