@@ -6,12 +6,15 @@
 <title>📚 السياسات والأدلة</title>
 <link rel="stylesheet" href="/css/style.css">
 <style>
+/* ============================= */
+/* 🌐 الأساسيات */
+/* ============================= */
 body {
     font-family: "Cairo", Arial, sans-serif;
-    background: #f5f7fa;
-    color: #2c3e50;
     margin: 0;
     padding: 0;
+    background: #f5f7fa;
+    color: #2c3e50;
     text-align: center;
 }
 header {
@@ -19,30 +22,67 @@ header {
     color: white;
     padding: 15px;
 }
-h1 { margin: 0; font-size: 1.6em; }
+h1 { margin: 0; font-size: 1.8em; }
 .container { padding: 25px; max-width: 900px; margin: auto; }
-.policy-btn {
-    background: #9b59b6;
-    color: #fff;
-    border: none;
-    padding: 12px 16px;
-    margin: 6px 0;
-    border-radius: 6px;
-    font-size: 1em;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.policy-btn span { margin-left: 8px; }
-.policy-btn:hover { background: #8e44ad; }
 
-/* PDF Viewer + Toolbar */
+/* ============================= */
+/* 📑 قائمة السياسات */
+/* ============================= */
+.policy-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.policy-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.05em;
+}
+
+.policy-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.policy-buttons button,
+.policy-buttons a {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.95em;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+}
+
+.btn-view { background: #3498db; }
+.btn-view:hover { background: #217dbb; }
+
+.btn-download { background: #2ecc71; }
+.btn-download:hover { background: #27ae60; }
+
+.btn-print { background: #9b59b6; }
+.btn-print:hover { background: #8e44ad; }
+
+/* ============================= */
+/* 📄 PDF Viewer + Toolbar */
+/* ============================= */
 .pdf-toolbar {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin: 10px 0;
+    margin: 15px 0;
 }
 .pdf-toolbar button,
 .pdf-toolbar a {
@@ -89,17 +129,36 @@ const studentPolicies = [
   { title: "📘 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
   { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
   { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" },
-  { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" }
+  { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
+  { title: "📓 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
+  { title: "📔 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📘 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
+  { title: "📗 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
+  { title: "📕 دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
+  { title: "📙 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
 ];
 
 const staffPolicies = [
   { title: "📘 الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
   { title: "📗 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-  { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" }
+  { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
+  { title: "📙 سياسة التقييم", filename: "Assessment_Policy.pdf" },
+  { title: "📒 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📓 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
+  { title: "📔 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
+  { title: "📘 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
+  { title: "📗 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
+  { title: "📕 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
+  { title: "📙 دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
+  { title: "📒 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
 ];
 
 let currentPdfFile = null;
 
+// ================================
+// ✅ فتح سياسة PDF
+// ================================
 function openPdfPolicy(filename) {
     if (!filename) return alert("❌ لم يتم تحديد الملف");
     currentPdfFile = filename;
@@ -139,17 +198,50 @@ function closePdf() {
     document.getElementById("pdfViewer").src = "";
 }
 
+// ================================
+// ✅ تحميل السياسات
+// ================================
 function loadPolicies(role) {
     const container = document.getElementById("policiesContainer");
     container.innerHTML = "";
 
-    let policies = role === "student" ? studentPolicies : staffPolicies;
+    const policies = role === "student" ? studentPolicies : staffPolicies;
+
     policies.forEach(item => {
-        const btn = document.createElement("button");
-        btn.className = "policy-btn";
-        btn.innerHTML = `<span>${item.title}</span><span>🖨 ⬇</span>`;
-        btn.onclick = () => openPdfPolicy(item.filename);
-        container.appendChild(btn);
+        const div = document.createElement("div");
+        div.className = "policy-item";
+
+        const title = document.createElement("div");
+        title.className = "policy-title";
+        title.textContent = item.title;
+
+        const btns = document.createElement("div");
+        btns.className = "policy-buttons";
+
+        const btnView = document.createElement("button");
+        btnView.className = "btn-view";
+        btnView.innerHTML = "👁 عرض";
+        btnView.onclick = () => openPdfPolicy(item.filename);
+
+        const btnDownload = document.createElement("a");
+        btnDownload.className = "btn-download";
+        btnDownload.href = `/pdfs/${item.filename}`;
+        btnDownload.download = item.filename;
+        btnDownload.innerHTML = "⬇ تحميل";
+
+        const btnPrint = document.createElement("button");
+        btnPrint.className = "btn-print";
+        btnPrint.innerHTML = "🖨 طباعة";
+        btnPrint.onclick = () => openPdfPolicy(item.filename);
+
+        btns.appendChild(btnView);
+        btns.appendChild(btnDownload);
+        btns.appendChild(btnPrint);
+
+        div.appendChild(title);
+        div.appendChild(btns);
+
+        container.appendChild(div);
     });
 }
 
