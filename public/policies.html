@@ -6,9 +6,6 @@
   <title>📚 السياسات</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* ============================= */
-    /* 🌐 الأساسيات */
-    /* ============================= */
     body {
       font-family: "Cairo", Arial, sans-serif;
       margin: 0;
@@ -25,19 +22,11 @@
       font-weight: bold;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
-    /* ============================= */
-    /* 📦 الحاوية العامة */
-    /* ============================= */
     .container {
       padding: 30px 20px;
       max-width: 900px;
       margin: auto;
     }
-
-    /* ============================= */
-    /* 📚 عناصر السياسة */
-    /* ============================= */
     .policy-item {
       display: flex;
       align-items: center;
@@ -56,10 +45,6 @@
       font-size: 1.05em;
       margin-right: 10px;
     }
-
-    /* ============================= */
-    /* 🔘 الأزرار */
-    /* ============================= */
     .policy-item a {
       text-decoration: none;
       padding: 8px 14px;
@@ -84,10 +69,6 @@
     .btn-warning:hover {
       background: #e67e22;
     }
-
-    /* ============================= */
-    /* 📱 تجاوب الموبايل */
-    /* ============================= */
     @media (max-width: 600px) {
       .policy-item {
         flex-direction: column;
@@ -118,13 +99,7 @@
       { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
       { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" },
       { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
-      { title: "📓 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
-      { title: "📔 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📘 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
-      { title: "📗 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-      { title: "📕 دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
-      { title: "📙 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
+      { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" }
     ];
 
     // ================================
@@ -133,16 +108,7 @@
     const staffPolicies = [
       { title: "📘 الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
       { title: "📗 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-      { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
-      { title: "📙 سياسة التقييم", filename: "Assessment_Policy.pdf" },
-      { title: "📒 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📓 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
-      { title: "📔 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
-      { title: "📘 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📗 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
-      { title: "📕 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-      { title: "📙 دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
-      { title: "📒 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
+      { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" }
     ];
 
     // ================================
@@ -163,18 +129,18 @@
         const span = document.createElement("span");
         span.textContent = item.title;
 
-        // زر عرض
+        // زر عرض PDF عبر Google Docs Viewer
         const viewBtn = document.createElement("a");
         viewBtn.className = "btn btn-info";
-        viewBtn.href = `https://docs.google.com/viewer?url=https://azurefs.k12net.com/FS/GetFile.aspx?path=Attachments/${item.filename}`;
+        viewBtn.href = `https://docs.google.com/viewer?url=https://saud-dashboard.onrender.com/pdfs/${item.filename}&embedded=true`;
         viewBtn.target = "_blank";
         viewBtn.textContent = "عرض";
 
-        // زر تحميل
+        // زر تحميل PDF مباشرة
         const downloadBtn = document.createElement("a");
         downloadBtn.className = "btn btn-warning";
-        downloadBtn.href = `https://azurefs.k12net.com/FS/GetFile.aspx?path=Attachments/${item.filename}&filename=${item.filename}`;
-        downloadBtn.target = "_blank";
+        downloadBtn.href = `https://saud-dashboard.onrender.com/pdfs/${item.filename}`;
+        downloadBtn.download = item.filename;
         downloadBtn.textContent = "تحميل";
 
         div.appendChild(span);
