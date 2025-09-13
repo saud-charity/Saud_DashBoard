@@ -73,32 +73,11 @@ h1 { margin: 0; font-size: 1.8em; }
     display: none;
     margin-top: 10px;
 }
-.pdf-toolbar {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin: 15px 0;
-}
-.pdf-toolbar button {
-    background: #e67e22;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 0.95em;
-    cursor: pointer;
-}
-.pdf-toolbar button:hover { background: #d35400; }
 </style>
 </head>
 <body>
 <header><h1>📚 السياسات والأدلة</h1></header>
 <div class="container">
-    <!-- ✅ زر الطباعة العام -->
-    <div class="pdf-toolbar">
-        <button id="btnGlobalPrint">🖨 طباعة مباشرة</button>
-    </div>
-
     <!-- ✅ قائمة السياسات -->
     <div id="policiesContainer"></div>
 
@@ -136,12 +115,9 @@ const staffPolicies = [
   { title: "📒 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
 ];
 
-let currentPdfFile = null;
-
 // ✅ فتح PDF للعرض
 function openPdfPolicy(filename) {
     if (!filename) return alert("❌ لم يتم تحديد الملف");
-    currentPdfFile = filename;
 
     const isMobile = /Mobi|Android/i.test(navigator.userAgent);
     const pdfViewer = document.getElementById("pdfViewer");
@@ -156,9 +132,9 @@ function openPdfPolicy(filename) {
 }
 
 // ✅ طباعة مباشرة
-function printPdfDirect() {
-    if (!currentPdfFile) return alert("❌ لم يتم اختيار ملف للطباعة");
-    const printWindow = window.open(`/pdfs/${currentPdfFile}`, "_blank");
+function printPdfDirect(filename) {
+    if (!filename) return alert("❌ لم يتم اختيار ملف للطباعة");
+    const printWindow = window.open(`/pdfs/${filename}`, "_blank");
     if (printWindow) {
         printWindow.addEventListener("load", () => {
             printWindow.print();
@@ -198,7 +174,7 @@ function loadPolicies(role) {
         const btnPrint = document.createElement("button");
         btnPrint.className = "btn-print";
         btnPrint.innerHTML = "🖨 طباعة";
-        btnPrint.onclick = () => { currentPdfFile = item.filename; printPdfDirect(); };
+        btnPrint.onclick = () => printPdfDirect(item.filename);
 
         btns.appendChild(btnView);
         btns.appendChild(btnDownload);
@@ -213,8 +189,6 @@ function loadPolicies(role) {
 document.addEventListener("DOMContentLoaded", () => {
     const role = new URLSearchParams(window.location.search).get("role") || sessionStorage.getItem("role");
     if (role) loadPolicies(role);
-
-    document.getElementById("btnGlobalPrint").onclick = printPdfDirect;
 });
 </script>
 </body>
