@@ -1,159 +1,212 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>السياسات والأدلة</title>
-  <style>
-    body {
-      font-family: "Cairo", Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f7fa;
-      color: #2c3e50;
-      text-align: center;
-    }
-    header {
-      background: #3498db;
-      color: white;
-      padding: 15px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 1.8em;
-    }
-    .container {
-      padding: 25px;
-      max-width: 900px;
-      margin: auto;
-    }
-    .policy-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fff;
-      padding: 12px 15px;
-      margin: 8px 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .policy-title {
-      font-size: 1em;
-      text-align: right;
-      flex: 1;
-    }
-    .policy-buttons {
-      display: flex;
-      gap: 8px;
-    }
-    .btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.95em;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .btn:hover { background: #217dbb; }
-    .btn.download { background: #f39c12; }
-    .btn.download:hover { background: #d68910; }
-    .btn.view { background: #2ecc71; }
-    .btn.view:hover { background: #27ae60; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>السياسات والأدلة</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  body { font-family: "Cairo", Arial, sans-serif; margin:0; padding:0; background:#f5f7fa; color:#2c3e50; text-align:center; direction:rtl; }
+  h1 { margin:20px 0; }
+  .policy-container { max-width:900px; margin:auto; padding:20px; }
+  .policy-item { display:flex; align-items:center; justify-content:space-between; background:#fff; padding:12px 20px; margin:8px 0; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+  .policy-title { flex:1; text-align:right; font-weight:bold; }
+  .policy-buttons a { display:inline-block; margin-left:8px; text-decoration:none; color:#fff; padding:8px 12px; border-radius:6px; font-size:0.95em; }
+  .btn-view { background:#3498db; }
+  .btn-download { background:#f39c12; }
+  .btn:hover { opacity:0.9; }
+</style>
 </head>
 <body>
-  <header>
-    <h1>السياسات والأدلة</h1>
-  </header>
+<h1>السياسات والأدلة</h1>
+<div class="policy-container">
 
-  <div class="container" id="policiesContainer">
-    <!-- سيتم تحميل السياسات هنا -->
+  <!-- ======================= سياسات الطلاب ======================= -->
+  <div class="policy-item">
+    <div class="policy-title">📘 اللائحة السلوكية</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Behaviour_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Behaviour_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
   </div>
 
-  <script>
-    const studentPolicies = [
-      { title: "📘 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-      { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
-      { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" },
-      { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
-      { title: "📓 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
-      { title: "📔 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📘 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
-      { title: "📗 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-      { title: "📕 دليل ولي الأمر للطفولة المبكرة", filename: "Parents_Guide_to_Early_Childhood.pdf" },
-      { title: "📙 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
-    ];
+  <div class="policy-item">
+    <div class="policy-title">📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Attendance_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Attendance_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-    const staffPolicies = [
-      { title: "📘 الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
-      { title: "📗 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-      { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
-      { title: "📙 سياسة التقييم", filename: "Assessment_Policy.pdf" },
-      { title: "📒 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📓 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
-      { title: "📔 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
-      { title: "📘 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📗 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
-      { title: "📕 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-      { title: "📙 دليل ولي الأمر للطفولة المبكرة", filename: "Parents_Guide_to_Early_Childhood.pdf" },
-      { title: "📒 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
-    ];
+  <div class="policy-item">
+    <div class="policy-title">📕 سياسة التقييم</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Assessment_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Assessment_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-    function getRole() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get("role") || sessionStorage.getItem("role") || "student";
-    }
+  <div class="policy-item">
+    <div class="policy-title">📙 سياسة الوقاية من التنمر</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-    function loadPolicies(role) {
-      const container = document.getElementById("policiesContainer");
-      container.innerHTML = "";
+  <div class="policy-item">
+    <div class="policy-title">📒 سياسة حقوق الطفل</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Child_Rights_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Child_Rights_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-      const policies = role === "staff" ? staffPolicies : studentPolicies;
+  <div class="policy-item">
+    <div class="policy-title">📓 قانون وديمة</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Behaviour_Policy1.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Behaviour_Policy1.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-      policies.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "policy-item";
+  <div class="policy-item">
+    <div class="policy-title">📔 دليل الوقاية من التنمر</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-        const title = document.createElement("div");
-        title.className = "policy-title";
-        title.textContent = item.title;
+  <div class="policy-item">
+    <div class="policy-title">📘 دليل ولي الأمر للوقاية من المخدرات</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Drug_Prevention_Guide.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Drug_Prevention_Guide.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-        const buttons = document.createElement("div");
-        buttons.className = "policy-buttons";
+  <div class="policy-item">
+    <div class="policy-title">📗 دليل ولي الأمر للصحة النفسية</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Mental_Health_Guide.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Mental_Health_Guide.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-        // زر العرض
-        const viewBtn = document.createElement("a");
-        viewBtn.className = "btn view";
-        viewBtn.href = `/pdfjs/web/viewer.html?file=/pdfs/${encodeURIComponent(item.filename)}`;
-        viewBtn.target = "_blank";
-        viewBtn.textContent = "عرض";
+  <div class="policy-item">
+    <div class="policy-title">📕 دليل ولي الأمر للطفولة المبكرة</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Parents’_Guide_to_Early_Childhood.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Parents’_Guide_to_Early_Childhood.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-        // زر التحميل
-        const downloadBtn = document.createElement("a");
-        downloadBtn.className = "btn download";
-        downloadBtn.href = `/pdfs/${encodeURIComponent(item.filename)}`;
-        downloadBtn.download = item.filename;
-        downloadBtn.textContent = "تحميل";
+  <div class="policy-item">
+    <div class="policy-title">📙 سياسة الأمن الرقمي</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Digital_Safety_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Digital_Safety_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-        buttons.appendChild(viewBtn);
-        buttons.appendChild(downloadBtn);
+  <!-- ======================= سياسات الموظفين ======================= -->
+  <div class="policy-item">
+    <div class="policy-title">📘 الميثاق المهني والأخلاقي</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Ethics_Charter_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Ethics_Charter_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-        div.appendChild(title);
-        div.appendChild(buttons);
+  <div class="policy-item">
+    <div class="policy-title">📗 اللائحة السلوكية</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Behaviour_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Behaviour_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-        container.appendChild(div);
-      });
-    }
+  <div class="policy-item">
+    <div class="policy-title">📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Attendance_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Attendance_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
 
-    document.addEventListener("DOMContentLoaded", () => {
-      loadPolicies(getRole());
-    });
-  </script>
+  <div class="policy-item">
+    <div class="policy-title">📙 سياسة التقييم</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Assessment_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Assessment_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📒 سياسة الوقاية من التنمر</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📓 سياسة حقوق الطفل</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Child_Rights_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Child_Rights_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📔 قانون وديمة</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Behaviour_Policy1.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Behaviour_Policy1.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📘 دليل الوقاية من التنمر</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Bullying_Prevention_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📗 دليل ولي الأمر للوقاية من المخدرات</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Drug_Prevention_Guide.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Drug_Prevention_Guide.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📕 دليل ولي الأمر للصحة النفسية</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Mental_Health_Guide.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Mental_Health_Guide.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📙 دليل ولي الأمر للطفولة المبكرة</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Parents’_Guide_to_Early_Childhood.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Parents’_Guide_to_Early_Childhood.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+  <div class="policy-item">
+    <div class="policy-title">📒 سياسة الأمن الرقمي</div>
+    <div class="policy-buttons">
+      <a href="/pdfs/Digital_Safety_Policy.pdf" class="btn-view" target="_blank">عرض</a>
+      <a href="/pdfs/Digital_Safety_Policy.pdf" class="btn-download" target="_blank">تحميل</a>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>
