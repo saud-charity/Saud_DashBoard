@@ -3,92 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>السياسات</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body {
-      font-family: "Cairo", Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f5f7fa;
-      color: #2c3e50;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    .policy-item {
-      background: #fff;
-      margin: 12px auto;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      max-width: 800px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .policy-title {
-      flex: 1;
-      font-weight: bold;
-    }
-    .policy-actions a {
-      text-decoration: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      margin: 0 3px;
-      font-size: 0.95em;
-      color: white;
-      transition: 0.2s;
-    }
-    .policy-actions a.view { background: #3498db; }
-    .policy-actions a.view:hover { background: #217dbb; }
-
-    .policy-actions a.download { background: #f39c12; }
-    .policy-actions a.download:hover { background: #d68910; }
-
-    .policy-actions a.print { background: #2ecc71; }
-    .policy-actions a.print:hover { background: #27ae60; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <h1>📚 السياسات</h1>
+  <header>
+    <h1>📚 السياسات</h1>
+  </header>
 
-  <div id="policiesContainer"></div>
+  <div class="container" id="policiesContainer"></div>
 
-  <script>
-    const policies = [
-      { title: "📘 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-      { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
-      { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" },
-      { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" },
-      { title: "📓 قانون وديمة", filename: "Behaviour_Policy1.pdf" },
-      { title: "📔 دليل الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📘 دليل ولي الأمر للوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
-      { title: "📗 دليل ولي الأمر للصحة النفسية", filename: "Mental_Health_Guide.pdf" },
-      { title: "📕 دليل ولي الأمر للطفولة المبكرة", filename: "Parents’_Guide_to_Early_Childhood.pdf" },
-      { title: "📙 سياسة الأمن الرقمي", filename: "Digital_Safety_Policy.pdf" }
-    ];
-
-    const container = document.getElementById("policiesContainer");
-
-    policies.forEach(item => {
-      const pdfUrl = `/pdfs/${item.filename}`;
-      const googleViewer = `https://docs.google.com/viewer?url=${location.origin}${pdfUrl}&embedded=true`;
-
-      const div = document.createElement("div");
-      div.className = "policy-item";
-      div.innerHTML = `
-        <div class="policy-title">${item.title}</div>
-        <div class="policy-actions">
-          <a class="view" href="${googleViewer}" target="_blank"><i class="fas fa-eye"></i> عرض</a>
-          <a class="download" href="${pdfUrl}" download><i class="fas fa-download"></i> تحميل</a>
-          <a class="print" href="${pdfUrl}" target="_blank" onclick="setTimeout(() => window.print(), 1000)"><i class="fas fa-print"></i> طباعة</a>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-  </script>
+  <script src="policies.js"></script>
 </body>
 </html>
