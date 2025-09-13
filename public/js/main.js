@@ -1,5 +1,5 @@
 // ================================
-// ✅ Load menu for a specific role
+// ✅ تحميل القائمة حسب الدور
 // ================================
 async function loadMenu(role) {
   const container = document.getElementById("menuContainer");
@@ -38,7 +38,7 @@ async function loadMenu(role) {
           btn.onclick = () => window.open(item.url, "_blank");
           break;
         case "submenu":
-          btn.onclick = () => loadPolicies(role);
+          btn.onclick = () => window.location.href = `/policies.html?role=${role}`;
           break;
       }
 
@@ -52,7 +52,7 @@ async function loadMenu(role) {
 }
 
 // ================================
-// ✅ Open PDF smartly (desktop/mobile)
+// ✅ فتح PDF بذكاء (موبايل / كمبيوتر)
 // ================================
 function openPdfSmart(filename, viewerId = "pdfViewer") {
   if (!filename) return alert("❌ لم يتم تحديد الملف");
@@ -68,7 +68,6 @@ function openPdfSmart(filename, viewerId = "pdfViewer") {
     if (pdfViewer) {
       pdfViewer.src = viewerUrl;
       pdfViewer.style.display = "block";
-      document.getElementById("pdfControls").style.display = "flex";
       pdfViewer.scrollIntoView({ behavior: "smooth" });
     } else {
       window.open(viewerUrl, "_blank");
@@ -77,83 +76,31 @@ function openPdfSmart(filename, viewerId = "pdfViewer") {
 }
 
 // ================================
-// ✅ Load policies for a role
-// ================================
-async function loadPolicies(role) {
-  const container = document.getElementById("menuContainer");
-  container.innerHTML = "<p>جاري تحميل السياسات...</p>";
-
-  try {
-    const res = await fetch(`/api/policies/${role}`);
-    if (!res.ok) throw new Error("تعذر تحميل السياسات");
-
-    const policies = await res.json();
-    if (!policies || policies.length === 0) {
-      container.innerHTML = "<p>لا توجد سياسات متاحة</p>";
-      return;
-    }
-
-    container.innerHTML = "";
-    policies.forEach(item => {
-      const btn = document.createElement("button");
-      btn.className = "menu-btn";
-      btn.textContent = item.title;
-      btn.onclick = () => openPdfSmart(item.filename);
-      container.appendChild(btn);
-    });
-
-  } catch (err) {
-    console.error("⚠ خطأ:", err);
-    container.innerHTML = "<p>❌ فشل تحميل السياسات</p>";
-  }
-}
-
-// ================================
-// ✅ Role selection
+// ✅ اختيار الدور
 // ================================
 function selectRole(role) {
   sessionStorage.setItem("role", role);
-  loadMenu(role);
+  window.location.href = `/menu.html?role=${role}`;
 }
 
 window.selectRole = selectRole;
 
 // ================================
-// ✅ DOMContentLoaded
+// ✅ عند تحميل الصفحة
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   const role = params.get("role") || sessionStorage.getItem("role");
 
-  if (role) loadMenu(role);
+  loadMenu(role);
 
   const studentBtn = document.getElementById("studentBtn");
   const staffBtn = document.getElementById("staffBtn");
 
   if (studentBtn) studentBtn.onclick = () => selectRole("student");
-  if (staffBtn) staffBtn.onclick = () => selectRole("staff");
+  if (staffBtn) staffBtn.onclick = () => window.location.href = "/staff_login.html";
 
-  // ✅ PDF controls
-  const downloadBtn = document.getElementById("downloadBtn");
-  const printBtn = document.getElementById("printBtn");
-  const pdfViewer = document.getElementById("pdfViewer");
-
-  if (downloadBtn) {
-    downloadBtn.onclick = () => {
-      if (!pdfViewer.src) return alert("❌ لم يتم تحميل ملف PDF");
-      window.open(pdfViewer.src, "_blank");
-    };
-  }
-
-  if (printBtn) {
-    printBtn.onclick = () => {
-      if (!pdfViewer.src) return alert("❌ لم يتم تحميل ملف PDF");
-      const w = window.open(pdfViewer.src);
-      w.onload = () => w.print();
-    };
-  }
-
-  // ✅ Service Worker registration
+  // ✅ تسجيل Service Worker (للتخزين المؤقت والـ PWA)
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js")
       .then(() => console.log("✅ Service Worker مسجل بنجاح"))

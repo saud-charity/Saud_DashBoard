@@ -3,35 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بوابة مدرسة الشيخ سعود - فرع1</title>
+  <title>🏫 نظام المدرسة</title>
+  <link rel="stylesheet" href="/css/style.css">
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .role-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       text-align: center;
-      padding: 50px;
-      background: #f5f7fa;
+      width: 320px;
     }
-    h1 { margin-bottom: 30px; color: #2c3e50; }
-    .btn {
-      background: #3498db;
-      color: white;
+    h2 { margin-bottom: 20px; color: #333; }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
       border: none;
-      padding: 15px 25px;
-      margin: 10px;
-      border-radius: 8px;
-      font-size: 1.1em;
+      border-radius: 6px;
+      background: #3498db;
+      color: #fff;
+      font-size: 1em;
       cursor: pointer;
-      transition: 0.3s;
+      transition: 0.2s;
     }
-    .btn:hover { background: #217dbb; }
+    button:hover { background: #217dbb; }
   </style>
 </head>
 <body>
-  <h1>👋 مرحباً بكم في بوابة مدرسة الشيخ سعود - فرع1</h1>
-
-  <button class="btn" id="studentBtn">🎓 دخول طالب / ولي أمر</button>
-  <button class="btn" id="staffBtn">👨‍🏫 دخول موظف</button>
-
-  <script src="js/login.js" defer></script>
+  <div class="role-box">
+    <h2>👋 اختر نوع الدخول</h2>
+    <button id="studentBtn">🎓 دخول طالب / ولي أمر</button>
+    <button id="staffBtn">👨‍🏫 دخول موظف</button>
+  </div>
+  <script src="/js/main.js"></script>
 </body>
 </html>
