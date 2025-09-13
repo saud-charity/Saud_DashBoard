@@ -3,184 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📚 السياسات والأدلة</title>
+<title>السياسات</title>
+<link rel="stylesheet" href="/css/style.css">
 <style>
-body {
-  font-family: "Cairo", Arial, sans-serif;
-  margin: 0; padding: 0;
-  background: #f5f7fa; color: #2c3e50; text-align: center;
-}
-
-header {
-  background: #3498db; color: white; padding: 15px;
-  font-size: 1.5em;
-}
-
-.container {
-  padding: 20px; max-width: 900px; margin: auto;
-}
-
-.policy-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px 0;
-  padding: 10px 15px;
-  background: #9b59b6;
-  color: white;
-  border-radius: 6px;
-}
-
-.policy-item span {
-  flex: 1; text-align: right; font-size: 1em;
-}
-
-.policy-item button {
-  margin-left: 6px; padding: 6px 10px;
-  font-size: 0.95em; border: none;
-  border-radius: 4px; cursor: pointer;
-  transition: 0.2s;
-  background: #34495e; color: white;
-}
-
-.policy-item button:hover {
-  background: #2c3e50;
-}
-
-.pdf-toolbar {
-  display: flex; justify-content: center;
-  gap: 10px; margin: 15px 0;
-}
-
-.pdf-toolbar button {
-  background: #34495e; color: white; border: none;
-  padding: 8px 12px; border-radius: 4px; cursor: pointer;
-}
-
-#pdfViewer {
-  width: 100%; height: 70vh; border: none; display: none; margin-top: 10px;
-}
+  body { font-family: "Cairo", Arial, sans-serif; margin:0; padding:20px; background:#f5f7fa; text-align:center; }
+  h1 { color:#2c3e50; }
+  .policy-btn { background:#9b59b6; color:#fff; border:none; padding:12px 20px; margin:8px; border-radius:6px; cursor:pointer; transition:0.3s; display:inline-block; }
+  .policy-btn:hover { background:#8e44ad; }
+  .pdf-toolbar { display:none; justify-content:center; gap:10px; margin:10px 0; }
+  .pdf-toolbar button { background:#34495e; color:white; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; }
+  .pdf-toolbar button:hover { background:#2c3e50; }
+  #pdfViewer { width:100%; height:80vh; border:none; display:none; margin-top:10px; }
 </style>
 </head>
 <body>
 
-<header>📚 السياسات والأدلة</header>
-<div class="container" id="policiesContainer"></div>
+<h1>السياسات</h1>
+<div id="policiesContainer"></div>
 
-<div class="pdf-toolbar" id="pdfToolbar" style="display:none;">
-  <button onclick="printPdf()">🖨️ طباعة</button>
-  <button onclick="downloadPdf()">⬇️ تحميل</button>
+<div class="pdf-toolbar" id="pdfToolbar">
+  <button onclick="downloadPdf()">⬇ تحميل</button>
+  <button onclick="printPdf()">🖨 طباعة</button>
   <button onclick="closePdf()">❌ إغلاق</button>
 </div>
 
 <iframe id="pdfViewer"></iframe>
 
-<script>
-// ✅ السياسات
-const studentPolicies = [
-  { title: "📘 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-  { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
-  { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" }
-];
-
-const staffPolicies = [
-  { title: "📘 الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
-  { title: "📗 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" }
-];
-
-let currentPdfFile = null;
-
-// ================================
-// ✅ تحميل السياسات حسب الدور
-// ================================
-function loadPolicies(role) {
-  const container = document.getElementById("policiesContainer");
-  if (!container) return;
-  container.innerHTML = "";
-
-  let policies = role === "student" ? studentPolicies : staffPolicies;
-  if (policies.length === 0) {
-    container.innerHTML = "<p>❌ لا توجد سياسات متاحة</p>";
-    return;
-  }
-
-  policies.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "policy-item";
-
-    const span = document.createElement("span");
-    span.textContent = item.title;
-
-    const btnView = document.createElement("button");
-    btnView.textContent = "👁️ عرض";
-    btnView.onclick = () => openPdfSmart(item.filename);
-
-    const btnDownload = document.createElement("button");
-    btnDownload.textContent = "⬇️ تحميل";
-    btnDownload.onclick = () => downloadPdf();
-
-    const btnPrint = document.createElement("button");
-    btnPrint.textContent = "🖨️ طباعة";
-    btnPrint.onclick = () => printPdf();
-
-    div.appendChild(span);
-    div.appendChild(btnView);
-    div.appendChild(btnDownload);
-    div.appendChild(btnPrint);
-
-    container.appendChild(div);
-  });
-}
-
-// ================================
-// ✅ دوال PDF
-// ================================
-function openPdfSmart(filename) {
-  if (!filename) return alert("❌ لم يتم تحديد الملف");
-  currentPdfFile = filename;
-
-  const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + filename)}`;
-  const pdfViewer = document.getElementById("pdfViewer");
-  const pdfToolbar = document.getElementById("pdfToolbar");
-
-  pdfViewer.src = viewerUrl;
-  pdfViewer.style.display = "block";
-  pdfToolbar.style.display = "flex";
-  pdfViewer.scrollIntoView({ behavior: "smooth" });
-}
-
-function downloadPdf() {
-  if (!currentPdfFile) return;
-  const link = document.createElement("a");
-  link.href = `/pdfs/${currentPdfFile}`;
-  link.download = currentPdfFile;
-  link.click();
-}
-
-function printPdf() {
-  if (!currentPdfFile) return;
-  const printWindow = window.open(
-    `/pdfjs/web/viewer.html?file=${encodeURIComponent("/pdfs/" + currentPdfFile)}&print=true`,
-    "_blank"
-  );
-  if (printWindow) printWindow.focus();
-}
-
-function closePdf() {
-  document.getElementById("pdfViewer").style.display = "none";
-  document.getElementById("pdfToolbar").style.display = "none";
-  document.getElementById("pdfViewer").src = "";
-}
-
-// ================================
-// ✅ عند تحميل الصفحة
-// ================================
-document.addEventListener("DOMContentLoaded", () => {
-  const params = new URLSearchParams(window.location.search);
-  const role = params.get("role") || sessionStorage.getItem("role");
-  if (role) loadPolicies(role);
-});
-</script>
-
+<script src="/js/policies.js"></script>
 </body>
 </html>
