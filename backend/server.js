@@ -15,7 +15,6 @@ app.use(express.static(path.join(__dirname, "../public")));
 app.use("/pdfs", express.static(path.join(__dirname, "../public/pdfs")));
 app.use("/js", express.static(path.join(__dirname, "../public/js")));
 app.use("/pdfjs", express.static(path.join(__dirname, "../public/pdfjs")));
-app.use("/css", express.static(path.join(__dirname, "../public/css")));
 
 // -----------------------------
 // ✅ Home page
@@ -25,16 +24,13 @@ app.get("/", (req, res) => {
 });
 
 // -----------------------------
-// ✅ Staff login data
+// ✅ Staff login
 // -----------------------------
 const STAFF_USERS = [
   { username: "admin", password: "1234" },
   { username: "staff", password: "abcd" }
 ];
 
-// -----------------------------
-// ✅ Login API
-// -----------------------------
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   const user = STAFF_USERS.find(u => u.username===username && u.password===password);
@@ -131,23 +127,19 @@ const subjects=["اللغة العربية","اللغة الإنجليزية","�
 
 function loadStudentsFromExcel(){
   if(!fs.existsSync(EXCEL_PATH)) return {};
-
   const workbook = xlsx.readFile(EXCEL_PATH);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = xlsx.utils.sheet_to_json(sheet,{defval:"-"});
-
   const students = {};
   rows.forEach(row=>{
     const idKeys = ["ID","Id","id","الهوية","رقم الهوية","NationalID"];
     let id = idKeys.map(k=>row[k]).find(v=>v && String(v).trim()!=="");
     if(!id) return;
     id=String(id).trim();
-
     const nameKeys = ["الاسم","اسم","Name","student_name"];
     const classKeys = ["الشعبة","Class","الفصل"];
     const name = nameKeys.map(k=>row[k]).find(v=>v && String(v).trim()!=="")||"-";
     const className = classKeys.map(k=>row[k]).find(v=>v && String(v).trim()!=="")||"-";
-
     const allCols = Object.keys(row).slice(4);
     const subjectData = subjects.map((sub,i)=>{
       const base=i*6;
@@ -161,10 +153,8 @@ function loadStudentsFromExcel(){
         commitment: row[allCols[base+5]]||"-"
       };
     });
-
     students[id] = { student: { "الاسم":name.trim(), "الشعبة":className.trim() }, subjects: subjectData };
   });
-
   return students;
 }
 
