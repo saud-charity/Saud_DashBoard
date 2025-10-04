@@ -3,162 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📚 السياسات</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>السياسات</title>
   <style>
     body {
-      font-family: "Cairo", Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f7fa;
-      color: #2c3e50;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
       text-align: center;
+      padding: 30px;
     }
-    header {
-      background: #3498db;
-      color: white;
-      padding: 15px;
-      font-size: 1.6em;
-      font-weight: bold;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .container {
-      padding: 30px 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-    .policy-item {
+    h2 { margin-bottom: 25px; color: #333; }
+    #policiesContainer {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #ffffff;
-      padding: 12px 15px;
-      margin: 8px 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
     }
-    .policy-item span {
-      flex: 1;
-      text-align: right;
-      font-weight: bold;
-      font-size: 1.05em;
-      margin-right: 10px;
-    }
-    .policy-item a {
-      text-decoration: none;
-      padding: 8px 14px;
-      margin: 2px;
-      border-radius: 6px;
-      color: white;
-      font-size: 0.95em;
-      transition: 0.3s;
-      display: inline-block;
-      min-width: 70px;
-      text-align: center;
-    }
-    .btn-info {
+    .menu-btn {
+      padding: 12px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
       background: #3498db;
+      color: #fff;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
+      min-width: 200px;
     }
-    .btn-info:hover {
+    .menu-btn:hover {
       background: #217dbb;
+      transform: translateY(-2px);
     }
-    .btn-warning {
-      background: #f39c12;
-    }
-    .btn-warning:hover {
-      background: #e67e22;
-    }
-    @media (max-width: 600px) {
-      .policy-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .policy-item span {
-        margin-bottom: 8px;
-      }
-      .policy-item a {
-        width: 100%;
-        text-align: center;
-      }
+    #pdfViewer {
+      width: 90%;
+      height: 600px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin: 20px auto;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <header>📚 السياسات</header>
-  <div class="container" id="policiesContainer">
-    <!-- سيتم ملؤها ديناميكيًا -->
-  </div>
 
-  <script>
-    // ================================
-    // ✅ السياسات الخاصة بالطلاب
-    // ================================
-    const studentPolicies = [
-      { title: "📘 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-      { title: "📗 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" },
-      { title: "📕 سياسة التقييم", filename: "Assessment_Policy.pdf" },
-      { title: "📙 سياسة الوقاية من التنمر", filename: "Bullying_Prevention_Policy.pdf" },
-      { title: "📒 سياسة حقوق الطفل", filename: "Child_Rights_Policy.pdf" }
-    ];
+<h2>السياسات</h2>
+<div id="policiesContainer"></div>
+<iframe id="pdfViewer"></iframe>
 
-    // ================================
-    // ✅ السياسات الخاصة بالموظفين
-    // ================================
-    const staffPolicies = [
-      { title: "📘 الميثاق المهني والأخلاقي", filename: "Ethics_Charter_Policy.pdf" },
-      { title: "📗 اللائحة السلوكية", filename: "Behaviour_Policy.pdf" },
-      { title: "📕 الدليل الاجرائي لإدارة حضور وغياب الطلبة", filename: "Attendance_Policy.pdf" }
-    ];
+<script>
+const params = new URLSearchParams(window.location.search);
+const role = (params.get("role") || sessionStorage.getItem("role") || "").toLowerCase();
+const container = document.getElementById("policiesContainer");
+const pdfViewer = document.getElementById("pdfViewer");
 
-    // ================================
-    // ✅ إنشاء السياسات ديناميكيًا
-    // ================================
-    function loadPolicies(role) {
-      const container = document.getElementById("policiesContainer");
-      if (!container) return;
+function showMsg(html) {
+  container.innerHTML = html;
+}
 
-      container.innerHTML = ""; // مسح المحتوى القديم
-      const policies = role === "staff" ? staffPolicies : studentPolicies;
+// تحميل السياسات
+async function loadPolicies() {
+  if (!role) {
+    showMsg(`
+      <p>لم يتم تحديد الدور.</p>
+      <button class="menu-btn" onclick="window.location.href='/'">العودة للصفحة الرئيسية</button>
+    `);
+    return;
+  }
 
-      policies.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "policy-item";
+  showMsg("<p>جارٍ التحميل…</p>");
 
-        // اسم السياسة
-        const span = document.createElement("span");
-        span.textContent = item.title;
-
-        // زر عرض PDF عبر Google Docs Viewer
-        const viewBtn = document.createElement("a");
-        viewBtn.className = "btn btn-info";
-        viewBtn.href = `https://docs.google.com/viewer?url=https://saud-dashboard.onrender.com/pdfs/${item.filename}&embedded=true`;
-        viewBtn.target = "_blank";
-        viewBtn.textContent = "عرض";
-
-        // زر تحميل PDF مباشرة
-        const downloadBtn = document.createElement("a");
-        downloadBtn.className = "btn btn-warning";
-        downloadBtn.href = `https://saud-dashboard.onrender.com/pdfs/${item.filename}`;
-        downloadBtn.download = item.filename;
-        downloadBtn.textContent = "تحميل";
-
-        div.appendChild(span);
-        div.appendChild(viewBtn);
-        div.appendChild(downloadBtn);
-
-        container.appendChild(div);
-      });
+  try {
+    const res = await fetch(`/api/policies/${role}`);
+    if (!res.ok) {
+      const text = await res.text();
+      showMsg(`<p>تعذر تحميل السياسات (${res.status})</p><small>${text}</small>`);
+      return;
     }
 
-    // ================================
-    // ✅ تحميل السياسات عند فتح الصفحة
-    // ================================
-    document.addEventListener("DOMContentLoaded", () => {
-      const params = new URLSearchParams(window.location.search);
-      const role = params.get("role") || sessionStorage.getItem("role");
-      if (role) loadPolicies(role);
+    const policies = await res.json();
+    if (!Array.isArray(policies) || policies.length === 0) {
+      showMsg("<p>لا توجد سياسات متاحة حالياً.</p>");
+      return;
+    }
+
+    container.innerHTML = "";
+
+    policies.forEach(p => {
+      const btn = document.createElement("button");
+      btn.textContent = p.title;
+      btn.className = "menu-btn";
+      btn.onclick = () => {
+        // ✅ تحميل الملف باستخدام pdf.js viewer
+        pdfViewer.src = `/pdfjs/web/viewer.html?file=/pdfs/${p.filename}`;
+        pdfViewer.style.display = "block";
+        pdfViewer.scrollIntoView({ behavior: "smooth" });
+      };
+      container.appendChild(btn);
     });
-  </script>
+
+  } catch (err) {
+    showMsg(`<p>تعذر تحميل السياسات</p><small>${err?.message || err}</small>`);
+  }
+}
+
+loadPolicies();
+</script>
+
 </body>
 </html>
