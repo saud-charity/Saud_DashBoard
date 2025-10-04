@@ -1,61 +1,152 @@
+/* تنسيقات عامة */
 body {
-  font-family: "Cairo", Arial, sans-serif;
+  font-family: "Tahoma", Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: #f5f7fa;
-  color: #2c3e50;
-  text-align: center;
+  background: #f5f6fa;
+  color: #333;
   direction: rtl;
+  text-align: center;
 }
 
-header {
-  background: #3498db;
+h1, h2 {
+  margin-bottom: 20px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 10px 0;
+}
+
+/* الأزرار */
+.btn, .btn-secondary {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn {
+  background-color: #3498db;
   color: white;
-  padding: 15px;
 }
 
-.container {
-  padding: 30px;
-  max-width: 800px;
-  margin: auto;
+.btn:hover {
+  background-color: #2980b9;
 }
 
-.policy-item {
+.btn-secondary {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background-color: #bdbdbd;
+}
+
+/* الحقول */
+.input {
+  display: block;
+  width: 250px;
+  margin: 8px auto;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* إخفاء */
+.hidden {
+  display: none;
+}
+
+.centered {
+  margin-top: 100px;
+}
+
+/* عارض PDF */
+.full-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  padding: 15px;
-  margin: 15px 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.viewer-header {
+  background: #2c3e50;
+  color: white;
+  padding: 10px;
   text-align: right;
 }
 
-.policy-title {
-  font-size: 1.1em;
-  margin-bottom: 10px;
-  color: #2c3e50;
+.viewer-header button {
+  background: #e74c3c;
+  color: white;
+  padding: 6px 14px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.policy-actions a {
-  display: inline-block;
-  margin: 5px;
-  padding: 8px 14px;
-  border-radius: 6px;
+.viewer-header button:hover {
+  background: #c0392b;
+}
+
+.pdf-frame {
+  flex: 1;
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+.pdf-frame {
+  width: 100%;
+  height: 90vh;
+  border: none;
+}
+
+.viewer-header {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px;
+  background: #f1f1f1;
+}
+.menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+.has-submenu::after {
+  content: " ▼";
+  float: right;
+  font-size: 0.8em;
+}
+
+.submenu {
+  margin-left: 20px;
+  border-left: 1px solid #ccc;
+  padding-left: 10px;
+}
+
+.submenu-item {
   font-size: 0.95em;
-  text-decoration: none;
-  transition: background 0.3s ease;
-  color: #fff;
-}
-
-.policy-actions a.view {
-  background: #3498db;
-}
-.policy-actions a.view:hover {
-  background: #217dbb;
-}
-
-.policy-actions a.download {
-  background: #27ae60;
-}
-.policy-actions a.download:hover {
-  background: #1e8449;
 }
