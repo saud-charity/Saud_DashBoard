@@ -9,16 +9,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public"), { etag: false, maxAge: 0 }));
 
-// ===================== بيانات القوائم =====================
-const studentMenu = [
-  { title: "📋 تقرير الطالب", path: "report.html" },
-  { title: "📜 السياسات", path: "policies.html" }
-];
-
-const staffMenu = [
-  { title: "📊 تقارير الطلاب", path: "report.html" },
-  { title: "📁 إدارة السياسات", path: "policies.html" }
-];
 
 // ===================== سياسات عامة =====================
 const studentPolicies = [
