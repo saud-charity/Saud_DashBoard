@@ -4,102 +4,36 @@
   <meta charset="UTF-8">
   <title>تقرير طالب</title>
   <style>
-    body {
-      font-family: "Tahoma", Arial, sans-serif;
-      background: #f5f6fa;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background: #2c3e50;
-      color: #fff;
-      padding: 15px;
-      font-size: 22px;
-    }
-    .container {
-      margin: 30px auto;
-      max-width: 900px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .search-box {
-      margin-bottom: 20px;
-    }
-    input[type="text"] {
-      padding: 8px;
-      font-size: 16px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      padding: 9px 15px;
-      font-size: 16px;
-      background: #2980b9;
-      border: none;
-      color: #fff;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 5px;
-    }
-    button:hover {
-      background: #3498db;
-    }
-    .student-info {
-      margin: 15px 0;
-      font-size: 18px;
-      color: #2c3e50;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    table th, table td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-    table th {
-      background: #34495e;
-      color: #fff;
-    }
-    .error {
-      color: red;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    #printBtn {
-      display: none; /* يظهر فقط عند تحميل تقرير */
-      background: #27ae60;
-    }
-    #printBtn:hover {
-      background: #2ecc71;
-    }
-    .notes-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: #fdf6e3;
-      border: 1px solid #eed;
-      border-radius: 8px;
-      text-align: right;
-    }
-    .notes-box h3 {
-      margin-top: 0;
-      color: #b58900;
+    body { font-family: "Tahoma", sans-serif; background: #f7f7f7; margin: 0; }
+    header { background: #2c3e50; color: #fff; padding: 15px; font-size: 22px; text-align: center; }
+    .container { background: #fff; max-width: 900px; margin: 30px auto; padding: 20px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
+    .search-box { text-align: center; margin-bottom: 20px; }
+    input[type="text"] { padding: 8px; font-size: 16px; width: 260px; border: 1px solid #ccc; border-radius: 5px; }
+    button { padding: 8px 15px; border: none; border-radius: 5px; background: #2980b9; color: #fff; cursor: pointer; font-size: 15px; margin: 5px; }
+    button:hover { background: #3498db; }
+    #printBtn { background: #27ae60; display: none; }
+    #printBtn:hover { background: #2ecc71; }
+    .error { color: red; text-align: center; margin-top: 10px; font-weight: bold; }
+    .student-info { font-size: 18px; margin-bottom: 15px; color: #2c3e50; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #34495e; color: #fff; }
+    .notes-box { display: flex; justify-content: space-between; gap: 20px; margin-top: 25px; background: #fdf6e3; border: 1px solid #eed; border-radius: 10px; padding: 15px; }
+    .notes-box h3 { color: #b58900; margin-top: 0; }
+    @media print {
+      header, .search-box, #printBtn { display: none; }
+      body { background: #fff; }
+      .container { box-shadow: none; margin: 0; padding: 10px; }
     }
   </style>
 </head>
 <body>
-  <header>📑 تقرير طالب</header>
+  <header>📑 تقرير الطالب</header>
   <div class="container">
     <div class="search-box">
       <input type="text" id="studentId" placeholder="أدخل رقم الهوية">
       <button onclick="loadReport()">عرض التقرير</button>
-      <button id="printBtn" onclick="window.print()">🖨️ طباعة</button>
+      <button id="printBtn" onclick="window.print()">🖨️ حفظ/طباعة PDF</button>
     </div>
     <div id="error" class="error"></div>
     <div id="report"></div>
@@ -123,72 +57,69 @@
       try {
         const res = await fetch(`/api/report/${id}`);
         if (!res.ok) {
-          if (res.status === 404) {
-            errorDiv.textContent = "❌ الطالب غير موجود.";
-          } else {
-            errorDiv.textContent = "❌ خطأ في تحميل التقرير.";
-          }
+          errorDiv.textContent = res.status === 404 ? "❌ الطالب غير موجود." : "❌ خطأ في تحميل التقرير.";
           return;
         }
 
         const data = await res.json();
-
-        // عرض بيانات الطالب
         let html = `
           <div class="student-info">
             <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
-            <p><strong>الشعبة:</strong> ${data.student["الشعبة"]}</p>
+            <p><strong>الصف والشعبة:</strong> ${data.student["الصف والشعبة"]}</p>
           </div>
           <table>
             <thead>
               <tr>
                 <th>المادة</th>
-                <th>تكويني</th>
-                <th>مشاركة</th>
-                <th>مهمة</th>
-                <th>التزام</th>
+                <th>الاختبارات التكوينية</th>
+                <th>استماع وتحدث</th>
+                <th>قراءة</th>
+                <th>كتابة</th>
+                <th>السلوك</th>
               </tr>
             </thead>
             <tbody>
         `;
 
-        let notes = [];
+        const strengths = [];
+        const improvements = [];
 
         data.subjects.forEach(sub => {
           html += `
             <tr>
               <td>${sub.name}</td>
               <td>${sub.formative}</td>
-              <td>${sub.participation}</td>
-              <td>${sub.task}</td>
-              <td>${sub.commitment}</td>
+              <td>${sub.listening}</td>
+              <td>${sub.reading}</td>
+              <td>${sub.writing}</td>
+              <td>${sub.behavior}</td>
             </tr>
           `;
-          if (sub.note && sub.note.trim() && sub.note !== "-") {
-            notes.push(`${sub.name}: ${sub.note}`);
+          if (sub.behavior.includes("ممتاز") || sub.behavior.includes("جيد")) {
+            strengths.push(`${sub.name}: ${sub.behavior}`);
+          } else if (sub.behavior && sub.behavior !== "-") {
+            improvements.push(`${sub.name}: ${sub.behavior}`);
           }
         });
 
-        html += "</tbody></table>";
-
-        // عرض الملاحظات تحت الجدول
-        if (notes.length > 0) {
-          html += `
-            <div class="notes-box">
-              <h3>📝 الملاحظات:</h3>
-              <ul>${notes.map(n => `<li>${n}</li>`).join("")}</ul>
+        html += `</tbody></table>
+          <div class="notes-box">
+            <div style="flex:1;">
+              <h3>🟩 جوانب القوة</h3>
+              ${strengths.length ? `<ul>${strengths.map(s => `<li>${s}</li>`).join("")}</ul>` : "<p>-</p>"}
             </div>
-          `;
-        }
-
+            <div style="flex:1;">
+              <h3>🟥 جوانب التحسين</h3>
+              ${improvements.length ? `<ul>${improvements.map(i => `<li>${i}</li>`).join("")}</ul>` : "<p>-</p>"}
+            </div>
+          </div>
+        `;
         reportDiv.innerHTML = html;
-
-        // إظهار زر الطباعة
         printBtn.style.display = "inline-block";
 
       } catch (err) {
-        console.error("Error loading report:", err);
-        errorDiv.textContent = "❌ حدث خطأ غير متوقع.";
+        errorDiv.textContent = "❌ حدث خطأ في تحميل البيانات.";
+        console.error(err);
       }
     }
   </script>
