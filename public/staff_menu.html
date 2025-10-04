@@ -4,22 +4,6 @@
   <meta charset="UTF-8">
   <title>قائمة الموظف</title>
   <link rel="stylesheet" href="styles/main.css">
-  <style>
-    .menu-btn {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 12px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background-color: #2980b9;
-      color: #fff;
-      cursor: pointer;
-      text-align: right;
-    }
-    .menu-btn:hover { background-color: #3498db; }
-  </style>
 </head>
 <body>
   <header>📋 قائمة الموظف</header>
@@ -30,8 +14,13 @@
   <script src="scripts/main.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      sessionStorage.setItem("role", "staff"); // تحديد الدور في الجلسة
-      loadMenu("staff"); // جلب القائمة من السيرفر
+      const role = sessionStorage.getItem("role");
+      if (!role) {
+        alert("يرجى تسجيل الدخول أولاً!");
+        location.href = "staff_login.html";
+        return;
+      }
+      loadMenu(role);
     });
   </script>
 </body>
