@@ -6,16 +6,28 @@
   <title>لوحة التحكم - مدرسة الشيخ سعود</title>
   <link rel="stylesheet" href="css/main.css" />
   <style>
-    /* تعديل حجم الأزرار لتكون أصغر */
-    .menu-btn {
-      width: 100%;
-      max-width: 300px;
-      margin: 8px auto;
-      font-size: 1em;
-      padding: 10px 12px;
+    .menu-container {
+      max-width: 600px;
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    /* iframe PDF */
+    .menu-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .menu-btn:hover {
+      background: #2980b9;
+    }
+
     #pdfViewer {
       width: 90%;
       height: 600px;
@@ -24,41 +36,26 @@
       margin: 20px auto;
       display: none;
     }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    .menu-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 40px;
-    }
   </style>
 </head>
 <body>
   <header>
-    <h1 id="pageTitle">🔄 جاري التحميل...</h1>
+    <h1 id="pageTitle">لوحة التحكم</h1>
   </header>
 
-  <main class="menu-container">
-    <div id="menuContainer"></div>
+  <main class="container">
+    <div id="menuContainer" class="menu-container"></div>
     <iframe id="pdfViewer"></iframe>
   </main>
 
   <footer>
-    <p>© جميع الحقوق محفوظة - مدرسة الشيخ سعود - فرع1</p>
+    <p>© جميع الحقوق محفوظة - مدرسة الشيخ سعود</p>
   </footer>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const role = sessionStorage.getItem("role");
-      if (!role) { 
-        window.location.href = "login.html"; 
-        return; 
-      }
+      if (!role) { window.location.href = "login.html"; return; }
 
       document.getElementById("pageTitle").textContent =
         role === "staff" ? "🧑‍🏫 لوحة الموظف" : "🎓 لوحة الطالب / ولي الأمر";
@@ -85,14 +82,26 @@
           btn.className = "menu-btn";
           btn.textContent = item.title;
 
-          if (item.type === "pdf") btn.onclick = () => openPdf(item.filename);
-          if (item.type === "page") btn.onclick = () => window.location.href = item.path;
-          if (item.type === "external") btn.onclick = () => window.open(item.url, "_blank");
-          if (item.type === "submenu") btn.onclick = () => window.location.href = `/policies.html?role=${role}`;
+          switch(item.type){
+            case "pdf":
+              btn.onclick = () => openPdf(item.filename);
+              break;
+            case "page":
+              btn.onclick = () => window.location.href = item.path;
+              break;
+            case "external":
+              btn.onclick = () => window.open(item.url, "_blank");
+              break;
+            case "submenu":
+              btn.onclick = () => window.location.href = `/policies.html?role=${role}`;
+              break;
+            default:
+              console.warn("نوع عنصر غير معروف:", item);
+          }
 
           container.appendChild(btn);
         });
-      } catch (err) {
+      } catch(err) {
         console.error(err);
         container.innerHTML = "<p>تعذر تحميل القائمة</p>";
       }
