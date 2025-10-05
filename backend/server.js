@@ -99,15 +99,16 @@ function loadStudentsFromExcel() {
     const subjects = [];
     for (let col = 3; col < row.length; col += 7) {
       const subjectName = rows[0][col] || `مادة ${Math.floor(col/7)+1}`;
-      const headers = rows[1].slice(col, col + 5);
-      const subData = row.slice(col, col + 5);
-      const strengths = row[col + 5] || "";
-      const improvements = row[col + 6] || "";
+      const headers = rows[1].slice(col, col + 5); // 5 أعمدة للبيانات
+      const subData = row.slice(col, col + 5);     // البيانات الفعلية
 
       const subObj = { name: subjectName };
-      headers.forEach((h, i) => subObj[h] = subData[i]);
-      subObj.strengths = strengths;
-      subObj.improvements = improvements;
+      headers.forEach((h, i) => {
+        subObj[h] = subData[i] || "-";            // ربط العنوان بالبيانات
+      });
+
+      subObj.strengths = row[col + 5] || "";      // العمود 6: نقاط القوة
+      subObj.improvements = row[col + 6] || "";  // العمود 7: جوانب التحسين
 
       subjects.push(subObj);
     }
