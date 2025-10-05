@@ -39,4 +39,7 @@ app.get("/api/menu/:role", (req, res) => {
   res.status(400).send("❌ دور غير معروف");
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+// ===================== START SERVER =====================
+app.listen(PORT, () => {
+  console.log(`🚀 Server works on: http://localhost:${PORT}`);
+});
