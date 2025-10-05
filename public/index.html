@@ -65,7 +65,7 @@
 
       if (role === "student") {
         sessionStorage.setItem("role", "student");
-        window.location.href = "student_menu.html";
+        window.location.href = "dashboard.html";
       } else if (role === "staff") {
         staffFields.classList.remove("hidden");
       } else {
@@ -89,7 +89,7 @@
       // تحقق تجريبي (يمكن ربطه لاحقًا بالسيرفر)
       if (username === "admin" && password === "1234") {
         sessionStorage.setItem("role", "staff");
-        window.location.href = "staff_menu.html";
+        window.location.href = "dashboard.html";
       } else {
         msg.textContent = "❌ بيانات الدخول غير صحيحة";
       }
