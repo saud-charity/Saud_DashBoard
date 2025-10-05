@@ -3,22 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تسجيل الدخول - منصة سعود التعليمية</title>
+  <title>تسجيل الدخول - مدرسة الشيخ سعود</title>
   <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
   <header>
-    <h1>نظام الدخول الموحد</h1>
+    <h1>🔐 نظام الدخول الموحّد</h1>
   </header>
 
   <main class="container centered">
-    <h2>تسجيل الدخول</h2>
-
-    <label for="username">اسم المستخدم</label>
-    <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
-
-    <label for="password">كلمة المرور</label>
-    <input type="password" id="password" class="input" placeholder="أدخل كلمة المرور" />
+    <h2>مرحباً بك في مدرسة الشيخ سعود - فرع1</h2>
 
     <label for="role">اختر الدور</label>
     <select id="role" class="input">
@@ -27,8 +21,15 @@
       <option value="staff">🧑‍🏫 موظف</option>
     </select>
 
+    <div id="staffLoginFields" style="display:none">
+      <label for="username">اسم المستخدم</label>
+      <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
+      <label for="password">كلمة المرور</label>
+      <input type="password" id="password" class="input" placeholder="أدخل كلمة المرور" />
+    </div>
+
     <button class="btn" onclick="login()">تسجيل الدخول</button>
-    <p id="loginMessage" style="color: red; margin-top: 10px;"></p>
+    <p id="loginMessage" style="color:red; margin-top:10px;"></p>
   </main>
 
   <footer>
@@ -36,28 +37,34 @@
   </footer>
 
   <script>
-    function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const role = document.getElementById("role").value;
-      const msg = document.getElementById("loginMessage");
+    const roleSelect = document.getElementById("role");
+    const staffFields = document.getElementById("staffLoginFields");
+    roleSelect.addEventListener("change", () => {
+      staffFields.style.display = roleSelect.value === "staff" ? "block" : "none";
+    });
 
+    function login() {
+      const role = roleSelect.value;
+      const msg = document.getElementById("loginMessage");
       msg.textContent = "";
 
-      if (!username || !password || !role) {
-        msg.textContent = "❌ يرجى تعبئة جميع الحقول";
-        return;
-      }
+      if (!role) { msg.textContent = "❌ يرجى اختيار الدور"; return; }
 
-      // محاكاة تحقق بسيط (يمكن ربطه لاحقًا بالسيرفر)
-      if (username === "admin" && password === "1234" && role === "staff") {
-        sessionStorage.setItem("role", "staff");
-        window.location.href = "staff_menu.html";
-      } else if (username === "student" && password === "1234" && role === "student") {
+      if (role === "student") {
         sessionStorage.setItem("role", "student");
-        window.location.href = "student_menu.html";
-      } else {
-        msg.textContent = "❌ بيانات الدخول غير صحيحة";
+        window.location.href = "dashboard.html";
+      } else if (role === "staff") {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        if (!username || !password) { msg.textContent = "❌ يرجى تعبئة جميع الحقول"; return; }
+
+        // محاكاة تحقق (يمكن ربطه بالسيرفر لاحقاً)
+        if (username === "admin" && password === "1234") {
+          sessionStorage.setItem("role", "staff");
+          window.location.href = "dashboard.html";
+        } else {
+          msg.textContent = "❌ بيانات الدخول غير صحيحة";
+        }
       }
     }
   </script>
