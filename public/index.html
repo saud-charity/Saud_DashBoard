@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تسجيل الدخول - مجمع زايد التعليمي</title>
+  <title>تسجيل الدخول - مدرسة الشيخ سعود - فرع1</title>
   <link rel="stylesheet" href="css/main.css" />
   <style>
     footer {
@@ -16,20 +16,22 @@
 </head>
 <body>
   <header>
-    <h1>🔐 نظام الدخول الموحد</h1>
+    <h1>🔐 نظام الدخول الموحّد</h1>
   </header>
 
   <main class="container centered">
-    <h2>مرحباً بك في مجمع زايد التعليمي</h2>
+    <h2>مرحباً بك في مدرسة الشيخ سعود - فرع1</h2>
 
-    <label for="username">اسم المستخدم</label>
-    <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
+    <div id="usernameSection">
+      <label for="username">اسم المستخدم</label>
+      <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
+    </div>
 
     <label for="password">كلمة المرور</label>
     <input type="password" id="password" class="input" placeholder="أدخل كلمة المرور" />
 
     <label for="role">اختر الدور</label>
-    <select id="role" class="input">
+    <select id="role" class="input" onchange="toggleUsername()">
       <option value="">-- اختر الدور --</option>
       <option value="student">👨‍🎓 طالب / ولي الأمر</option>
       <option value="staff">🧑‍🏫 موظف</option>
@@ -44,26 +46,32 @@
   </footer>
 
   <script>
-    // ✅ تحقق بسيط من بيانات الدخول
-    function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
+    // ✅ إخفاء/إظهار اسم المستخدم حسب الدور
+    function toggleUsername() {
       const role = document.getElementById("role").value;
+      const usernameSection = document.getElementById("usernameSection");
+      usernameSection.style.display = (role === "staff") ? "block" : "none";
+    }
+
+    // ✅ تسجيل الدخول
+    function login() {
+      const role = document.getElementById("role").value;
+      const password = document.getElementById("password").value.trim();
+      const username = document.getElementById("username").value.trim();
       const msg = document.getElementById("loginMessage");
 
       msg.textContent = "";
 
-      if (!username || !password || !role) {
-        msg.textContent = "❌ يرجى تعبئة جميع الحقول";
+      if (!role || !password || (role === "staff" && !username)) {
+        msg.textContent = "❌ يرجى تعبئة الحقول المطلوبة";
         return;
       }
 
-      // ✅ محاكاة تحقق (يمكن ربطها لاحقاً بالسيرفر)
       if (role === "staff" && username === "admin" && password === "1234") {
         sessionStorage.setItem("role", "staff");
         window.location.href = "staff_menu.html";
       } 
-      else if (role === "student" && username === "student" && password === "1234") {
+      else if (role === "student" && password === "1234") {
         sessionStorage.setItem("role", "student");
         window.location.href = "student_menu.html";
       } 
@@ -71,6 +79,9 @@
         msg.textContent = "❌ بيانات الدخول غير صحيحة";
       }
     }
+
+    // ✅ إخفاء الحقل افتراضياً عند التحميل
+    document.addEventListener("DOMContentLoaded", toggleUsername);
   </script>
 </body>
 </html>
