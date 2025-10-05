@@ -31,9 +31,9 @@
     <h2>مرحباً بك في مدرسة الشيخ سعود - فرع1</h2>
 
     <!-- اختيار الدور -->
-    <label for="role">اختر الدور</label>
+    <label for="role">خيارات الدخول</label>
     <select id="role" class="input" onchange="handleRoleChange()">
-      <option value="">-- اختر الدور --</option>
+      <option value="">-- خيارات الدخول --</option>
       <option value="student">👨‍🎓 طالب / ولي الأمر</option>
       <option value="staff">🧑‍🏫 معلم / إداري</option>
     </select>
@@ -73,7 +73,7 @@
       }
     }
 
-    // ✅ تسجيل دخول الموظف فقط
+    // ✅ تسجيل دخول المعلم / الإداري فقط
     function login() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
