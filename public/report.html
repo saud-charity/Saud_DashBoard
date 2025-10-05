@@ -1,3 +1,4 @@
+<!-- public/report.html -->
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -7,7 +8,22 @@
 <link rel="stylesheet" href="css/main.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-/* نفس التنسيقات السابقة */
+  body { font-family: "Tahoma", Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 0; text-align: center; }
+  header { background: #2c3e50; color: #fff; padding: 15px; font-size: 22px; }
+  .container { margin: 30px auto; max-width: 950px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: right; }
+  .search-box { margin-bottom: 20px; text-align: center; }
+  input[type="text"] { padding: 8px; font-size: 16px; width: 250px; border: 1px solid #ccc; border-radius: 5px; }
+  button { padding: 9px 15px; font-size: 16px; background: #2980b9; border: none; color: #fff; border-radius: 5px; cursor: pointer; margin: 5px; }
+  button:hover { background: #3498db; }
+  .student-info { margin: 15px 0; font-size: 18px; color: #2c3e50; text-align: center; }
+  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+  table th, table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+  table th { background: #34495e; color: #fff; }
+  .error { color: red; margin-top: 15px; font-weight: bold; }
+  .notes-box { display: flex; justify-content: space-between; margin-top: 10px; padding: 10px; background: #fdf6e3; border: 1px solid #eed; border-radius: 8px; }
+  .notes-box .strengths, .notes-box .improvements { width: 48%; }
+  .notes-box h3 { margin-top: 0; color: #b58900; text-align: center; }
+  .notes-box ul { padding-right: 20px; text-align: right; }
 </style>
 </head>
 <body>
@@ -16,8 +32,8 @@
   <div class="search-box">
     <input type="text" id="studentId" placeholder="أدخل رقم الهوية">
     <button onclick="loadReport()">عرض التقرير</button>
-    <button id="printBtn" onclick="window.print()">🖨️ طباعة</button>
-    <button id="downloadBtn">💾 تحميل PDF</button>
+    <button id="printBtn" onclick="window.print()" style="display:none">🖨️ طباعة</button>
+    <button id="downloadBtn" style="display:none">💾 تحميل PDF</button>
   </div>
   <div id="error" class="error"></div>
   <div id="report"></div>
@@ -42,7 +58,7 @@ async function loadReport() {
   }
 
   try {
-    const res = await fetch(`/api/report/${id}`);
+    const res = await fetch(`/api/report/${encodeURIComponent(id)}`);
     if (!res.ok) {
       errorDiv.textContent = res.status === 404 ? "❌ الطالب غير موجود." : "❌ خطأ في تحميل التقرير.";
       return;
@@ -50,27 +66,34 @@ async function loadReport() {
 
     const data = await res.json();
 
+    // بناء HTML للتقرير
     let html = `<div class="student-info">
                   <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
                   <p><strong>الشعبة:</strong> ${data.student["الشعبة"]}</p>
                 </div>`;
 
     data.subjects.forEach(sub => {
+      // جدول العناوين: نأخذ كل خواص الكائن عدا name, strengths, improvements
+      const keys = Object.keys(sub).filter(k => !["name","strengths","improvements"].includes(k));
+
       html += `<h3 style="text-align:center; margin-top:20px;">${sub.name}</h3>`;
       html += `<table><thead><tr>`;
-      Object.keys(sub).filter(k=>!["name","strengths","improvements"].includes(k)).forEach(h=>{
-        html += `<th>${h}</th>`;
-      });
+      keys.forEach(k => html += `<th>${k}</th>`);
       html += `</tr></thead><tbody><tr>`;
-      Object.keys(sub).filter(k=>!["name","strengths","improvements"].includes(k)).forEach(h=>{
-        html += `<td>${sub[h]}</td>`;
-      });
+      keys.forEach(k => html += `<td>${sub[k] !== undefined ? sub[k] : "-"}</td>`);
       html += `</tr></tbody></table>`;
 
-      if(sub.strengths || sub.improvements){
+      // ملاحظات
+      const s = sub.strengths ? String(sub.strengths).trim() : "";
+      const i = sub.improvements ? String(sub.improvements).trim() : "";
+      if (s || i) {
+        // إذا كانت الملاحظات تحتوي على فواصل أسطر، نفصلها لعرض كل سطر كبند
+        const strengthsList = s ? s.split(/\r?\n/).filter(Boolean) : [];
+        const improvementsList = i ? i.split(/\r?\n/).filter(Boolean) : [];
+
         html += `<div class="notes-box">
-                  <div class="strengths"><h3>🟢 نقاط القوة</h3><ul>${sub.strengths ? `<li>${sub.strengths}</li>` : ""}</ul></div>
-                  <div class="improvements"><h3>🔴 جوانب التحسين</h3><ul>${sub.improvements ? `<li>${sub.improvements}</li>` : ""}</ul></div>
+                  <div class="strengths"><h3>🟢 نقاط القوة</h3>${strengthsList.length ? "<ul>" + strengthsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
+                  <div class="improvements"><h3>🔴 جوانب التحسين</h3>${improvementsList.length ? "<ul>" + improvementsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
                 </div>`;
       }
     });
@@ -79,16 +102,20 @@ async function loadReport() {
     printBtn.style.display = "inline-block";
     downloadBtn.style.display = "inline-block";
 
+    // تحميل PDF باستخدام jsPDF (لو أردت تحسين الضغط/الصفحات لاحقاً يمكن تبديله بـ html2pdf)
     downloadBtn.onclick = () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
       doc.html(reportDiv, {
-        callback: function(pdf){ pdf.save(`${data.student["الاسم"]}_report.pdf`); },
-        x:10, y:10, width:570, windowWidth: reportDiv.scrollWidth
+        callback: function(pdf){
+          const nameSafe = (data.student["الاسم"] || "report").replace(/\s+/g,"_");
+          pdf.save(`${nameSafe}_report.pdf`);
+        },
+        x:10, y:10, width: 570, windowWidth: reportDiv.scrollWidth
       });
     };
 
-  } catch(err){
+  } catch (err) {
     console.error(err);
     errorDiv.textContent = "❌ حدث خطأ غير متوقع.";
   }

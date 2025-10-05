@@ -1,3 +1,4 @@
+// backend/server.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -76,49 +77,91 @@ app.get("/api/policies/:role", (req, res) => {
 // ===================== STUDENT REPORT =====================
 const EXCEL_PATH = path.join(__dirname, "data", "students.xlsx");
 
+/**
+ * قراءة الـ Excel وبناء خريطة الطلاب.
+ * يفترض:
+ *  - الصف 0: أسماء المواد (تبدأ المادة من العمود index 3)
+ *  - الصف 1: عناوين الأعمدة لكل مادة (عدد حقول كل مادة = 5) — هذه الحقول تُقرأ ديناميكياً
+ *  - من الصف 2 فصاعداً: بيانات الطلاب
+ *  - لكل مادة: 5 أعمدة بيانات + عمودين ملاحظات (strengths, improvements) => مجموعة 7 أعمدة
+ */
 function loadStudentsFromExcel() {
-  if (!fs.existsSync(EXCEL_PATH)) return {};
+  if (!fs.existsSync(EXCEL_PATH)) {
+    console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH);
+    return {};
+  }
 
   const workbook = xlsx.readFile(EXCEL_PATH);
-  const sheetName = workbook.SheetNames[0];
-  const sheet = workbook.Sheets[sheetName];
-  const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "-" });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" });
 
-  if (rows.length < 3) return {};
+  // تأكد من أن هناك على الأقل 3 صفوف (أسماء المواد، عناوين الأعمدة، صفوف طلاب)
+  if (!rows || rows.length < 3) {
+    console.warn("⚠️ بنية ملف Excel غير كافية (نحتاج 3 صفوف على الأقل).");
+    return {};
+  }
+
+  const headerRow = rows[0];   // أسماء المواد
+  const titlesRow = rows[1];   // رؤوس الأعمدة لكل مادة
+  const dataRows = rows.slice(2);
+
+  const totalCols = Math.max(headerRow.length, titlesRow.length);
 
   const students = {};
-  const dataRows = rows.slice(2); // تجاهل الصفين الأول والثاني
 
   dataRows.forEach((row) => {
-    let studentId = String(row[0] || "").trim();
-    if (!studentId) return;
+    const studentIdRaw = row[0];
+    if (studentIdRaw === undefined || studentIdRaw === null || String(studentIdRaw).trim() === "") return;
+    const studentId = String(studentIdRaw).replace(/\s/g, "").trim();
 
-    const name = String(row[1] || "-").trim();
-    const className = String(row[2] || "-").trim();
+    const studentName = String(row[1] || "-").trim();
+    const studentClass = String(row[2] || "-").trim();
 
     const subjects = [];
-    for (let col = 3; col < row.length; col += 7) {
-      const subjectName = rows[0][col] || `مادة ${Math.floor(col/7)+1}`;
-      const headers = rows[1].slice(col, col + 5);
-      const subData = row.slice(col, col + 5);
 
+    // نمر من العمود 3 (index=3) لأن 0..2 محفوظة للهوية والاسم والشعبة
+    for (let col = 3; col < totalCols; col += 7) {
+      const subjectName = (headerRow[col] || "").toString().trim();
+      if (!subjectName) {
+        // إذا لم يكن هناك اسم مادة عند هذا الموضع، نتخطاه (قد تكون أعمدة فارغة)
+        continue;
+      }
+
+      // القيم العناوين من الصف الثاني (titlesRow)
+      const fieldTitles = titlesRow.slice(col, col + 5).map(t => (t || "").toString().trim());
+
+      // القيم الفعلية للطالب بالنسبة لهذه المادة
+      const values = [];
+      for (let i = 0; i < 5; i++) {
+        values.push(row[col + i] !== undefined ? row[col + i] : "");
+      }
+
+      // الباني النهائي للكائن المادة
       const subObj = { name: subjectName };
-      headers.forEach((h, i) => {
-        subObj[h] = subData[i] || "-";
-      });
 
-      subObj.strengths = row[col + 5] || "";
-      subObj.improvements = row[col + 6] || "";
+      // أضف الحقول الديناميكية (العنوان: القيمة)
+      for (let i = 0; i < fieldTitles.length; i++) {
+        const title = fieldTitles[i] || `حقل ${i+1}`;
+        subObj[title] = values[i] !== undefined && values[i] !== "" ? values[i] : "-";
+      }
+
+      // ملاحظات: نقاط القوة و جوانب التحسين (أعمدة بعد الـ5 أعمدة)
+      const strengths = row[col + 5] !== undefined ? row[col + 5] : "";
+      const improvements = row[col + 6] !== undefined ? row[col + 6] : "";
+
+      subObj.strengths = strengths || "";
+      subObj.improvements = improvements || "";
 
       subjects.push(subObj);
     }
 
     students[studentId] = {
-      student: { "الاسم": name, "الشعبة": className },
+      student: { "الاسم": studentName, "الشعبة": studentClass },
       subjects
     };
   });
 
+  console.log(`✅ Loaded ${Object.keys(students).length} student reports from Excel.`);
   return students;
 }
 
@@ -130,9 +173,12 @@ app.post("/api/reload-students", (req, res) => {
 });
 
 app.get("/api/report/:id", (req, res) => {
-  const id = String(req.params.id).replace(/\s/g, "").trim();
+  const id = String(req.params.id || "").replace(/\s/g, "").trim();
   const report = studentReports[id];
-  if (!report) return res.status(404).send("❌ الطالب غير موجود");
+  if (!report) {
+    console.warn(`⚠️ رقم الهوية ${id} غير موجود`);
+    return res.status(404).send("❌ الطالب غير موجود");
+  }
   return res.json(report);
 });
 
