@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة التحكم - مدرسة الشيخ سعود</title>
+  <title>لوحة التحكم - مدرسة الشيخ سعود - فرع1</title>
   <link rel="stylesheet" href="css/main.css" />
   <style>
     .menu-container {
@@ -49,7 +49,7 @@
   </main>
 
   <footer>
-    <p>© جميع الحقوق محفوظة - مدرسة الشيخ سعود</p>
+    <p>© جميع الحقوق محفوظة - مدرسة الشيخ سعود - فرع1</p>
   </footer>
 
   <script>
@@ -58,7 +58,7 @@
       if (!role) { window.location.href = "login.html"; return; }
 
       document.getElementById("pageTitle").textContent =
-        role === "staff" ? "🧑‍🏫 لوحة الموظف" : "🎓 لوحة الطالب / ولي الأمر";
+        role === "staff" ? "🧑‍🏫 لوحة المعلم/ الإداري" : "🎓 لوحة الطالب / ولي الأمر";
 
       loadMenu(role);
     });
