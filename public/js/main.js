@@ -67,8 +67,8 @@ function selectRole(role) {
   sessionStorage.setItem("role", role);
 
   const rolePages = {
-    staff: "staff_login.html",
-    student: "student_menu.html"
+    staff: "dashboard.html",
+    student: "dashboard.html"
   };
 
   const page = rolePages[role];
