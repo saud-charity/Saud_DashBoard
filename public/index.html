@@ -13,9 +13,12 @@
       color: #777;
     }
 
-    #loginSection {
+    .hidden {
       display: none;
-      margin-top: 20px;
+    }
+
+    select, input, button {
+      font-size: 16px;
     }
   </style>
 </head>
@@ -27,15 +30,16 @@
   <main class="container centered">
     <h2>مرحباً بك في مدرسة الشيخ سعود - فرع1</h2>
 
+    <!-- اختيار الدور -->
     <label for="role">اختر الدور</label>
-    <select id="role" class="input" onchange="handleRoleSelection()">
+    <select id="role" class="input" onchange="handleRoleChange()">
       <option value="">-- اختر الدور --</option>
       <option value="student">👨‍🎓 طالب / ولي الأمر</option>
       <option value="staff">🧑‍🏫 موظف</option>
     </select>
 
-    <!-- قسم تسجيل الدخول للموظف -->
-    <div id="loginSection">
+    <!-- حقول الموظف -->
+    <div id="staffFields" class="hidden">
       <label for="username">اسم المستخدم</label>
       <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
 
@@ -53,27 +57,23 @@
 
   <script>
     // ✅ التعامل مع اختيار الدور
-    function handleRoleSelection() {
+    function handleRoleChange() {
       const role = document.getElementById("role").value;
-      const loginSection = document.getElementById("loginSection");
+      const staffFields = document.getElementById("staffFields");
       const msg = document.getElementById("loginMessage");
       msg.textContent = "";
 
       if (role === "student") {
-        // 🔹 انتقال مباشر لصفحة الطالب
         sessionStorage.setItem("role", "student");
         window.location.href = "student_menu.html";
-      } 
-      else if (role === "staff") {
-        // 🔹 عرض نموذج تسجيل الدخول للموظف
-        loginSection.style.display = "block";
-      } 
-      else {
-        loginSection.style.display = "none";
+      } else if (role === "staff") {
+        staffFields.classList.remove("hidden");
+      } else {
+        staffFields.classList.add("hidden");
       }
     }
 
-    // ✅ التحقق من بيانات دخول الموظف
+    // ✅ تسجيل دخول الموظف فقط
     function login() {
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value.trim();
@@ -86,7 +86,7 @@
         return;
       }
 
-      // 🔹 تحقق تجريبي
+      // تحقق تجريبي (يمكن ربطه لاحقًا بالسيرفر)
       if (username === "admin" && password === "1234") {
         sessionStorage.setItem("role", "staff");
         window.location.href = "staff_menu.html";
