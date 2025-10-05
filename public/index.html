@@ -12,6 +12,11 @@
       font-size: 0.9em;
       color: #777;
     }
+
+    #loginSection {
+      display: none;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -22,23 +27,24 @@
   <main class="container centered">
     <h2>مرحباً بك في مدرسة الشيخ سعود - فرع1</h2>
 
-    <div id="usernameSection">
-      <label for="username">اسم المستخدم</label>
-      <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
-    </div>
-
-    <label for="password">كلمة المرور</label>
-    <input type="password" id="password" class="input" placeholder="أدخل كلمة المرور" />
-
     <label for="role">اختر الدور</label>
-    <select id="role" class="input" onchange="toggleUsername()">
+    <select id="role" class="input" onchange="handleRoleSelection()">
       <option value="">-- اختر الدور --</option>
       <option value="student">👨‍🎓 طالب / ولي الأمر</option>
       <option value="staff">🧑‍🏫 موظف</option>
     </select>
 
-    <button class="btn" onclick="login()">تسجيل الدخول</button>
-    <p id="loginMessage" style="color: red; margin-top: 10px;"></p>
+    <!-- قسم تسجيل الدخول للموظف -->
+    <div id="loginSection">
+      <label for="username">اسم المستخدم</label>
+      <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
+
+      <label for="password">كلمة المرور</label>
+      <input type="password" id="password" class="input" placeholder="أدخل كلمة المرور" />
+
+      <button class="btn" onclick="login()">تسجيل الدخول</button>
+      <p id="loginMessage" style="color: red; margin-top: 10px;"></p>
+    </div>
   </main>
 
   <footer>
@@ -46,42 +52,48 @@
   </footer>
 
   <script>
-    // ✅ إخفاء/إظهار اسم المستخدم حسب الدور
-    function toggleUsername() {
+    // ✅ التعامل مع اختيار الدور
+    function handleRoleSelection() {
       const role = document.getElementById("role").value;
-      const usernameSection = document.getElementById("usernameSection");
-      usernameSection.style.display = (role === "staff") ? "block" : "none";
+      const loginSection = document.getElementById("loginSection");
+      const msg = document.getElementById("loginMessage");
+      msg.textContent = "";
+
+      if (role === "student") {
+        // 🔹 انتقال مباشر لصفحة الطالب
+        sessionStorage.setItem("role", "student");
+        window.location.href = "student_menu.html";
+      } 
+      else if (role === "staff") {
+        // 🔹 عرض نموذج تسجيل الدخول للموظف
+        loginSection.style.display = "block";
+      } 
+      else {
+        loginSection.style.display = "none";
+      }
     }
 
-    // ✅ تسجيل الدخول
+    // ✅ التحقق من بيانات دخول الموظف
     function login() {
-      const role = document.getElementById("role").value;
-      const password = document.getElementById("password").value.trim();
       const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
       const msg = document.getElementById("loginMessage");
 
       msg.textContent = "";
 
-      if (!role || !password || (role === "staff" && !username)) {
-        msg.textContent = "❌ يرجى تعبئة الحقول المطلوبة";
+      if (!username || !password) {
+        msg.textContent = "❌ يرجى إدخال اسم المستخدم وكلمة المرور";
         return;
       }
 
-      if (role === "staff" && username === "admin" && password === "1234") {
+      // 🔹 تحقق تجريبي
+      if (username === "admin" && password === "1234") {
         sessionStorage.setItem("role", "staff");
         window.location.href = "staff_menu.html";
-      } 
-      else if (role === "student" && password === "1234") {
-        sessionStorage.setItem("role", "student");
-        window.location.href = "student_menu.html";
-      } 
-      else {
+      } else {
         msg.textContent = "❌ بيانات الدخول غير صحيحة";
       }
     }
-
-    // ✅ إخفاء الحقل افتراضياً عند التحميل
-    document.addEventListener("DOMContentLoaded", toggleUsername);
   </script>
 </body>
 </html>
