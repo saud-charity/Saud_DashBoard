@@ -40,6 +40,33 @@ app.get("/api/menu/:role", (req, res) => {
   res.status(400).send("❌ دور غير معروف");
 });
 
+const studentPolicies = [
+  { title: "اللائحة السلوكية", filename: "behavior_policy.pdf" },
+  { title: "سياسة التقييم", filename: "assessment_policy.pdf" },
+  { title: "سياسة المغادرة", filename: "leave_policy.pdf" },
+  { title: "سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
+  { title: "سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
+  { title: "سياسة الحضور والغياب", filename: "attendance_policy.pdf" }
+];
+
+const staffPolicies = [
+  { title: "اللائحة السلوكية", filename: "behavior_policy.pdf" },
+  { title: "سياسة التقييم", filename: "assessment_policy.pdf" },
+  { title: "سياسة المغادرة", filename: "leave_policy.pdf" },
+  { title: "سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
+  { title: "سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
+  { title: "سياسة الحضور والانصراف", filename: "attendance_policy.pdf" },
+  { title: "إطار معايير الرقابة والتقييم المدرسية", filename: "framework.pdf" },
+  { title: "السياسات المهنية والأخلاقية", filename: "ethics_charter_policy.pdf" }
+];
+
+app.get("/api/policies/:role", (req, res) => {
+  const { role } = req.params;
+  if (role === "student") return res.json(studentPolicies);
+  if (role === "staff") return res.json(staffPolicies);
+  return res.status(400).send("❌ دور غير معروف");
+});
+
 // ===================== START SERVER =====================
 app.listen(PORT, () => {
   console.log(`🚀 Server works on: http://localhost:${PORT}`);
