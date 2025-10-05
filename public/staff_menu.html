@@ -2,26 +2,30 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>قائمة الموظف</title>
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <header>📋 قائمة الموظف</header>
-  <div class="container">
-    <div id="menuContainer"></div>
-  </div>
+  <header>
+    <h1>بوابة الموظف</h1>
+  </header>
 
-  <script src="js/main.js"></script>
+  <main class="container">
+    <h2>اختر من القائمة</h2>
+
+    <!-- ✅ هنا تظهر خيارات الموظف -->
+    <div id="menuContainer" class="menu-container"></div>
+  </main>
+
+  <footer>
+    <p>© جميع الحقوق محفوظة - مدرسة الشيخ سعود - فرع1</p>
+  </footer>
+
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const role = sessionStorage.getItem("role");
-      if (!role) {
-        alert("يرجى تسجيل الدخول أولاً!");
-        location.href = "staff_login.html";
-        return;
-      }
-      loadMenu(role);
-    });
+    // نحفظ الدور في الذاكرة قبل تحميل القائمة
+    sessionStorage.setItem("role", "staff");
   </script>
+  <script src="js/main.js"></script>
 </body>
 </html>
