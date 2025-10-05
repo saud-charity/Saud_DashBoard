@@ -6,36 +6,25 @@
   <title>لوحة التحكم - مدرسة الشيخ سعود - فرع1</title>
   <link rel="stylesheet" href="css/main.css" />
   <style>
-    .menu-container {
-      max-width: 600px;
-      margin: 20px auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .menu-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .menu-btn:hover {
-      background: #2980b9;
-    }
-
-    #pdfViewer {
-      width: 90%;
-      height: 600px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      margin: 20px auto;
+    /* Toolbar أسفل الأزرار */
+    .pdf-toolbar {
       display: none;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px auto;
     }
+    .pdf-toolbar button {
+      padding: 8px 14px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+    .pdf-toolbar button.download { background: #2980b9; }
+    .pdf-toolbar button.print { background: #f39c12; }
+    .pdf-toolbar button.close { background: #e74c3c; }
+    .pdf-toolbar button:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
@@ -45,6 +34,13 @@
 
   <main class="container">
     <div id="menuContainer" class="menu-container"></div>
+
+    <div class="pdf-toolbar" id="pdfToolbar">
+      <button class="download" onclick="downloadPdf()">تحميل</button>
+      <button class="print" onclick="printPdf()">طباعة</button>
+      <button class="close" onclick="closePdf()">إغلاق</button>
+    </div>
+
     <iframe id="pdfViewer"></iframe>
   </main>
 
@@ -53,12 +49,14 @@
   </footer>
 
   <script>
+    let currentPdfFile = null;
+
     document.addEventListener("DOMContentLoaded", () => {
       const role = sessionStorage.getItem("role");
       if (!role) { window.location.href = "login.html"; return; }
 
       document.getElementById("pageTitle").textContent =
-        role === "staff" ? "🧑‍🏫 لوحة المعلم/ الإداري" : "🎓 لوحة الطالب / ولي الأمر";
+        role === "staff" ? "🧑‍🏫 لوحة الموظف" : "🎓 لوحة الطالب / ولي الأمر";
 
       loadMenu(role);
     });
@@ -108,10 +106,42 @@
     }
 
     function openPdf(filename) {
+      if(!filename) return;
+      currentPdfFile = filename;
       const viewer = document.getElementById("pdfViewer");
       viewer.src = `/pdfs/${filename}`;
       viewer.style.display = "block";
+
+      const toolbar = document.getElementById("pdfToolbar");
+      toolbar.style.display = "flex";
+
       viewer.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function downloadPdf(){
+      if(!currentPdfFile) return;
+      const link = document.createElement("a");
+      link.href = `/pdfs/${currentPdfFile}`;
+      link.download = currentPdfFile;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printPdf(){
+      if(!currentPdfFile) return;
+      const printWindow = window.open(
+        `/pdfs/${currentPdfFile}`,
+        "_blank"
+      );
+      if(printWindow) printWindow.focus();
+    }
+
+    function closePdf(){
+      document.getElementById("pdfViewer").style.display = "none";
+      document.getElementById("pdfToolbar").style.display = "none";
+      document.getElementById("pdfViewer").src = "";
+      currentPdfFile = null;
     }
   </script>
 </body>
