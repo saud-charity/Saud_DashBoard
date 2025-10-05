@@ -56,7 +56,7 @@
       if (!role) { window.location.href = "login.html"; return; }
 
       document.getElementById("pageTitle").textContent =
-        role === "staff" ? "🧑‍🏫 لوحة الموظف" : "🎓 لوحة الطالب / ولي الأمر";
+        role === "staff" ? "🧑‍🏫 لوحة المعلم / الإداري" : "🎓 لوحة الطالب / ولي الأمر";
 
       loadMenu(role);
     });

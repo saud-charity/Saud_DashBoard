@@ -2,212 +2,105 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تقرير طالب</title>
+  <link rel="stylesheet" href="css/main.css" />
   <style>
-    body {
-      font-family: "Tahoma", Arial, sans-serif;
-      background: #f5f6fa;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background: #2c3e50;
-      color: #fff;
-      padding: 15px;
-      font-size: 22px;
-    }
-    .container {
-      margin: 30px auto;
-      max-width: 900px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: right;
-    }
-    .search-box {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    input[type="text"] {
-      padding: 8px;
-      font-size: 16px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      padding: 9px 15px;
-      font-size: 16px;
-      background: #2980b9;
-      border: none;
-      color: #fff;
-      border-radius: 5px;
-      cursor: pointer;
-      margin: 5px;
-    }
-    button:hover {
-      background: #3498db;
-    }
-    .student-info {
-      margin: 15px 0;
-      font-size: 18px;
-      color: #2c3e50;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    table th, table td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-    table th {
-      background: #34495e;
-      color: #fff;
-    }
-    .error {
-      color: red;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    #printBtn {
-      display: none;
-      background: #27ae60;
-    }
-    #printBtn:hover {
-      background: #2ecc71;
-    }
-    .notes-box {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      padding: 15px;
-      background: #fdf6e3;
-      border: 1px solid #eed;
-      border-radius: 8px;
-    }
-    .notes-box .strengths, .notes-box .improvements {
-      width: 48%;
-    }
-    .notes-box h3 {
-      margin-top: 0;
-      color: #b58900;
-      text-align: center;
-    }
-    .notes-box ul {
-      padding-right: 20px;
-    }
+    body { font-family: "Tahoma", Arial, sans-serif; background: #f5f6fa; margin:0; padding:0; text-align:center; }
+    header { background: #2c3e50; color: #fff; padding: 15px; font-size: 22px; }
+    .container { margin: 30px auto; max-width: 1000px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align:right; }
+    .search-box { margin-bottom: 20px; text-align:center; }
+    input[type="text"] { padding: 8px; font-size:16px; width: 250px; border:1px solid #ccc; border-radius:5px; }
+    button { padding:9px 15px; font-size:16px; background:#2980b9; border:none; color:#fff; border-radius:5px; cursor:pointer; margin:5px; }
+    button:hover { background:#3498db; }
+    .student-info { margin:15px 0; font-size:18px; color:#2c3e50; }
+    table { width:100%; border-collapse:collapse; margin-top:15px; }
+    table th, table td { border:1px solid #ddd; padding:8px; text-align:center; }
+    table th { background:#34495e; color:#fff; }
+    .notes-box { display:flex; justify-content:space-between; margin-top:20px; padding:15px; background:#fdf6e3; border:1px solid #eed; border-radius:8px; }
+    .notes-box .strengths, .notes-box .improvements { width:48%; }
+    .notes-box h3 { margin-top:0; color:#b58900; text-align:center; }
+    .notes-box ul { padding-right:20px; }
   </style>
 </head>
 <body>
   <header>📑 تقرير طالب</header>
   <div class="container">
     <div class="search-box">
-      <input type="text" id="studentId" placeholder="أدخل رقم الهوية">
+      <input type="text" id="studentId" placeholder="أدخل رقم هوية الطالب">
       <button onclick="loadReport()">عرض التقرير</button>
       <button id="printBtn" onclick="window.print()">🖨️ طباعة</button>
+      <button id="downloadBtn">⬇️ تنزيل PDF</button>
     </div>
-    <div id="error" class="error"></div>
+    <div id="error" style="color:red;font-weight:bold;"></div>
     <div id="report"></div>
   </div>
 
+  <!-- مكتبات XLSX و html2pdf -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <script>
-    async function loadReport() {
-      const id = document.getElementById("studentId").value.trim();
-      const reportDiv = document.getElementById("report");
-      const errorDiv = document.getElementById("error");
-      const printBtn = document.getElementById("printBtn");
-      reportDiv.innerHTML = "";
-      errorDiv.textContent = "";
-      printBtn.style.display = "none";
+  async function loadReport() {
+    const id = document.getElementById("studentId").value.trim();
+    const reportDiv = document.getElementById("report");
+    const errorDiv = document.getElementById("error");
+    const printBtn = document.getElementById("printBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    reportDiv.innerHTML = "";
+    errorDiv.textContent = "";
+    printBtn.style.display = "none";
+    downloadBtn.style.display = "none";
 
-      if (!id) {
-        errorDiv.textContent = "❌ فضلاً أدخل رقم هوية الطالب.";
-        return;
+    if(!id){ errorDiv.textContent = "❌ فضلاً أدخل رقم هوية الطالب."; return; }
+
+    try {
+      const resp = await fetch('data/students.xlsx');
+      const arrayBuffer = await resp.arrayBuffer();
+      const workbook = XLSX.read(arrayBuffer, {type:'array'});
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(worksheet, {header:1});
+      
+      // البحث عن الصف المناسب حسب رقم الهوية
+      const studentRow = json.find(r => r[0] && r[0].toString() === id);
+      if(!studentRow){ errorDiv.textContent="❌ الطالب غير موجود."; return; }
+
+      // معلومات الطالب
+      const studentName = studentRow[1] || "-";
+      const studentClass = studentRow[2] || "-";
+      reportDiv.innerHTML = `<div class="student-info"><p><strong>الاسم:</strong> ${studentName}</p><p><strong>الشعبة:</strong> ${studentClass}</p></div>`;
+
+      // بناء الجداول لكل مادة
+      let col = 3; // بداية بيانات المادة الرابعة (المواد تبدأ من العمود الرابع)
+      while(col < studentRow.length){
+        const subjectName = json[0][col] || "مادة غير محددة"; // الصف الأول اسم المادة
+        const headers = json[1].slice(col, col+5); // الصف الثاني رؤوس الأعمدة لكل مادة
+        const values = studentRow.slice(col, col+5);
+        const strength = studentRow[col+5] || "-";
+        const improvement = studentRow[col+6] || "-";
+
+        let html = `<h3>${subjectName}</h3><table><thead><tr>${headers.map(h=>`<th>${h||"-"}</th>`).join("")}</tr></thead><tbody><tr>${values.map(v=>`<td>${v||"-"}</td>`).join("")}</tr></tbody></table>`;
+        html += `<div class="notes-box"><div class="strengths"><h3>🟢 نقاط القوة</h3><p>${strength}</p></div><div class="improvements"><h3>🔴 جوانب التحسين</h3><p>${improvement}</p></div></div>`;
+
+        reportDiv.innerHTML += html;
+        col += 7; // الانتقال للمادة التالية (5 أعمدة + عمودين الملاحظات)
       }
 
-      try {
-        const res = await fetch(`/api/report/${id}`);
-        if (!res.ok) {
-          if (res.status === 404) {
-            errorDiv.textContent = "❌ الطالب غير موجود.";
-          } else {
-            errorDiv.textContent = "❌ خطأ في تحميل التقرير.";
-          }
-          return;
-        }
+      printBtn.style.display = "inline-block";
+      downloadBtn.style.display = "inline-block";
 
-        const data = await res.json();
+      // تنزيل PDF
+      downloadBtn.onclick = () => {
+        const element = reportDiv;
+        html2pdf().set({filename: studentName+"_report.pdf", html2canvas:{scale:2}}).from(element).save();
+      };
 
-        // بيانات الطالب
-        let html = `
-          <div class="student-info">
-            <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
-            <p><strong>الشعبة:</strong> ${data.student["الشعبة"]}</p>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>المادة</th>
-                <th>الاختبارات التكوينية</th>
-                <th>استماع وتحدث</th>
-                <th>قراءة</th>
-                <th>كتابة</th>
-                <th>السلوك</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
-
-        const strengths = [];
-        const improvements = [];
-
-        data.subjects.forEach(sub => {
-          html += `
-            <tr>
-              <td>${sub.name}</td>
-              <td>${sub.formative}</td>
-              <td>${sub.participation}</td>
-              <td>${sub.task}</td>
-              <td>${sub.commitment}</td>
-              <td>${sub.note || "-"}</td>
-            </tr>
-          `;
-
-          // تقسيم الملاحظات
-          if (sub.note && sub.note.includes("قوة")) strengths.push(`${sub.name}: ${sub.note}`);
-          else if (sub.note && sub.note.includes("تحسين")) improvements.push(`${sub.name}: ${sub.note}`);
-        });
-
-        html += "</tbody></table>";
-
-        if (strengths.length > 0 || improvements.length > 0) {
-          html += `
-            <div class="notes-box">
-              <div class="strengths">
-                <h3>🟢 نقاط القوة</h3>
-                <ul>${strengths.map(s => `<li>${s}</li>`).join("")}</ul>
-              </div>
-              <div class="improvements">
-                <h3>🔴 جوانب التحسين</h3>
-                <ul>${improvements.map(i => `<li>${i}</li>`).join("")}</ul>
-              </div>
-            </div>
-          `;
-        }
-
-        reportDiv.innerHTML = html;
-        printBtn.style.display = "inline-block";
-
-      } catch (err) {
-        console.error("Error loading report:", err);
-        errorDiv.textContent = "❌ حدث خطأ غير متوقع.";
-      }
+    } catch(err){
+      console.error(err);
+      errorDiv.textContent="❌ حدث خطأ غير متوقع.";
     }
+  }
   </script>
 </body>
 </html>
