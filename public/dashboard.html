@@ -152,8 +152,8 @@ function handleMenuClick(item) {
 
 // ✅ عرض ملف PDF داخل PDF.js (يعمل على الهاتف والكمبيوتر)
 function openPdf(filename) {
-  const viewUrl = `/api/pdfs/${filename}`;
-  const downloadUrl = `/api/pdfs/download/${filename}`;
+  const viewUrl = `/pdfs/${filename}`;
+  const downloadUrl = `/pdfs/${filename}`;
 
   // استخدام PDF.js للعرض
   pdfViewer.src = `/pdfjs/web/viewer.html?file=${encodeURIComponent(viewUrl)}`;
