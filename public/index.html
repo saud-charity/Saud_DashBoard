@@ -1,99 +1,82 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>تسجيل الدخول - مدرسة الشيخ سعود - فرع1</title>
-  <link rel="stylesheet" href="css/main.css" />
-  <style>
-    footer {
-      text-align: center;
-      padding: 15px;
-      font-size: 0.9em;
-      color: #777;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    select, input, button {
-      font-size: 16px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تسجيل الدخول - مدرسة الشيخ سعود - فرع1</title>
+<style>
+body { font-family: "Tahoma", Arial, sans-serif; text-align: center; padding: 50px; background: #f4f6f8; }
+h1 { margin-bottom: 30px; color: #333; }
+select, input, button { font-size: 16px; margin: 5px; }
+button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; background: #3498db; color: #fff; transition: 0.2s; }
+button:hover { background: #217dbb; transform: translateY(-2px); }
+.hidden { display: none; }
+footer { text-align: center; padding: 15px; font-size: 0.9em; color: #777; margin-top: 50px; }
+</style>
 </head>
 <body>
-  <header>
-    <h1>🔐 نظام الدخول الموحّد</h1>
-  </header>
 
-  <main class="container centered">
-    <h2>مرحباً بك في مدرسة الشيخ سعود - فرع1</h2>
+<h1>🔐 نظام الدخول الموحّد</h1>
+<h2>مرحباً بك في مدرسة الشيخ سعود - فرع1</h2>
 
-    <!-- اختيار الدور -->
-    <label for="role">خيارات الدخول</label>
-    <select id="role" class="input" onchange="handleRoleChange()">
-      <option value="">-- خيارات الدخول --</option>
-      <option value="student">👨‍🎓 طالب / ولي الأمر</option>
-      <option value="staff">🧑‍🏫 معلم / إداري</option>
-    </select>
+<label for="role">خيارات الدخول</label>
+<select id="role" onchange="handleRoleChange()">
+  <option value="">-- اختر الدور --</option>
+  <option value="student">👨‍🎓 طالب / ولي الأمر</option>
+  <option value="staff">🧑‍🏫 معلم / إداري</option>
+</select>
 
-    <!-- حقول الموظف -->
-    <div id="staffFields" class="hidden">
-      <label for="username">اسم المستخدم</label>
-      <input type="text" id="username" class="input" placeholder="أدخل اسم المستخدم" />
+<div id="staffFields" class="hidden">
+  <label for="username">اسم المستخدم</label>
+  <input type="text" id="username" placeholder="أدخل اسم المستخدم" />
 
-      <label for="password">كلمة المرور</label>
-      <input type="password" id="password" class="input" placeholder="أدخل كلمة المرور" />
+  <label for="password">كلمة المرور</label>
+  <input type="password" id="password" placeholder="أدخل كلمة المرور" />
 
-      <button class="btn" onclick="login()">تسجيل الدخول</button>
-      <p id="loginMessage" style="color: red; margin-top: 10px;"></p>
-    </div>
-  </main>
+  <button onclick="login()">تسجيل الدخول</button>
+  <p id="loginMessage" style="color:red; margin-top:10px;"></p>
+</div>
 
-  <footer>
-    <p>© جميع الحقوق محفوظة - مدرسة الشيخ سعود - فرع1</p>
-  </footer>
+<footer>
+  <p>© جميع الحقوق محفوظة - مدرسة الشيخ سعود - فرع1</p>
+</footer>
 
-  <script>
-    // ✅ التعامل مع اختيار الدور
-    function handleRoleChange() {
-      const role = document.getElementById("role").value;
-      const staffFields = document.getElementById("staffFields");
-      const msg = document.getElementById("loginMessage");
-      msg.textContent = "";
+<script>
+function handleRoleChange() {
+  const role = document.getElementById("role").value;
+  const staffFields = document.getElementById("staffFields");
+  const msg = document.getElementById("loginMessage");
+  msg.textContent = "";
 
-      if (role === "student") {
-        sessionStorage.setItem("role", "student");
-        window.location.href = "dashboard.html";
-      } else if (role === "staff") {
-        staffFields.classList.remove("hidden");
-      } else {
-        staffFields.classList.add("hidden");
-      }
-    }
+  if (role === "student") {
+    sessionStorage.setItem("role", "student");
+    window.location.href = "dashboard.html?role=student";
+  } else if (role === "staff") {
+    staffFields.classList.remove("hidden");
+  } else {
+    staffFields.classList.add("hidden");
+  }
+}
 
-    // ✅ تسجيل دخول المعلم / الإداري فقط
-    function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const msg = document.getElementById("loginMessage");
+function login() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const msg = document.getElementById("loginMessage");
+  msg.textContent = "";
 
-      msg.textContent = "";
+  if (!username || !password) {
+    msg.textContent = "❌ يرجى إدخال اسم المستخدم وكلمة المرور";
+    return;
+  }
 
-      if (!username || !password) {
-        msg.textContent = "❌ يرجى إدخال اسم المستخدم وكلمة المرور";
-        return;
-      }
-
-      // تحقق تجريبي (يمكن ربطه لاحقًا بالسيرفر)
-      if (username === "admin" && password === "1234") {
-        sessionStorage.setItem("role", "staff");
-        window.location.href = "dashboard.html";
-      } else {
-        msg.textContent = "❌ بيانات الدخول غير صحيحة";
-      }
-    }
-  </script>
+  // تحقق تجريبي
+  if (username === "admin" && password === "1234") {
+    sessionStorage.setItem("role", "staff");
+    window.location.href = "dashboard.html?role=staff";
+  } else {
+    msg.textContent = "❌ بيانات الدخول غير صحيحة";
+  }
+}
+</script>
 </body>
 </html>

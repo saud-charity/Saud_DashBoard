@@ -7,30 +7,18 @@
 <style>
 body { font-family: "Tahoma", Arial, sans-serif; text-align: center; padding: 20px; background: #f4f6f8; }
 h1 { margin-bottom: 20px; color: #333; }
-
 #policyMenu { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px; }
-.policy-btn {
-  padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px;
-  background: #3498db; color: #fff; transition: 0.2s; min-width: 220px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
+.policy-btn { padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px; background: #3498db; color: #fff; transition: 0.2s; min-width: 220px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 .policy-btn:hover { background: #217dbb; transform: translateY(-2px); }
 
 #policyContainer { display: none; width: 90%; margin: 20px auto; position: relative; }
 #policyViewer { width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 8px; }
-#policyControls {
-  display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; position: static; z-index: 10;
-}
-.pdf-btn {
-  padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;
-  font-size: 1em; color: white; display: flex; align-items: center; gap: 6px; transition: 0.2s;
-}
+#policyControls { display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; position: static; z-index: 10; }
+.pdf-btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 1em; color: white; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
 #downloadBtn { background-color: #3498db; } #downloadBtn:hover { background-color: #217dbb; }
 #printBtn { background-color: #f39c12; } #printBtn:hover { background-color: #d68910; }
 #closeBtn { background-color: #e74c3c; } #closeBtn:hover { background-color: #c0392b; }
-
 #errorMessage { color: red; margin-top: 15px; }
-
 @media (max-width: 768px) {
   #policyViewer { height: 80vh; }
   #policyControls { flex-direction: row; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
@@ -64,15 +52,13 @@ const closeBtn = document.getElementById("closeBtn");
 const pageTitle = document.getElementById("pageTitle");
 const errorMessage = document.getElementById("errorMessage");
 
-// قراءة الدور من URL
 const params = new URLSearchParams(window.location.search);
-const role = params.get("role") || "student";
+const role = params.get("role") || sessionStorage.getItem("role") || "student";
 
 pageTitle.textContent = role === "staff"
   ? "📄 سياسات الكادر الإداري والتدريسي"
   : "📄 سياسات الطالب / ولي الأمر";
 
-// جلب قائمة السياسات من السيرفر حسب الدور
 fetch(`/api/policies/${role}`)
   .then(res => {
     if (!res.ok) throw new Error(`خطأ في استجابة السيرفر (${res.status})`);
@@ -111,7 +97,6 @@ function openPolicy(filename) {
   policyContainer.scrollIntoView({ behavior: "smooth" });
 
   downloadBtn.onclick = () => window.open(downloadUrl, "_blank");
-
   printBtn.onclick = () => {
     const printFrame = document.createElement('iframe');
     printFrame.style.display = 'none';
@@ -120,7 +105,6 @@ function openPolicy(filename) {
     printFrame.contentWindow.focus();
     printFrame.contentWindow.print();
   };
-
   closeBtn.onclick = () => {
     policyContainer.style.display = "none";
     policyViewer.src = "";
