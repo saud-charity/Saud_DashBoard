@@ -63,7 +63,7 @@
   }
 
   .pdf-btn {
-    padding: 10px 16px;
+    padding: 10px 20px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -74,10 +74,9 @@
     gap: 6px;
     transition: 0.2s;
   }
-  .pdf-btn:hover { transform: translateY(-2px); }
 
-  #downloadBtn { background-color: #2ecc71; }
-  #downloadBtn:hover { background-color: #27ae60; }
+  #downloadBtn { background-color: #3498db; }
+  #downloadBtn:hover { background-color: #217dbb; }
 
   #printBtn { background-color: #f39c12; }
   #printBtn:hover { background-color: #d68910; }
@@ -90,3 +89,59 @@
       width: 90%;
       font-size: 1em;
       padding: 10px;
+    }
+    #pdfViewer {
+      width: 100%;
+      height: 80vh;
+    }
+    #pdfControls {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pdf-btn {
+      width: 80%;
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1 id="pageTitle">🎓 لوحة التحكم</h1>
+
+<div id="menuContainer"></div>
+
+<!-- PDF Viewer Section -->
+<div id="pdfContainer">
+  <iframe id="pdfViewer"></iframe>
+  <div id="pdfControls">
+    <button class="pdf-btn" id="downloadBtn">⬇ تحميل PDF</button>
+    <button class="pdf-btn" id="printBtn">🖨️ طباعة PDF</button>
+    <button class="pdf-btn" id="closeBtn">❌ إغلاق الملف</button>
+  </div>
+</div>
+
+<script>
+const menuContainer = document.getElementById("menuContainer");
+const pdfContainer = document.getElementById("pdfContainer");
+const pdfViewer = document.getElementById("pdfViewer");
+const downloadBtn = document.getElementById("downloadBtn");
+const printBtn = document.getElementById("printBtn");
+const closeBtn = document.getElementById("closeBtn");
+const pageTitle = document.getElementById("pageTitle");
+
+// 🔹 قراءة الدور من URL
+const params = new URLSearchParams(window.location.search);
+const role = params.get("role") || "student";
+
+pageTitle.textContent = role === "staff" 
+  ? "🎓 لوحة تحكم الكادر الإداري والتدريسي" 
+  : "🎓 لوحة تحكم الطالب / ولي الأمر";
+
+// تحميل القائمة من السيرفر
+fetch(`/api/menu/${role}`)
+  .then(res => res.json())
+  .then(menuItems => renderMenu(menuItems))
+  .catch(err => {
+    console.error("خطأ في تحميل القائمة:", err);
+    menuContainer.
