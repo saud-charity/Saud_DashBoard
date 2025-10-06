@@ -11,16 +11,19 @@
     padding: 20px;
     background: #f4f6f8;
   }
+
   h1 {
     margin-bottom: 20px;
     color: #333;
   }
+
   #menuContainer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
   }
+
   .menu-btn {
     padding: 12px 20px;
     font-size: 1em;
@@ -33,6 +36,7 @@
     min-width: 220px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
+
   .menu-btn:hover {
     background: #217dbb;
     transform: translateY(-2px);
@@ -41,29 +45,33 @@
   /* PDF Viewer Section */
   #pdfContainer {
     display: none;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-    width: 100%;
+    position: relative; /* مهم لوضع الأزرار فوق الإطار */
+    width: 90%;
+    margin: 20px auto;
   }
 
   #pdfViewer {
-    width: 90%;
+    width: 100%;
     height: 600px;
     border: 1px solid #ccc;
     border-radius: 8px;
   }
 
   #pdfControls {
-    margin-top: 10px;
+    position: absolute; /* لجعل الأزرار عائمة فوق الإطار */
+    top: 10px;
+    right: 10px;
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+    z-index: 10;
+    background: rgba(255,255,255,0.8); /* خلفية شفافة قليلاً */
+    padding: 5px 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   }
 
   .pdf-btn {
-    padding: 10px 20px;
+    padding: 8px 12px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -85,30 +93,16 @@
   #closeBtn:hover { background-color: #c0392b; }
 
   @media (max-width: 768px) {
-    .menu-btn {
-      width: 90%;
-      font-size: 1em;
-      padding: 10px;
-    }
-    #pdfViewer {
-      width: 100%;
-      height: 80vh;
-    }
-    #pdfControls {
-      flex-direction: column;
-      gap: 8px;
-    }
-    .pdf-btn {
-      width: 80%;
-      justify-content: center;
-    }
+    #pdfViewer { height: 80vh; }
+    #pdfControls { flex-direction: column; top: 5px; right: 5px; gap: 5px; }
+    .pdf-btn { width: auto; }
+    .menu-btn { width: 90%; font-size: 1em; padding: 10px; }
   }
 </style>
 </head>
 <body>
 
 <h1 id="pageTitle">🎓 لوحة التحكم</h1>
-
 <div id="menuContainer"></div>
 
 <!-- PDF Viewer Section -->
@@ -134,8 +128,8 @@ const pageTitle = document.getElementById("pageTitle");
 const params = new URLSearchParams(window.location.search);
 const role = params.get("role") || "student";
 
-pageTitle.textContent = role === "staff" 
-  ? "🎓 لوحة تحكم الكادر الإداري والتدريسي" 
+pageTitle.textContent = role === "staff"
+  ? "🎓 لوحة تحكم الكادر الإداري والتدريسي"
   : "🎓 لوحة تحكم الطالب / ولي الأمر";
 
 // تحميل القائمة من السيرفر
@@ -185,7 +179,7 @@ function openPdf(filename) {
   const downloadUrl = `/pdfs/${filename}`;
 
   pdfViewer.src = `/pdfjs/web/viewer.html?file=${encodeURIComponent(viewUrl)}`;
-  pdfContainer.style.display = "flex";
+  pdfContainer.style.display = "block";
   pdfContainer.scrollIntoView({ behavior: "smooth" });
 
   downloadBtn.onclick = () => window.open(downloadUrl, "_blank");
