@@ -5,89 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🎓 لوحة التحكم</title>
 <style>
-  body {
-    font-family: "Tahoma", Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-    background: #f4f6f8;
-  }
-
-  h1 {
-    margin-bottom: 20px;
-    color: #333;
-  }
-
-  #menuContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-  }
-
+  body { font-family: "Tahoma", Arial, sans-serif; text-align: center; padding: 20px; background: #f4f6f8; }
+  h1 { margin-bottom: 20px; color: #333; }
+  #menuContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
   .menu-btn {
-    padding: 12px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background: #3498db;
-    color: #fff;
-    transition: 0.2s;
-    min-width: 220px;
+    padding: 12px 20px; font-size: 1em; cursor: pointer; border: none; border-radius: 8px;
+    background: #3498db; color: #fff; transition: 0.2s; min-width: 220px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
-
-  .menu-btn:hover {
-    background: #217dbb;
-    transform: translateY(-2px);
-  }
-
-  /* PDF Viewer Section */
-  #pdfContainer {
-    display: none;
-    width: 90%;
-    margin: 20px auto;
-    position: relative;
-  }
-
-  #pdfViewer {
-    width: 100%;
-    height: 600px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-
+  .menu-btn:hover { background: #217dbb; transform: translateY(-2px); }
+  #pdfContainer { display: none; width: 90%; margin: 20px auto; position: relative; }
+  #pdfViewer { width: 100%; height: 600px; border: 1px solid #ccc; border-radius: 8px; }
   #pdfControls {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 10px;
-    position: static; /* أصبح ثابت فوق PDF */
-    z-index: 10;
+    display: flex; justify-content: center; gap: 15px; margin-bottom: 10px; position: static; z-index: 10;
   }
-
   .pdf-btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1em;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: 0.2s;
+    padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;
+    font-size: 1em; color: white; display: flex; align-items: center; gap: 6px; transition: 0.2s;
   }
-
-  #downloadBtn { background-color: #3498db; }
-  #downloadBtn:hover { background-color: #217dbb; }
-
-  #printBtn { background-color: #f39c12; }
-  #printBtn:hover { background-color: #d68910; }
-
-  #closeBtn { background-color: #e74c3c; }
-  #closeBtn:hover { background-color: #c0392b; }
-
+  #downloadBtn { background-color: #3498db; } #downloadBtn:hover { background-color: #217dbb; }
+  #printBtn { background-color: #f39c12; } #printBtn:hover { background-color: #d68910; }
+  #closeBtn { background-color: #e74c3c; } #closeBtn:hover { background-color: #c0392b; }
   @media (max-width: 768px) {
     #pdfViewer { height: 80vh; }
     #pdfControls { flex-direction: row; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
@@ -137,7 +75,6 @@ fetch(`/api/menu/${role}`)
     menuContainer.innerHTML = "<p style='color:red;'>❌ تعذر تحميل القائمة.</p>";
   });
 
-// إنشاء الأزرار
 function renderMenu(menu) {
   menuContainer.innerHTML = "";
   menu.forEach(item => {
@@ -158,7 +95,12 @@ function handleMenuClick(item) {
       openPdf(item.filename);
       break;
     case "submenu":
-      window.location.href = `/policies.html?role=${item.role}`;
+      // إذا كان العنصر "السياسات"، فرض الدور staff
+      if(item.title === "السياسات") {
+        window.location.href = `/policies.html?role=staff`;
+      } else {
+        window.location.href = `/policies.html?role=${item.role}`;
+      }
       break;
     case "page":
       window.location.href = item.path;
@@ -169,7 +111,7 @@ function handleMenuClick(item) {
   }
 }
 
-// عرض ملف PDF داخل PDF.js
+// عرض PDF داخل لوحة التحكم
 function openPdf(filename) {
   const viewUrl = `/pdfs/${filename}`;
   const downloadUrl = `/pdfs/${filename}`;
@@ -179,7 +121,6 @@ function openPdf(filename) {
   pdfContainer.scrollIntoView({ behavior: "smooth" });
 
   downloadBtn.onclick = () => window.open(downloadUrl, "_blank");
-
   printBtn.onclick = () => {
     const printFrame = document.createElement('iframe');
     printFrame.style.display = 'none';
@@ -188,7 +129,6 @@ function openPdf(filename) {
     printFrame.contentWindow.focus();
     printFrame.contentWindow.print();
   };
-
   closeBtn.onclick = () => {
     pdfContainer.style.display = "none";
     pdfViewer.src = "";
