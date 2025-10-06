@@ -45,9 +45,9 @@
   /* PDF Viewer Section */
   #pdfContainer {
     display: none;
-    position: relative; /* مهم لوضع الأزرار فوق الإطار */
     width: 90%;
     margin: 20px auto;
+    position: relative;
   }
 
   #pdfViewer {
@@ -58,20 +58,16 @@
   }
 
   #pdfControls {
-    position: absolute; /* لجعل الأزرار عائمة فوق الإطار */
-    top: 10px;
-    right: 10px;
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    position: static; /* أصبح ثابت فوق PDF */
     z-index: 10;
-    background: rgba(255,255,255,0.8); /* خلفية شفافة قليلاً */
-    padding: 5px 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   }
 
   .pdf-btn {
-    padding: 8px 12px;
+    padding: 10px 15px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -94,8 +90,8 @@
 
   @media (max-width: 768px) {
     #pdfViewer { height: 80vh; }
-    #pdfControls { flex-direction: column; top: 5px; right: 5px; gap: 5px; }
-    .pdf-btn { width: auto; }
+    #pdfControls { flex-direction: row; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .pdf-btn { flex: 1 1 45%; min-width: 100px; justify-content: center; }
     .menu-btn { width: 90%; font-size: 1em; padding: 10px; }
   }
 </style>
@@ -107,12 +103,12 @@
 
 <!-- PDF Viewer Section -->
 <div id="pdfContainer">
-  <iframe id="pdfViewer"></iframe>
   <div id="pdfControls">
     <button class="pdf-btn" id="downloadBtn">⬇ تحميل PDF</button>
     <button class="pdf-btn" id="printBtn">🖨️ طباعة PDF</button>
     <button class="pdf-btn" id="closeBtn">❌ إغلاق الملف</button>
   </div>
+  <iframe id="pdfViewer"></iframe>
 </div>
 
 <script>
@@ -124,7 +120,7 @@ const printBtn = document.getElementById("printBtn");
 const closeBtn = document.getElementById("closeBtn");
 const pageTitle = document.getElementById("pageTitle");
 
-// 🔹 قراءة الدور من URL
+// قراءة الدور من URL
 const params = new URLSearchParams(window.location.search);
 const role = params.get("role") || "student";
 
@@ -173,7 +169,7 @@ function handleMenuClick(item) {
   }
 }
 
-// ✅ عرض ملف PDF داخل PDF.js
+// عرض ملف PDF داخل PDF.js
 function openPdf(filename) {
   const viewUrl = `/pdfs/${filename}`;
   const downloadUrl = `/pdfs/${filename}`;
