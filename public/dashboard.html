@@ -144,4 +144,67 @@ fetch(`/api/menu/${role}`)
   .then(menuItems => renderMenu(menuItems))
   .catch(err => {
     console.error("خطأ في تحميل القائمة:", err);
-    menuContainer.
+    menuContainer.innerHTML = "<p style='color:red;'>❌ تعذر تحميل القائمة.</p>";
+  });
+
+// إنشاء الأزرار
+function renderMenu(menu) {
+  menuContainer.innerHTML = "";
+  menu.forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "menu-btn";
+    btn.textContent = item.title;
+    btn.onclick = () => handleMenuClick(item);
+    menuContainer.appendChild(btn);
+  });
+}
+
+// التعامل مع النقر على عناصر القائمة
+function handleMenuClick(item) {
+  pdfContainer.style.display = "none";
+
+  switch (item.type) {
+    case "pdf":
+      openPdf(item.filename);
+      break;
+    case "submenu":
+      window.location.href = `/policies.html?role=${item.role}`;
+      break;
+    case "page":
+      window.location.href = item.path;
+      break;
+    case "external":
+      window.open(item.url, "_blank", "noopener,noreferrer");
+      break;
+  }
+}
+
+// ✅ عرض ملف PDF داخل PDF.js
+function openPdf(filename) {
+  const viewUrl = `/pdfs/${filename}`;
+  const downloadUrl = `/pdfs/${filename}`;
+
+  pdfViewer.src = `/pdfjs/web/viewer.html?file=${encodeURIComponent(viewUrl)}`;
+  pdfContainer.style.display = "flex";
+  pdfContainer.scrollIntoView({ behavior: "smooth" });
+
+  downloadBtn.onclick = () => window.open(downloadUrl, "_blank");
+
+  printBtn.onclick = () => {
+    const printFrame = document.createElement('iframe');
+    printFrame.style.display = 'none';
+    printFrame.src = downloadUrl;
+    document.body.appendChild(printFrame);
+    printFrame.contentWindow.focus();
+    printFrame.contentWindow.print();
+  };
+
+  closeBtn.onclick = () => {
+    pdfContainer.style.display = "none";
+    pdfViewer.src = "";
+  };
+}
+</script>
+
+</body>
+</html>
