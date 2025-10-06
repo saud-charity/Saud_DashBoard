@@ -17,6 +17,32 @@
     color: #333;
   }
 
+  #policyMenu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .policy-btn {
+    padding: 12px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #3498db;
+    color: #fff;
+    transition: 0.2s;
+    min-width: 220px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  .policy-btn:hover {
+    background: #217dbb;
+    transform: translateY(-2px);
+  }
+
   #policyContainer {
     display: none;
     width: 90%;
@@ -36,7 +62,7 @@
     justify-content: center;
     gap: 15px;
     margin-bottom: 10px;
-    position: static; /* ثابت فوق PDF */
+    position: static; /* فوق PDF */
     z-index: 10;
   }
 
@@ -66,12 +92,16 @@
     #policyViewer { height: 80vh; }
     #policyControls { flex-direction: row; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
     .pdf-btn { flex: 1 1 45%; min-width: 100px; justify-content: center; }
+    .policy-btn { width: 90%; font-size: 1em; padding: 10px; }
   }
 </style>
 </head>
 <body>
 
-<h1>📄 السياسات</h1>
+<h1 id="pageTitle">📄 السياسات</h1>
+
+<!-- قائمة السياسات -->
+<div id="policyMenu"></div>
 
 <!-- PDF Viewer Section -->
 <div id="policyContainer">
@@ -84,22 +114,44 @@
 </div>
 
 <script>
-// عناصر الصفحة
+const policyMenu = document.getElementById("policyMenu");
 const policyContainer = document.getElementById("policyContainer");
 const policyViewer = document.getElementById("policyViewer");
 const downloadBtn = document.getElementById("downloadBtn");
 const printBtn = document.getElementById("printBtn");
 const closeBtn = document.getElementById("closeBtn");
+const pageTitle = document.getElementById("pageTitle");
 
-// قراءة نوع السياسة من URL
+// قراءة الدور من URL
 const params = new URLSearchParams(window.location.search);
-const policyFile = params.get("file"); // مثال: file=policy1.pdf
+const role = params.get("role") || "student";
 
-if(policyFile) {
-  openPolicy(policyFile);
+pageTitle.textContent = role === "staff"
+  ? "📄 سياسات الكادر الإداري والتدريسي"
+  : "📄 سياسات الطالب / ولي الأمر";
+
+// جلب قائمة السياسات من السيرفر
+fetch(`/api/policies/${role}`)
+  .then(res => res.json())
+  .then(policies => renderPolicyMenu(policies))
+  .catch(err => {
+    console.error("خطأ في تحميل السياسات:", err);
+    policyMenu.innerHTML = "<p style='color:red;'>❌ تعذر تحميل السياسات.</p>";
+  });
+
+// إنشاء أزرار السياسات
+function renderPolicyMenu(policies) {
+  policyMenu.innerHTML = "";
+  policies.forEach(item => {
+    const btn = document.createElement("button");
+    btn.className = "policy-btn";
+    btn.textContent = item.title;
+    btn.onclick = () => openPolicy(item.filename);
+    policyMenu.appendChild(btn);
+  });
 }
 
-// فتح PDF للسياسة
+// عرض PDF
 function openPolicy(filename) {
   const viewUrl = `/pdfs/${filename}`;
   const downloadUrl = `/pdfs/${filename}`;
