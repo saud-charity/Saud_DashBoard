@@ -8,11 +8,11 @@
   body {
     font-family: "Tahoma", Arial, sans-serif;
     text-align: center;
-    padding: 30px;
+    padding: 20px;
     background: #f4f6f8;
   }
   h1 {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     color: #333;
   }
   #menuContainer {
@@ -38,132 +38,55 @@
     transform: translateY(-2px);
   }
 
+  /* PDF Viewer Section */
+  #pdfContainer {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+  }
+
   #pdfViewer {
     width: 90%;
     height: 600px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    margin: 20px auto;
-    display: none;
   }
 
-  #pdfDownloadContainer {
+  #pdfControls {
     margin-top: 10px;
-    display: none;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
   }
-  #downloadBtn {
-    padding: 10px 15px;
-    background-color: #2ecc71;
-    color: white;
+
+  .pdf-btn {
+    padding: 10px 16px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-size: 1em;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
   }
-  #downloadBtn:hover {
-    background-color: #27ae60;
-  }
+  .pdf-btn:hover { transform: translateY(-2px); }
+
+  #downloadBtn { background-color: #2ecc71; }
+  #downloadBtn:hover { background-color: #27ae60; }
+
+  #printBtn { background-color: #f39c12; }
+  #printBtn:hover { background-color: #d68910; }
+
+  #closeBtn { background-color: #e74c3c; }
+  #closeBtn:hover { background-color: #c0392b; }
 
   @media (max-width: 768px) {
     .menu-btn {
       width: 90%;
       font-size: 1em;
       padding: 10px;
-    }
-    #pdfViewer {
-      width: 100%;
-      height: 80vh;
-    }
-  }
-</style>
-</head>
-<body>
-
-<h1 id="pageTitle">🎓 لوحة التحكم</h1>
-
-<div id="menuContainer"></div>
-
-<!-- PDF Viewer -->
-<iframe id="pdfViewer"></iframe>
-
-<div id="pdfDownloadContainer">
-  <button id="downloadBtn">⬇ تحميل PDF</button>
-</div>
-
-<script>
-const menuContainer = document.getElementById("menuContainer");
-const pdfViewer = document.getElementById("pdfViewer");
-const downloadContainer = document.getElementById("pdfDownloadContainer");
-const downloadBtn = document.getElementById("downloadBtn");
-const pageTitle = document.getElementById("pageTitle");
-
-// 🔹 قراءة الدور من URL
-const params = new URLSearchParams(window.location.search);
-const role = params.get("role") || "student";
-
-pageTitle.textContent = role === "staff" ? "🎓 لوحة تحكم الكادر الإداري والتدريسي" : "🎓 لوحة تحكم الطالب / ولي الأمر";
-
-// تحميل القائمة من السيرفر
-fetch(`/api/menu/${role}`)
-  .then(res => res.json())
-  .then(menuItems => renderMenu(menuItems))
-  .catch(err => {
-    console.error("خطأ في تحميل القائمة:", err);
-    menuContainer.innerHTML = "<p style='color:red;'>❌ تعذر تحميل القائمة.</p>";
-  });
-
-// إنشاء الأزرار
-function renderMenu(menu) {
-  menuContainer.innerHTML = "";
-  menu.forEach(item => {
-    const btn = document.createElement("button");
-    btn.className = "menu-btn";
-    btn.textContent = item.title;
-
-    btn.onclick = () => handleMenuClick(item);
-
-    menuContainer.appendChild(btn);
-  });
-}
-
-// التعامل مع النقر على عناصر القائمة
-function handleMenuClick(item) {
-  pdfViewer.style.display = "none";
-  downloadContainer.style.display = "none";
-
-  switch (item.type) {
-    case "pdf":
-      openPdf(item.filename);
-      break;
-
-    case "submenu":
-      window.location.href = `/policies.html?role=${item.role}`;
-      break;
-
-    case "page":
-      window.location.href = item.path;
-      break;
-
-    case "external":
-      window.open(item.url, "_blank");
-      break;
-  }
-}
-
-// ✅ عرض ملف PDF داخل PDF.js (يعمل على الهاتف والكمبيوتر)
-function openPdf(filename) {
-  const viewUrl = `/pdfs/${filename}`;
-  const downloadUrl = `/pdfs/${filename}`;
-
-  // استخدام PDF.js للعرض
-  pdfViewer.src = `/pdfjs/web/viewer.html?file=${encodeURIComponent(viewUrl)}`;
-  pdfViewer.style.display = "block";
-  pdfViewer.scrollIntoView({ behavior: "smooth" });
-
-  downloadBtn.onclick = () => window.open(downloadUrl, "_blank");
-  downloadContainer.style.display = "block";
-}
-</script>
-
-</body>
-</html>
