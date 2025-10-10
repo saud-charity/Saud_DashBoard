@@ -1,56 +1,4 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تقرير الطالب</title>
-<link rel="stylesheet" href="css/main.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-  body { font-family: "Tahoma", Arial, sans-serif; background: #f5f6fa; margin: 0; padding: 0; text-align: center; }
-  header { background: #2c3e50; color: #fff; padding: 15px; font-size: 22px; }
-  .container { margin: 30px auto; max-width: 950px; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: right; }
-  .search-box { margin-bottom: 20px; text-align: center; }
-  input[type="text"] { padding: 8px; font-size: 16px; width: 250px; border: 1px solid #ccc; border-radius: 5px; }
-  button { padding: 9px 15px; font-size: 16px; background: #2980b9; border: none; color: #fff; border-radius: 5px; cursor: pointer; margin: 5px; }
-  button:hover { background: #3498db; }
-  .student-info { margin: 15px 0; font-size: 18px; color: #2c3e50; text-align: center; }
-  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-  table th, table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-  table th { background: #34495e; color: #fff; }
-  .error { color: red; margin-top: 15px; font-weight: bold; }
-  .notes-box { display: flex; justify-content: space-between; margin-top: 10px; padding: 10px; background: #fdf6e3; border: 1px solid #eed; border-radius: 8px; }
-  .notes-box .strengths, .notes-box .improvements { width: 48%; }
-  .notes-box h3 { margin-top: 0; color: #b58900; text-align: center; }
-  .notes-box ul { padding-right: 20px; text-align: right; }
-</style>
-</head>
-<body>
-<header>📑 تقرير الطالب</header>
-<div class="container">
-  <div class="search-box">
-    <input type="text" id="studentId" placeholder="أدخل رقم الهوية">
-    <button onclick="loadReport()">عرض التقرير</button>
-    <button id="printBtn" onclick="window.print()" style="display:none">🖨️ طباعة</button>
-    <button id="downloadBtn" style="display:none">💾 تحميل PDF</button>
-  </div>
-  <div id="error" class="error"></div>
-  <div id="report"></div>
-</div>
-
 <script>
-
-// 🔹 دالة أكثر ذكاءً لتحديد الصف
-function getGradeKey(gradeString) {
-  if (!gradeString) return null;
-  const clean = gradeString.trim().toUpperCase();
-  const gMatch = clean.match(/G\s*(\d+)/);
-  if (gMatch) return `G${gMatch[1]}`;
-  const numMatch = clean.match(/^(\d+)/);
-  if (numMatch) return `G${numMatch[1]}`;
-  return null;
-}
-
 async function loadReport() {
   const id = document.getElementById("studentId").value.trim();
   const reportDiv = document.getElementById("report");
@@ -76,20 +24,15 @@ async function loadReport() {
     }
 
     const data = await res.json();
-    const gradeKey = getGradeKey(data.student["الصف"] || "");
-    const subjectsForGrade = gradeSubjects[gradeKey];
 
-    if (!subjectsForGrade) {
-      errorDiv.textContent = "⚠️ لم يتم العثور على إعدادات الصف لهذا الطالب.";
-      return;
-    }
+    // 🔹 استخدم كل المواد الموجودة في data.subjects مباشرة
+    const subjectsForGrade = data.subjects.map(s => s.name);
 
     let html = `<div class="student-info">
                   <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
                   <p><strong>الصف:</strong> ${data.student["الصف"]}</p>
                 </div>`;
 
-    // إنشاء الجداول بناءً على الصف
     subjectsForGrade.forEach(subName => {
       const subjectData = data.subjects.find(s => s.name === subName);
       if (!subjectData) return;
@@ -138,5 +81,3 @@ async function loadReport() {
   }
 }
 </script>
-</body>
-</html>
