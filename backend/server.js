@@ -100,14 +100,14 @@ function loadStudentsFromExcel() {
     console.warn("⚠️ بنية ملف Excel غير كافية (نحتاج 3 صفوف على الأقل).");
     return {};
   }
- students[studentId] = {
-   student: { 
+  students[studentId] = {
+    student: { 
      "الاسم": studentName,
      "الصف": studentClass,   // 🔹 لإرسال الصف إلى الواجهة
      "الشعبة": studentClass  // 🔹 احتفاظ بالمكتسبات السابقة إن استخدمت "الشعبة"
-  },
-  subjects
-};
+    },
+    subjects
+  };
   const headerRow = rows[0];   // أسماء المواد
   const titlesRow = rows[1];   // رؤوس الأعمدة لكل مادة
   const dataRows = rows.slice(2);
