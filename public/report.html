@@ -1,83 +1,86 @@
 <script>
-async function loadReport() {
-  const id = document.getElementById("studentId").value.trim();
+document.addEventListener("DOMContentLoaded", () => {
   const reportDiv = document.getElementById("report");
   const errorDiv = document.getElementById("error");
   const printBtn = document.getElementById("printBtn");
   const downloadBtn = document.getElementById("downloadBtn");
 
-  reportDiv.innerHTML = "";
-  errorDiv.textContent = "";
-  printBtn.style.display = "none";
-  downloadBtn.style.display = "none";
+  async function loadReport() {
+    const id = document.getElementById("studentId").value.trim();
 
-  if (!id) {
-    errorDiv.textContent = "❌ فضلاً أدخل رقم هوية الطالب.";
-    return;
-  }
+    reportDiv.innerHTML = "";
+    errorDiv.textContent = "";
+    printBtn.style.display = "none";
+    downloadBtn.style.display = "none";
 
-  try {
-    const res = await fetch(`/api/report/${encodeURIComponent(id)}`);
-    if (!res.ok) {
-      errorDiv.textContent = res.status === 404 ? "❌ الطالب غير موجود." : "❌ خطأ في تحميل التقرير.";
+    if (!id) {
+      errorDiv.textContent = "❌ فضلاً أدخل رقم هوية الطالب.";
       return;
     }
 
-    const data = await res.json();
-
-    // 🔹 استخدم كل المواد الموجودة في data.subjects مباشرة
-    const subjectsForGrade = data.subjects.map(s => s.name);
-
-    let html = `<div class="student-info">
-                  <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
-                  <p><strong>الصف:</strong> ${data.student["الصف"]}</p>
-                </div>`;
-
-    subjectsForGrade.forEach(subName => {
-      const subjectData = data.subjects.find(s => s.name === subName);
-      if (!subjectData) return;
-
-      const keys = Object.keys(subjectData).filter(k => !["name","strengths","improvements"].includes(k));
-
-      html += `<h3 style="text-align:center; margin-top:20px;">${subjectData.name}</h3>`;
-      html += `<table><thead><tr>`;
-      keys.forEach(k => html += `<th>${k}</th>`);
-      html += `</tr></thead><tbody><tr>`;
-      keys.forEach(k => html += `<td>${subjectData[k] !== undefined ? subjectData[k] : "-"}</td>`);
-      html += `</tr></tbody></table>`;
-
-      const s = subjectData.strengths ? String(subjectData.strengths).trim() : "";
-      const i = subjectData.improvements ? String(subjectData.improvements).trim() : "";
-      if (s || i) {
-        const strengthsList = s ? s.split(/\r?\n/).filter(Boolean) : [];
-        const improvementsList = i ? i.split(/\r?\n/).filter(Boolean) : [];
-
-        html += `<div class="notes-box">
-                  <div class="strengths"><h3>🟢 نقاط القوة</h3>${strengthsList.length ? "<ul>" + strengthsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
-                  <div class="improvements"><h3>🔴 جوانب التحسين</h3>${improvementsList.length ? "<ul>" + improvementsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
-                </div>`;
+    try {
+      const res = await fetch(`/api/report/${encodeURIComponent(id)}`);
+      if (!res.ok) {
+        errorDiv.textContent = res.status === 404 ? "❌ الطالب غير موجود." : "❌ خطأ في تحميل التقرير.";
+        return;
       }
-    });
 
-    reportDiv.innerHTML = html;
-    printBtn.style.display = "inline-block";
-    downloadBtn.style.display = "inline-block";
+      const data = await res.json();
+      const subjectsForGrade = data.subjects.map(s => s.name);
 
-    downloadBtn.onclick = () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
-      doc.html(reportDiv, {
-        callback: function(pdf){
-          const nameSafe = (data.student["الاسم"] || "report").replace(/\s+/g,"_");
-          pdf.save(`${nameSafe}_report.pdf`);
-        },
-        x:10, y:10, width: 570, windowWidth: reportDiv.scrollWidth
+      let html = `<div class="student-info">
+                    <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
+                    <p><strong>الصف:</strong> ${data.student["الصف"]}</p>
+                  </div>`;
+
+      subjectsForGrade.forEach(subName => {
+        const subjectData = data.subjects.find(s => s.name === subName);
+        if (!subjectData) return;
+
+        const keys = Object.keys(subjectData).filter(k => !["name","strengths","improvements"].includes(k));
+
+        html += `<h3 style="text-align:center; margin-top:20px;">${subjectData.name}</h3>`;
+        html += `<table><thead><tr>`;
+        keys.forEach(k => html += `<th>${k}</th>`);
+        html += `</tr></thead><tbody><tr>`;
+        keys.forEach(k => html += `<td>${subjectData[k] !== undefined ? subjectData[k] : "-"}</td>`);
+        html += `</tr></tbody></table>`;
+
+        const s = subjectData.strengths ? String(subjectData.strengths).trim() : "";
+        const i = subjectData.improvements ? String(subjectData.improvements).trim() : "";
+        if (s || i) {
+          const strengthsList = s ? s.split(/\r?\n/).filter(Boolean) : [];
+          const improvementsList = i ? i.split(/\r?\n/).filter(Boolean) : [];
+
+          html += `<div class="notes-box">
+                    <div class="strengths"><h3>🟢 نقاط القوة</h3>${strengthsList.length ? "<ul>" + strengthsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
+                    <div class="improvements"><h3>🔴 جوانب التحسين</h3>${improvementsList.length ? "<ul>" + improvementsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
+                  </div>`;
+        }
       });
-    };
 
-  } catch (err) {
-    console.error(err);
-    errorDiv.textContent = "❌ حدث خطأ غير متوقع.";
+      reportDiv.innerHTML = html;
+      printBtn.style.display = "inline-block";
+      downloadBtn.style.display = "inline-block";
+
+      downloadBtn.onclick = () => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
+        doc.html(reportDiv, {
+          callback: function(pdf){
+            const nameSafe = (data.student["الاسم"] || "report").replace(/\s+/g,"_");
+            pdf.save(`${nameSafe}_report.pdf`);
+          },
+          x:10, y:10, width: 570, windowWidth: reportDiv.scrollWidth
+        });
+      };
+
+    } catch (err) {
+      console.error(err);
+      errorDiv.textContent = "❌ حدث خطأ غير متوقع.";
+    }
   }
-}
+
+  window.loadReport = loadReport; // لجعلها متاحة عند الضغط على الزر
+});
 </script>
