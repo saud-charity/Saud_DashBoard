@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// ===================== MENUS =====================
+/// ===================== MENUS =====================
 const studentMenu = [
   { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
   { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
@@ -66,6 +66,7 @@ const staffPolicies = [
   { title: "إطار معايير الرقابة والتقييم المدرسية", filename: "framework.pdf" },
   { title: "السياسات المهنية والأخلاقية", filename: "ethics_charter_policy.pdf" }
 ];
+
 
 app.get("/api/policies/:role", (req, res) => {
   const { role } = req.params;
