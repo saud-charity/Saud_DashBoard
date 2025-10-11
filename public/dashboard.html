@@ -179,7 +179,7 @@ function handleMenuClick(item) {
 function openPdf(filename) {
   const viewUrl = `./pdfs/${filename}`;
   const downloadUrl = `./pdfs/${filename}`;
-  pdfViewer.src = `./pdfjs/web/viewer.html?file=${encodeURIComponent(viewUrl)}`;
+  pdfViewer.src = `/pdfjs/web/viewer.html?file=${encodeURIComponent('/pdfs/' + filename)}`;
   pdfContainer.style.display = "block";
   pdfContainer.scrollIntoView({ behavior: "smooth" });
 
