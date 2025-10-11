@@ -1,12 +1,106 @@
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const reportDiv = document.getElementById("report");
-  const errorDiv = document.getElementById("error");
-  const printBtn = document.getElementById("printBtn");
-  const downloadBtn = document.getElementById("downloadBtn");
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تقرير الطالب</title>
+  <style>
+    body {
+      font-family: "Cairo", sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+      direction: rtl;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .search-box {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input {
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 250px;
+    }
+    button {
+      padding: 8px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #007bff;
+      color: white;
+      margin: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #e9ecef;
+    }
+    .notes-box {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      gap: 10px;
+    }
+    .strengths, .improvements {
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      background: #fefefe;
+    }
+    .strengths h3 { color: green; }
+    .improvements h3 { color: red; }
+    .error {
+      color: red;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  </style>
 
+  <!-- مكتبة jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="search-box">
+      <input type="text" id="studentId" placeholder="أدخل رقم هوية الطالب">
+      <button onclick="loadReport()">عرض التقرير</button>
+      <button id="printBtn" onclick="window.print()" style="display:none;">🖨️ طباعة</button>
+      <button id="downloadBtn" style="display:none;">💾 تحميل PDF</button>
+    </div>
+    <div id="error" class="error"></div>
+    <div id="report"></div>
+  </div>
+
+  <script>
   async function loadReport() {
     const id = document.getElementById("studentId").value.trim();
+    const reportDiv = document.getElementById("report");
+    const errorDiv = document.getElementById("error");
+    const printBtn = document.getElementById("printBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
 
     reportDiv.innerHTML = "";
     errorDiv.textContent = "";
@@ -26,16 +120,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await res.json();
-      const subjectsForGrade = data.subjects.map(s => s.name);
+      if (!data || !data.subjects || !Array.isArray(data.subjects)) {
+        errorDiv.textContent = "⚠️ لا توجد بيانات مواد لهذا الطالب.";
+        return;
+      }
 
-      let html = `<div class="student-info">
-                    <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
-                    <p><strong>الصف:</strong> ${data.student["الصف"]}</p>
-                  </div>`;
+      // عرض جميع المواد الموجودة في البيانات
+      let html = `
+        <div class="student-info">
+          <p><strong>الاسم:</strong> ${data.student?.["الاسم"] || "-"}</p>
+          <p><strong>الصف:</strong> ${data.student?.["الصف"] || "-"}</p>
+        </div>
+      `;
 
-      subjectsForGrade.forEach(subName => {
-        const subjectData = data.subjects.find(s => s.name === subName);
-        if (!subjectData) return;
+      data.subjects.forEach(subjectData => {
+        if (!subjectData.name) return;
 
         const keys = Object.keys(subjectData).filter(k => !["name","strengths","improvements"].includes(k));
 
@@ -43,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         html += `<table><thead><tr>`;
         keys.forEach(k => html += `<th>${k}</th>`);
         html += `</tr></thead><tbody><tr>`;
-        keys.forEach(k => html += `<td>${subjectData[k] !== undefined ? subjectData[k] : "-"}</td>`);
+        keys.forEach(k => html += `<td>${subjectData[k] ?? "-"}</td>`);
         html += `</tr></tbody></table>`;
 
         const s = subjectData.strengths ? String(subjectData.strengths).trim() : "";
@@ -52,10 +151,17 @@ document.addEventListener("DOMContentLoaded", () => {
           const strengthsList = s ? s.split(/\r?\n/).filter(Boolean) : [];
           const improvementsList = i ? i.split(/\r?\n/).filter(Boolean) : [];
 
-          html += `<div class="notes-box">
-                    <div class="strengths"><h3>🟢 نقاط القوة</h3>${strengthsList.length ? "<ul>" + strengthsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
-                    <div class="improvements"><h3>🔴 جوانب التحسين</h3>${improvementsList.length ? "<ul>" + improvementsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}</div>
-                  </div>`;
+          html += `
+          <div class="notes-box">
+            <div class="strengths">
+              <h3>🟢 نقاط القوة</h3>
+              ${strengthsList.length ? "<ul>" + strengthsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}
+            </div>
+            <div class="improvements">
+              <h3>🔴 جوانب التحسين</h3>
+              ${improvementsList.length ? "<ul>" + improvementsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}
+            </div>
+          </div>`;
         }
       });
 
@@ -68,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
         doc.html(reportDiv, {
           callback: function(pdf){
-            const nameSafe = (data.student["الاسم"] || "report").replace(/\s+/g,"_");
+            const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g,"_");
             pdf.save(`${nameSafe}_report.pdf`);
           },
           x:10, y:10, width: 570, windowWidth: reportDiv.scrollWidth
@@ -77,10 +183,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       console.error(err);
-      errorDiv.textContent = "❌ حدث خطأ غير متوقع.";
+      errorDiv.textContent = "❌ حدث خطأ غير متوقع أثناء تحميل التقرير.";
     }
   }
-
-  window.loadReport = loadReport; // لجعلها متاحة عند الضغط على الزر
-});
-</script>
+  </script>
+</body>
+</html>
