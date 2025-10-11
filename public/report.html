@@ -100,24 +100,23 @@ th {
 .btn-warning { background-color: #f39c12; }
 .btn-warning:hover { background-color: #d68910; }
 
+.btn-info { background-color: #16a085; }
+.btn-info:hover { background-color: #13876b; }
+
 /* ==================== حاويات الأزرار ==================== */
-#navControls {
+#navControls, #pdfControls, #searchButtons {
   display: flex;
   justify-content: center;
   gap: 15px;
   flex-wrap: wrap;
-  background: #fff;
-  padding: 15px 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 15px;
 }
 
-#searchButtons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
+#navControls {
+  background: #fff;
+  padding: 15px 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
 }
 
 /* ==================== استجابة للشاشات الصغيرة ==================== */
