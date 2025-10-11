@@ -1,82 +1,107 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>تقرير الطالب</title>
-  <style>
-    body {
-      font-family: "Cairo", sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 20px;
-      direction: rtl;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .search-box {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input {
-      padding: 8px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 250px;
-    }
-    button {
-      padding: 8px 15px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: #007bff;
-      color: white;
-      margin: 5px;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background: #e9ecef;
-    }
-    .notes-box {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-      gap: 10px;
-    }
-    .strengths, .improvements {
-      flex: 1;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      background: #fefefe;
-    }
-    .strengths h3 { color: green; }
-    .improvements h3 { color: red; }
-    .error {
-      color: red;
-      text-align: center;
-      margin-bottom: 10px;
-    }
- navControls {
+<meta charset="UTF-8">
+<title>تقرير الطالب</title>
+<style>
+body {
+  font-family: "Cairo", sans-serif;
+  background: #f8f9fa;
+  margin: 0;
+  padding: 20px;
+  direction: rtl;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.search-box {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 250px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #e9ecef;
+}
+
+.notes-box {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.strengths, .improvements {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background: #fefefe;
+}
+
+.strengths h3 { color: green; }
+.improvements h3 { color: red; }
+
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ==================== أزرار موحدة ==================== */
+.button {
+  padding: 10px 18px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+  transition: 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 5px;
+}
+
+.btn-primary { background-color: #3498db; }
+.btn-primary:hover { background-color: #217dbb; }
+
+.btn-danger { background-color: #e74c3c; }
+.btn-danger:hover { background-color: #c0392b; }
+
+.btn-warning { background-color: #f39c12; }
+.btn-warning:hover { background-color: #d68910; }
+
+/* ==================== حاويات الأزرار ==================== */
+#navControls {
   display: flex;
   justify-content: center;
   gap: 15px;
@@ -87,160 +112,144 @@
   margin-bottom: 15px;
 }
 
-.menu-btn {
-  padding: 10px 18px;
-  font-size: 1em;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #fff;
-  transition: 0.2s;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+#searchButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
 }
 
-.back-btn {
-  background-color: #3498db;
+/* ==================== استجابة للشاشات الصغيرة ==================== */
+@media (max-width: 768px) {
+  .button { width: 90%; }
+  .notes-box { flex-direction: column; }
 }
-.back-btn:hover {
-  background-color: #217dbb;
-}
+</style>
 
-.exit-btn {
-  background-color: #e74c3c;
-}
-.exit-btn:hover {
-  background-color: #c0392b;
-}
-  </style>
-
-  <!-- مكتبة jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- مكتبة jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
-   <body>
-  <!-- ✅ أزرار الرجوع والإنهاء هنا -->
-   <div id="navControls">
-    <button id="backBtn" class="menu-btn back-btn">🔙 الرجوع للرئيسية</button>
-    <button id="exitBtn" class="menu-btn exit-btn">❌ إنهاء البرنامج</button>
+<body>
+
+<!-- ==================== أزرار الرجوع والإنهاء ==================== -->
+<div id="navControls">
+  <button id="backBtn" class="button btn-primary">🔙 الرجوع للرئيسية</button>
+  <button id="exitBtn" class="button btn-danger">❌ إنهاء البرنامج</button>
+</div>
+
+<div class="container">
+  <div class="search-box">
+    <input type="text" id="studentId" placeholder="أدخل رقم هوية الطالب">
   </div>
-    </div>
-
-  <div class="container">
-    <div class="search-box">
-      <input type="text" id="studentId" placeholder="أدخل رقم هوية الطالب">
-      <button onclick="loadReport()">عرض التقرير</button>
-      <button id="printBtn" onclick="window.print()" style="display:none;">🖨️ طباعة</button>
-      <button id="downloadBtn" style="display:none;">💾 تحميل PDF</button>
-    </div>
-    <div id="error" class="error"></div>
-    <div id="report"></div>
+  <div id="searchButtons">
+    <button onclick="loadReport()" class="button btn-primary">عرض التقرير</button>
+    <button id="printBtn" class="button btn-warning" onclick="window.print()" style="display:none;">🖨️ طباعة</button>
+    <button id="downloadBtn" class="button btn-primary" style="display:none;">💾 تحميل PDF</button>
   </div>
 
-  <script>
-  async function loadReport() {
-    const id = document.getElementById("studentId").value.trim();
-    const reportDiv = document.getElementById("report");
-    const errorDiv = document.getElementById("error");
-    const printBtn = document.getElementById("printBtn");
-    const downloadBtn = document.getElementById("downloadBtn");
+  <div id="error" class="error"></div>
+  <div id="report"></div>
+</div>
 
-    reportDiv.innerHTML = "";
-    errorDiv.textContent = "";
-    printBtn.style.display = "none";
-    downloadBtn.style.display = "none";
+<script>
+async function loadReport() {
+  const id = document.getElementById("studentId").value.trim();
+  const reportDiv = document.getElementById("report");
+  const errorDiv = document.getElementById("error");
+  const printBtn = document.getElementById("printBtn");
+  const downloadBtn = document.getElementById("downloadBtn");
 
-    if (!id) {
-      errorDiv.textContent = "❌ فضلاً أدخل رقم هوية الطالب.";
+  reportDiv.innerHTML = "";
+  errorDiv.textContent = "";
+  printBtn.style.display = "none";
+  downloadBtn.style.display = "none";
+
+  if (!id) {
+    errorDiv.textContent = "❌ فضلاً أدخل رقم هوية الطالب.";
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/report/${encodeURIComponent(id)}`);
+    if (!res.ok) {
+      errorDiv.textContent = res.status === 404 ? "❌ الطالب غير موجود." : "❌ خطأ في تحميل التقرير.";
       return;
     }
 
-    try {
-      const res = await fetch(`/api/report/${encodeURIComponent(id)}`);
-      if (!res.ok) {
-        errorDiv.textContent = res.status === 404 ? "❌ الطالب غير موجود." : "❌ خطأ في تحميل التقرير.";
-        return;
-      }
-
-      const data = await res.json();
-      if (!data || !data.subjects || !Array.isArray(data.subjects)) {
-        errorDiv.textContent = "⚠️ لا توجد بيانات مواد لهذا الطالب.";
-        return;
-      }
-
-      // عرض جميع المواد الموجودة في البيانات
-      let html = `
-        <div class="student-info">
-          <p><strong>الاسم:</strong> ${data.student?.["الاسم"] || "-"}</p>
-          <p><strong>الصف:</strong> ${data.student?.["الصف"] || "-"}</p>
-        </div>
-      `;
-
-      data.subjects.forEach(subjectData => {
-        if (!subjectData.name) return;
-
-        const keys = Object.keys(subjectData).filter(k => !["name","strengths","improvements"].includes(k));
-
-        html += `<h3 style="text-align:center; margin-top:20px;">${subjectData.name}</h3>`;
-        html += `<table><thead><tr>`;
-        keys.forEach(k => html += `<th>${k}</th>`);
-        html += `</tr></thead><tbody><tr>`;
-        keys.forEach(k => html += `<td>${subjectData[k] ?? "-"}</td>`);
-        html += `</tr></tbody></table>`;
-
-        const s = subjectData.strengths ? String(subjectData.strengths).trim() : "";
-        const i = subjectData.improvements ? String(subjectData.improvements).trim() : "";
-        if (s || i) {
-          const strengthsList = s ? s.split(/\r?\n/).filter(Boolean) : [];
-          const improvementsList = i ? i.split(/\r?\n/).filter(Boolean) : [];
-
-          html += `
-          <div class="notes-box">
-            <div class="strengths">
-              <h3>🟢 نقاط القوة</h3>
-              ${strengthsList.length ? "<ul>" + strengthsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}
-            </div>
-            <div class="improvements">
-              <h3>🔴 جوانب التحسين</h3>
-              ${improvementsList.length ? "<ul>" + improvementsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}
-            </div>
-          </div>`;
-        }
-      });
-
-      reportDiv.innerHTML = html;
-      printBtn.style.display = "inline-block";
-      downloadBtn.style.display = "inline-block";
-
-      downloadBtn.onclick = () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
-        doc.html(reportDiv, {
-          callback: function(pdf){
-            const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g,"_");
-            pdf.save(`${nameSafe}_report.pdf`);
-          },
-          x:10, y:10, width: 570, windowWidth: reportDiv.scrollWidth
-        });
-      };
-
-    } catch (err) {
-      console.error(err);
-      errorDiv.textContent = "❌ حدث خطأ غير متوقع أثناء تحميل التقرير.";
+    const data = await res.json();
+    if (!data || !data.subjects || !Array.isArray(data.subjects)) {
+      errorDiv.textContent = "⚠️ لا توجد بيانات مواد لهذا الطالب.";
+      return;
     }
+
+    let html = `<div class="student-info">
+      <p><strong>الاسم:</strong> ${data.student?.["الاسم"] || "-"}</p>
+      <p><strong>الصف:</strong> ${data.student?.["الصف"] || "-"}</p>
+    </div>`;
+
+    data.subjects.forEach(subjectData => {
+      if (!subjectData.name) return;
+
+      const keys = Object.keys(subjectData).filter(k => !["name","strengths","improvements"].includes(k));
+
+      html += `<h3 style="text-align:center; margin-top:20px;">${subjectData.name}</h3>`;
+      html += `<table><thead><tr>`;
+      keys.forEach(k => html += `<th>${k}</th>`);
+      html += `</tr></thead><tbody><tr>`;
+      keys.forEach(k => html += `<td>${subjectData[k] ?? "-"}</td>`);
+      html += `</tr></tbody></table>`;
+
+      const s = subjectData.strengths ? String(subjectData.strengths).trim() : "";
+      const i = subjectData.improvements ? String(subjectData.improvements).trim() : "";
+      if (s || i) {
+        const strengthsList = s ? s.split(/\r?\n/).filter(Boolean) : [];
+        const improvementsList = i ? i.split(/\r?\n/).filter(Boolean) : [];
+
+        html += `
+        <div class="notes-box">
+          <div class="strengths">
+            <h3>🟢 نقاط القوة</h3>
+            ${strengthsList.length ? "<ul>" + strengthsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}
+          </div>
+          <div class="improvements">
+            <h3>🔴 جوانب التحسين</h3>
+            ${improvementsList.length ? "<ul>" + improvementsList.map(x=>`<li>${x}</li>`).join("") + "</ul>" : "<p>-</p>"}
+          </div>
+        </div>`;
+      }
+    });
+
+    reportDiv.innerHTML = html;
+    printBtn.style.display = "inline-block";
+    downloadBtn.style.display = "inline-block";
+
+    downloadBtn.onclick = () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
+      doc.html(reportDiv, {
+        callback: function(pdf){
+          const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g,"_");
+          pdf.save(`${nameSafe}_report.pdf`);
+        },
+        x:10, y:10, width: 570, windowWidth: reportDiv.scrollWidth
+      });
+    };
+
+  } catch (err) {
+    console.error(err);
+    errorDiv.textContent = "❌ حدث خطأ غير متوقع أثناء تحميل التقرير.";
   }
-  </script>
-<script>
-document.getElementById("backBtn").onclick = () => {
-  // الانتقال إلى الصفحة الرئيسية
-  window.location.href = "/index.html";
-};
+}
+
+// ==================== أزرار الرجوع / الإنهاء ====================
+document.getElementById("backBtn").onclick = () => window.location.href = "/index.html";
 
 document.getElementById("exitBtn").onclick = () => {
   if (window.matchMedia('(display-mode: standalone)').matches) {
-    // إذا كان التطبيق مثبتًا كتطبيق PWA
     window.close();
   } else {
-    // إذا كان داخل المتصفح العادي
     document.body.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;font-family:sans-serif;">
         <h2>👋 تم إنهاء الجلسة</h2>
@@ -253,5 +262,6 @@ document.getElementById("exitBtn").onclick = () => {
   }
 };
 </script>
+
 </body>
 </html>
