@@ -132,8 +132,7 @@ pageTitle.textContent = role === "staff"
   : "🎓 لوحة تحكم الطالب / ولي الأمر";
 
 // ==================== تحميل القائمة ====================
-// استخدم مسار نسبي لتجنب مشاكل Netlify
-fetch(`./api/menu/${role}`)
+fetch(`/api/menu/${role}`)
   .then(res => {
     if (!res.ok) throw new Error(`خطأ ${res.status}`);
     return res.json();
@@ -165,7 +164,7 @@ function handleMenuClick(item) {
       openPdf(item.filename);
       break;
     case "submenu":
-      window.location.href = `./policies.html?role=${item.role || role}`;
+      window.location.href = `/policies.html?role=${item.role || role}`;
       break;
     case "page":
       window.location.href = `.${item.path}`;
