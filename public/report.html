@@ -150,6 +150,24 @@ th {
   .button { width: 90%; }
   .notes-box { flex-direction: column; }
 }
+
+/* إشعار تحميل PDF */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #16a085;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.toast.show {
+  opacity: 1;
+}
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -175,7 +193,15 @@ th {
   <div id="report"></div>
 </div>
 
+<div id="toast" class="toast">✅ تم تحميل التقرير بنجاح</div>
+
 <script>
+function showToast() {
+  const toast = document.getElementById("toast");
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
 async function loadReport() {
   const id = document.getElementById("studentId").value.trim();
   const reportDiv = document.getElementById("report");
@@ -255,14 +281,15 @@ async function loadReport() {
     printBtn.style.display = "inline-block";
     downloadBtn.style.display = "inline-block";
 
-    // ======== تحميل PDF مع إخفاء رقم الهوية ========
+    // تحميل PDF بدون تراكب وإظهار إشعار النجاح
     downloadBtn.onclick = async () => {
       const idElements = reportDiv.querySelectorAll(".id-number");
-      idElements.forEach(el => el.style.display = "none"); // إخفاؤه مؤقتاً
+      idElements.forEach(el => el.style.display = "none"); // إخفاء رقم الهوية مؤقتاً
 
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
 
+      const reportClone = reportDiv.cloneNode(true); // استخدام نسخة لتجنب أي تراكب
       const logo = new Image();
       logo.src = "./icons/logo.png";
       await logo.decode();
@@ -270,17 +297,18 @@ async function loadReport() {
       doc.setFontSize(14);
       doc.text("المدرسة: مدارس الشيخ سعود الخيرية - فرع1", 300, 140, { align: "center" });
 
-      doc.html(reportDiv, {
-        callback: function (pdf) {
-          idElements.forEach(el => el.style.display = ""); // إعادة إظهاره بعد الحفظ
-          const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g, "_");
-          pdf.save(`${nameSafe}_report.pdf`);
-        },
+      await doc.html(reportClone, {
         x: 10,
         y: 160,
         width: 570,
         windowWidth: reportDiv.scrollWidth
       });
+
+      const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g, "_");
+      doc.save(`${nameSafe}_report.pdf`);
+
+      idElements.forEach(el => el.style.display = ""); // إعادة ظهور رقم الهوية
+      showToast(); // إشعار نجاح التحميل
     };
 
   } catch (err) {
