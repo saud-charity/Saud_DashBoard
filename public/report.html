@@ -99,7 +99,7 @@ th {
 .btn-warning { background-color: #f39c12; }
 .btn-warning:hover { background-color: #d68910; }
 
-#navControls, #pdfControls, #searchButtons {
+#navControls, #searchButtons {
   display: flex;
   justify-content: center;
   gap: 15px;
@@ -131,6 +131,7 @@ th {
   color: #2c3e50;
 }
 
+/* إخفاء رقم الهوية في الطباعة */
 @media print {
   body { background: white; }
   #navControls, #searchButtons, #error { display: none !important; }
@@ -143,26 +144,7 @@ th {
   .button { width: 90%; }
   .notes-box { flex-direction: column; }
 }
-
-.toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #16a085;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.toast.show {
-  opacity: 1;
-}
 </style>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -178,33 +160,22 @@ th {
   <div id="searchButtons">
     <button onclick="loadReport()" class="button btn-primary">عرض التقرير</button>
     <button id="printBtn" class="button btn-warning" onclick="window.print()" style="display:none;">🖨️ طباعة</button>
-    <button id="downloadBtn" class="button btn-primary" style="display:none;">💾 تحميل PDF</button>
   </div>
 
   <div id="error" class="error"></div>
   <div id="report"></div>
 </div>
 
-<div id="toast" class="toast">✅ تم تحميل التقرير بنجاح</div>
-
 <script>
-function showToast() {
-  const toast = document.getElementById("toast");
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2500);
-}
-
 async function loadReport() {
   const id = document.getElementById("studentId").value.trim();
   const reportDiv = document.getElementById("report");
   const errorDiv = document.getElementById("error");
   const printBtn = document.getElementById("printBtn");
-  const downloadBtn = document.getElementById("downloadBtn");
 
   reportDiv.innerHTML = "";
   errorDiv.textContent = "";
   printBtn.style.display = "none";
-  downloadBtn.style.display = "none";
 
   if (!id) {
     errorDiv.textContent = "❌ فضلاً أدخل رقم هوية الطالب.";
@@ -270,45 +241,6 @@ async function loadReport() {
 
     reportDiv.innerHTML = html;
     printBtn.style.display = "inline-block";
-    downloadBtn.style.display = "inline-block";
-
-    // تحميل PDF في الخلفية
-    downloadBtn.onclick = async () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
-
-      // إنشاء نسخة Clone لإخفاء رقم الهوية
-      const reportClone = reportDiv.cloneNode(true);
-      reportClone.querySelectorAll(".id-number").forEach(el => el.style.display = "none");
-
-      // عنصر مؤقت خارج DOM
-      const tempDiv = document.createElement("div");
-      tempDiv.style.position = "absolute";
-      tempDiv.style.left = "-9999px";
-      tempDiv.appendChild(reportClone);
-      document.body.appendChild(tempDiv);
-
-      // إضافة شعار المدرسة
-      const logo = new Image();
-      logo.src = "./icons/logo.png";
-      await logo.decode();
-      doc.addImage(logo, "PNG", 250, 20, 100, 100);
-      doc.setFontSize(14);
-      doc.text("المدرسة: مدارس الشيخ سعود الخيرية - فرع1", 300, 140, { align: "center" });
-
-      await doc.html(reportClone, {
-        x: 10,
-        y: 160,
-        width: 570,
-        windowWidth: reportDiv.scrollWidth
-      });
-
-      const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g, "_");
-      doc.save(`${nameSafe}_report.pdf`);
-
-      document.body.removeChild(tempDiv); // إزالة العنصر المؤقت
-      showToast(); // إشعار النجاح
-    };
 
   } catch (err) {
     console.error(err);
@@ -325,14 +257,4 @@ document.getElementById("exitBtn").onclick = () => {
       <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;font-family:sans-serif;">
         <h2>👋 تم إنهاء الجلسة</h2>
         <p>يمكنك الآن إغلاق الصفحة أو العودة لاحقًا.</p>
-        <button onclick="window.location.href='/index.html'" style="margin-top:20px;padding:10px 20px;border:none;border-radius:8px;background:#2563eb;color:white;font-size:16px;">
-          🔁 عودة للرئيسية
-        </button>
-      </div>
-    `;
-  }
-};
-</script>
-
-</body>
-</html>
+        <button onclick="window.location.href='/index.html'" style="margin-top:20px;padding:10px 20px;border
