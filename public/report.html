@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>تقرير طالب</title>
+<title>تقرير الطالب</title>
 <style>
 body {
   font-family: "Cairo", sans-serif;
@@ -103,7 +103,6 @@ th {
 .btn-info { background-color: #16a085; }
 .btn-info:hover { background-color: #13876b; }
 
-/* ==================== حاويات الأزرار ==================== */
 #navControls, #pdfControls, #searchButtons {
   display: flex;
   justify-content: center;
@@ -137,29 +136,13 @@ th {
   color: #2c3e50;
 }
 
-/* ==================== الطباعة: يظهر الشعار فقط في الصفحة الأولى ==================== */
+/* إخفاء رقم الهوية في الطباعة */
 @media print {
-  body {
-    background: white;
-  }
-
-  #navControls, #searchButtons, #error {
-    display: none !important;
-  }
-
-  .school-header {
-    display: block;
-    page-break-after: avoid;
-  }
-
-  /* إخفاء الشعار في الصفحات التالية */
-  .school-header {
-    position: relative;
-  }
-
-  @page {
-    margin: 20mm;
-  }
+  body { background: white; }
+  #navControls, #searchButtons, #error { display: none !important; }
+  .school-header { display: block; page-break-after: avoid; }
+  .id-number { display: none !important; }
+  @page { margin: 20mm; }
 }
 
 /* ==================== استجابة للشاشات الصغيرة ==================== */
@@ -169,13 +152,10 @@ th {
 }
 </style>
 
-<!-- مكتبة jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
-
 <body>
 
-<!-- ==================== أزرار الرجوع والإنهاء ==================== -->
 <div id="navControls">
   <button id="backBtn" class="button btn-primary">🔙 الرجوع للرئيسية</button>
   <button id="exitBtn" class="button btn-danger">❌ إنهاء البرنامج</button>
@@ -234,6 +214,7 @@ async function loadReport() {
 
       <div class="student-info">
         <p><strong>الاسم:</strong> ${data.student?.["الاسم"] || "-"}</p>
+        <p class="id-number"><strong>رقم الهوية:</strong> ${data.student?.["الهوية"] || id}</p>
         <p><strong>الصف:</strong> ${data.student?.["الصف"] || "-"}</p>
       </div>
     `;
@@ -274,12 +255,14 @@ async function loadReport() {
     printBtn.style.display = "inline-block";
     downloadBtn.style.display = "inline-block";
 
-    // ======== تحميل PDF مع الشعار في الصفحة الأولى فقط ========
+    // ======== تحميل PDF مع إخفاء رقم الهوية ========
     downloadBtn.onclick = async () => {
+      const idElements = reportDiv.querySelectorAll(".id-number");
+      idElements.forEach(el => el.style.display = "none"); // إخفاؤه مؤقتاً
+
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
 
-      // إدراج الشعار واسم المدرسة في الصفحة الأولى
       const logo = new Image();
       logo.src = "./icons/logo.png";
       await logo.decode();
@@ -287,9 +270,9 @@ async function loadReport() {
       doc.setFontSize(14);
       doc.text("المدرسة: مدارس الشيخ سعود الخيرية - فرع1", 300, 140, { align: "center" });
 
-      // إدراج محتوى التقرير بعد الرأس
       doc.html(reportDiv, {
         callback: function (pdf) {
+          idElements.forEach(el => el.style.display = ""); // إعادة إظهاره بعد الحفظ
           const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g, "_");
           pdf.save(`${nameSafe}_report.pdf`);
         },
