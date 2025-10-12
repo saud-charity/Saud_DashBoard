@@ -208,23 +208,21 @@ async function loadReport() {
       </div>
     `;
 
-    data.subjects.forEach(subjectData => {
-      if (!subjectData.name) return;
-      const keys = Object.keys(subjectData).filter(k => !["name","strengths","improvements"].includes(k));
+    data.subjects.forEach(subject => {
+      if (!subject.name) return;
+      const keys = Object.keys(subject).filter(k => !["name","strengths","improvements"].includes(k));
 
-      html += `<h3 style="text-align:center; margin-top:20px;">${subjectData.name}</h3>`;
+      html += `<h3 style="text-align:center; margin-top:20px;">${subject.name}</h3>`;
       html += `<table><thead><tr>`;
       keys.forEach(k => html += `<th>${k}</th>`);
       html += `</tr></thead><tbody><tr>`;
-      keys.forEach(k => html += `<td>${subjectData[k] ?? "-"}</td>`);
+      keys.forEach(k => html += `<td>${subject[k] ?? "-"}</td>`);
       html += `</tr></tbody></table>`;
 
-      const s = subjectData.strengths ? String(subjectData.strengths).trim() : "";
-      const i = subjectData.improvements ? String(subjectData.improvements).trim() : "";
-      if (s || i) {
-        const strengthsList = s ? s.split(/\r?\n/).filter(Boolean) : [];
-        const improvementsList = i ? i.split(/\r?\n/).filter(Boolean) : [];
+      const strengthsList = subject.strengths ? subject.strengths.split(/\r?\n/).filter(Boolean) : [];
+      const improvementsList = subject.improvements ? subject.improvements.split(/\r?\n/).filter(Boolean) : [];
 
+      if (strengthsList.length || improvementsList.length) {
         html += `
         <div class="notes-box">
           <div class="strengths">
@@ -257,4 +255,14 @@ document.getElementById("exitBtn").onclick = () => {
       <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;text-align:center;font-family:sans-serif;">
         <h2>👋 تم إنهاء الجلسة</h2>
         <p>يمكنك الآن إغلاق الصفحة أو العودة لاحقًا.</p>
-        <button onclick="window.location.href='/index.html'" style="margin-top:20px;padding:10px 20px;border
+        <button onclick="window.location.href='/index.html'" style="margin-top:20px;padding:10px 20px;border:none;border-radius:8px;background:#2563eb;color:white;font-size:16px;">
+          🔁 عودة للرئيسية
+        </button>
+      </div>
+    `;
+  }
+};
+</script>
+
+</body>
+</html>
