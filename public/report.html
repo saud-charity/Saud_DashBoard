@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>تقرير الطالب</title>
+<title>تقرير طالب</title>
 <style>
 body {
   font-family: "Cairo", sans-serif;
@@ -119,6 +119,49 @@ th {
   z-index: 10;
 }
 
+/* ==================== شعار المدرسة ==================== */
+.school-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.school-header img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.school-header h2 {
+  margin: 10px 0 0;
+  font-size: 20px;
+  color: #2c3e50;
+}
+
+/* ==================== الطباعة: يظهر الشعار فقط في الصفحة الأولى ==================== */
+@media print {
+  body {
+    background: white;
+  }
+
+  #navControls, #searchButtons, #error {
+    display: none !important;
+  }
+
+  .school-header {
+    display: block;
+    page-break-after: avoid;
+  }
+
+  /* إخفاء الشعار في الصفحات التالية */
+  .school-header {
+    position: relative;
+  }
+
+  @page {
+    margin: 20mm;
+  }
+}
+
 /* ==================== استجابة للشاشات الصغيرة ==================== */
 @media (max-width: 768px) {
   .button { width: 90%; }
@@ -183,10 +226,17 @@ async function loadReport() {
       return;
     }
 
-    let html = `<div class="student-info">
-      <p><strong>الاسم:</strong> ${data.student?.["الاسم"] || "-"}</p>
-      <p><strong>الصف:</strong> ${data.student?.["الصف"] || "-"}</p>
-    </div>`;
+    let html = `
+      <div class="school-header">
+        <img src="./icons/logo.png" alt="شعار المدرسة">
+        <h2>المدرسة: مدارس الشيخ سعود الخيرية - فرع1</h2>
+      </div>
+
+      <div class="student-info">
+        <p><strong>الاسم:</strong> ${data.student?.["الاسم"] || "-"}</p>
+        <p><strong>الصف:</strong> ${data.student?.["الصف"] || "-"}</p>
+      </div>
+    `;
 
     data.subjects.forEach(subjectData => {
       if (!subjectData.name) return;
@@ -224,15 +274,29 @@ async function loadReport() {
     printBtn.style.display = "inline-block";
     downloadBtn.style.display = "inline-block";
 
-    downloadBtn.onclick = () => {
+    // ======== تحميل PDF مع الشعار في الصفحة الأولى فقط ========
+    downloadBtn.onclick = async () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({orientation:"p", unit:"pt", format:"a4"});
+
+      // إدراج الشعار واسم المدرسة في الصفحة الأولى
+      const logo = new Image();
+      logo.src = "./icons/logo.png";
+      await logo.decode();
+      doc.addImage(logo, "PNG", 250, 20, 100, 100);
+      doc.setFontSize(14);
+      doc.text("المدرسة: مدارس الشيخ سعود الخيرية - فرع1", 300, 140, { align: "center" });
+
+      // إدراج محتوى التقرير بعد الرأس
       doc.html(reportDiv, {
-        callback: function(pdf){
-          const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g,"_");
+        callback: function (pdf) {
+          const nameSafe = (data.student?.["الاسم"] || "report").replace(/\s+/g, "_");
           pdf.save(`${nameSafe}_report.pdf`);
         },
-        x:10, y:10, width: 570, windowWidth: reportDiv.scrollWidth
+        x: 10,
+        y: 160,
+        width: 570,
+        windowWidth: reportDiv.scrollWidth
       });
     };
 
@@ -242,7 +306,6 @@ async function loadReport() {
   }
 }
 
-// ==================== أزرار الرجوع / الإنهاء ====================
 document.getElementById("backBtn").onclick = () => window.location.href = "/index.html";
 
 document.getElementById("exitBtn").onclick = () => {
