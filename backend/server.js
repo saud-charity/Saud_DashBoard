@@ -22,7 +22,8 @@ const studentMenu = [
   { title: "السياسات", type: "submenu", role: "student" },
   { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
   { title: "وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" },
-  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.moe.gov.ae/" }
+  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.moe.gov.ae/" },
+   { title: "المكتبة الرقمية", type: "external", url: "https://books.arabreadingchallenge.com/ar/Login"}
 ];
 
 const staffMenu = [
