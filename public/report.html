@@ -234,9 +234,26 @@ async function loadReport() {
           </div>
         </div>`;
       }
+
     });
 
     reportDiv.innerHTML = html;
+    reportDiv.innerHTML = html + `
+      <div style="margin-top:40px; border-top:2px solid #ccc; padding-top:20px;">
+        <h3 style="text-align:center; color:#2c3e50;">🔶 مستوى التوقعات</h3>
+        <ul style="list-style:none; line-height:1.8; font-size:16px;">
+          <li><strong>يفوق التوقعات:</strong> الطلبة مقبلون على التعلم ويتولون مسؤولية تعلمهم ويعلمون نقاط القوة والضعف لديهم ويعملون على نحو هادف لتحقيق المزيد من التحسن.</li>
+          <li><strong>يلبّي التوقعات:</strong> يستمتع الطلبة بالتعلم ويتولون المسؤوليات في عملية تعلمهم على نحو متزايد ويعلمون نقاط القوة والضعف لديهم ويتخذون خطوات لتحسين أدائهم.</li>
+          <li><strong>يلبّي التوقعات جزئيًا:</strong> يتمتع الطلبة بمواقف إيجابية تجاه تعلمهم ويستطيعون العمل لفترات قصيرة دون تدخل المعلم، وعلى الرغم من ذلك لا يتسمون بالمشاركة الفاعلة في تعلمهم.</li>
+          <li><strong>لا يلبّي التوقعات:</strong> يتشتت انتباه الطلبة بسهولة ولا يستطيعون العمل إلا بتوجيهات من معلميهم ونادرًا ما يتفكرون في عملية تعلمهم.</li>
+        </ul>
+
+        <p style="text-align:left; margin-top:30px; font-weight:bold; font-size:18px;">
+          اعتماد مديرة المدرسة / <span style="color:#2c3e50;">ميادة عويضة</span>
+        </p>
+      </div>
+    `;
+
     printBtn.style.display = "inline-block";
 
   } catch (err) {
