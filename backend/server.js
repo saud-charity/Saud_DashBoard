@@ -14,9 +14,9 @@ app.use(express.static("public"));
 
 // ===================== MENUS =====================
 const studentMenu = [
-  { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
-  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
-  { title: "التوقيت الزمني لدوام الطلبة", type: "pdf", filename: "timings.pdf" },
+  { title: "📘 جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
+  { title: "📗 جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
+  { title: "⏰ التوقيت الزمني لدوام الطلبة", type: "pdf", filename: "timings.pdf" },
   { title: "📞 أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
   { title: "📄 تقرير طالب", type: "page", path: "/report.html" },
   { title: "📑 السياسات", type: "submenu", role: "student" },
