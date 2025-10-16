@@ -101,45 +101,6 @@ h1 {
     font-size: 1em;
   }
 }
-/* ==================== أزرار السياسات بأسلوب iPad ==================== */
-.button {
-  width: 100px;
-  height: 100px;
-  border: none;
-  border-radius: 20px;
-  background: #ffffff;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.1), -2px -2px 6px rgba(255,255,255,0.6);
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px; /* حجم الأيقونة */
-  color: #2563eb;
-  margin: 10px;
-}
-
-.button span {
-  font-size: 14px;
-  margin-top: 8px;
-  color: #333;
-  font-weight: 600;
-}
-
-.button:hover {
-  transform: scale(1.08);
-  box-shadow: 3px 3px 8px rgba(0,0,0,0.15), -3px -3px 8px rgba(255,255,255,0.8);
-}
-
-/* ترتيب الأزرار على شكل شبكة */
-#policyMenu {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 20px;
-  justify-items: center;
-  margin-top: 25px;
-}
 
 </style>
 </head>
@@ -181,18 +142,6 @@ const errorMessage = document.getElementById("errorMessage");
 const params = new URLSearchParams(window.location.search);
 const role = params.get("role") || sessionStorage.getItem("role") || "student";
 
-function getIcon(title) {
-  if (title.includes("السلوكية")) return "📘";
-  if (title.includes("التقييم")) return "🧾";
-  if (title.includes("المغادرة")) return "🚪";
-  if (title.includes("الأمن")) return "🛡️";
-  if (title.includes("حقوق")) return "👶";
-  if (title.includes("الحضور")) return "⏰";
-  if (title.includes("إطار")) return "📋";
-  if (title.includes("المهنية")) return "🤝";
-  return "📄";
-}
-
 pageTitle.textContent = role === "staff"
   ? "📄 سياسات الكادر الإداري والتدريسي"
   : "📄 سياسات الطالب / ولي الأمر";
@@ -220,7 +169,7 @@ function renderPolicyMenu(policies) {
   policies.forEach(item => {
     const btn = document.createElement("button");
     btn.className = "button btn-primary";
-    btn.innerHTML = `${getIcon(item.title)}<span>${item.title}</span>`;
+    btn.textContent = item.title;
     btn.onclick = () => openPolicy(item.filename);
     policyMenu.appendChild(btn);
   });

@@ -49,7 +49,7 @@ app.get("/api/menu/:role", (req, res) => {
 
 // ===================== POLICIES =====================
 const studentPolicies = [
-  { title: "📘 اللائحة السلوكية", filename: "behavior_policy.pdf" },
+  { title: "اللائحة السلوكية", filename: "behavior_policy.pdf" },
   { title: "🧾 سياسة التقييم", filename: "assessment_policy.pdf" },
   { title: "🚪 سياسة المغادرة", filename: "leave_policy.pdf" },
   { title: "💻 سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
