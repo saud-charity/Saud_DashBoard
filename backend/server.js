@@ -14,30 +14,30 @@ app.use(express.static("public"));
 
 // ===================== MENUS =====================
 const studentMenu = [
-  { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
-  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
-  { title: "التوقيت الزمني لدوام الطلبة", type: "pdf", filename: "timings.pdf" },
-  { title: "أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
-  { title: "تقرير طالب", type: "page", path: "/report.html" },
-  { title: "السياسات", type: "submenu", role: "student" },
-  { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
-  { title: "وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" },
-  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.moe.gov.ae/" },
-   { title: "المكتبة الرقمية", type: "external", url: "https://books.arabreadingchallenge.com/ar/Login"}
+  { title: "📘 جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
+  { title: "📗 جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
+  { title: "⏰ التوقيت الزمني لدوام الطلبة", type: "pdf", filename: "timings.pdf" },
+  { title: "📞 أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
+  { title: "📄 تقرير طالب", type: "page", path: "/report.html" },
+  { title: "📑 السياسات", type: "submenu", role: "student" },
+  { title: "💻 منصة ألف", type: "external", url: "https://www.alefed.com" },
+  { title: "🏛️ وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" },
+  { title: "🎓 بوابة التعلم الذكي", type: "external", url: "https://lms.moe.gov.ae/" },
+   { title: "🗓️ المكتبة الرقمية", type: "external", url: "https://books.arabreadingchallenge.com/ar/Login"}
 ];
 
 const staffMenu = [
-  { title: "جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
-  { title: "جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
-  { title: "جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
-  { title: "جدول المناوبة", type: "pdf", filename: "duties.pdf" },
-  { title: "التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
-  { title: "أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
-  { title: "السياسات", type: "submenu", role: "staff" },
-  { title: "منصة ألف", type: "external", url: "https://www.alefed.com" },
-  { title: "المنهل", type: "external", url: "https://sis.moe.gov.ae/" },
-  { title: "منهاجي", type: "external", url: "https://minhaji.moe.gov.ae/library" },
-  { title: "بوابة التعلم الذكي", type: "external", url: "https://lms.moe.gov.ae/" }
+  { title: "📘 جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
+  { title: "📗 جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
+  { title: "👩‍🏫 جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
+  { title: "🧑‍💼 جدول المناوبة", type: "pdf", filename: "duties.pdf" },
+  { title: "⏰ التوقيت الزمني للحصص", type: "pdf", filename: "timings.pdf" },
+  { title: "📞 أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
+  { title: "📑 السياسات", type: "submenu", role: "staff" },
+  { title: "💻 منصة ألف", type: "external", url: "https://www.alefed.com" },
+  { title: "🔗 المنهل", type: "external", url: "https://sis.moe.gov.ae/" },
+  { title: "📚 منهاجي", type: "external", url: "https://minhaji.moe.gov.ae/library" },
+  { title: "🚪بوابة التعلم الذكي", type: "external", url: "https://lms.moe.gov.ae/" }
 ];
 
 app.get("/api/menu/:role", (req, res) => {
@@ -49,23 +49,23 @@ app.get("/api/menu/:role", (req, res) => {
 
 // ===================== POLICIES =====================
 const studentPolicies = [
-  { title: "اللائحة السلوكية", filename: "behavior_policy.pdf" },
-  { title: "سياسة التقييم", filename: "assessment_policy.pdf" },
-  { title: "سياسة المغادرة", filename: "leave_policy.pdf" },
-  { title: "سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
-  { title: "سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
-  { title: "سياسة الحضور والغياب", filename: "attendance_policy.pdf" }
+  { title: "📘 اللائحة السلوكية", filename: "behavior_policy.pdf" },
+  { title: "🧾 سياسة التقييم", filename: "assessment_policy.pdf" },
+  { title: "🚪 سياسة المغادرة", filename: "leave_policy.pdf" },
+  { title: "💻 سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
+  { title: "👶 سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
+  { title: "⏰ سياسة الحضور والغياب", filename: "attendance_policy.pdf" }
 ];
 
 const staffPolicies = [
-  { title: "اللائحة السلوكية", filename: "behavior_policy.pdf" },
-  { title: "سياسة التقييم", filename: "assessment_policy.pdf" },
-  { title: "سياسة المغادرة", filename: "leave_policy.pdf" },
-  { title: "سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
-  { title: "سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
-  { title: "سياسة الحضور والانصراف", filename: "attendance_policy.pdf" },
-  { title: "إطار معايير الرقابة والتقييم المدرسية", filename: "framework.pdf" },
-  { title: "السياسات المهنية والأخلاقية", filename: "ethics_charter_policy.pdf" }
+  { title: "📘 اللائحة السلوكية", filename: "behavior_policy.pdf" },
+  { title: "🧾 سياسة التقييم", filename: "assessment_policy.pdf" },
+  { title: "🚪 سياسة المغادرة", filename: "leave_policy.pdf" },
+  { title: "💻 سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
+  { title: "👶 سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
+  { title: "⏰ سياسة الحضور والانصراف", filename: "attendance_policy.pdf" },
+  { title: "📊 إطار معايير الرقابة والتقييم المدرسية", filename: "framework.pdf" },
+  { title: "⚖️ السياسات المهنية والأخلاقية", filename: "ethics_charter_policy.pdf" }
 ];
 
 app.get("/api/policies/:role", (req, res) => {
