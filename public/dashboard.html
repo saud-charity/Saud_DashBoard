@@ -18,37 +18,63 @@ h1 {
 }
 
 /* ==================== أزرار موحدة ==================== */
-./* ==================== أزرار موحدة (تصميم شفاف حديث) ==================== */
+/* ==================== أزرار أيقونية بأسلوب iPad ==================== */
 .button {
-  padding: 12px 20px;
-  font-size: 1em;
+  width: 90px;
+  height: 90px;
   border: none;
-  border-radius: 10px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.1), -3px -3px 8px rgba(255,255,255,0.7);
   cursor: pointer;
-  background: transparent;
-  color: #2c3e50;
-  transition: all 0.25s ease;
-  display: inline-flex;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin: 6px;
-  font-weight: 600;
+  font-size: 22px;
+  color: #444;
+  margin: 10px;
+}
+
+.button span {
+  font-size: 13px;
+  margin-top: 6px;
+  color: #333;
 }
 
 .button:hover {
-  background: rgba(52, 152, 219, 0.15);
-  color: #000;
-  transform: translateY(-2px);
+  transform: scale(1.08);
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.15), -3px -3px 10px rgba(255,255,255,0.9);
 }
 
-/* ألوان خفيفة للدلالة فقط عند التفاعل */
-.btn-primary:hover { background: rgba(52, 152, 219, 0.15); }
-.btn-danger:hover { background: rgba(231, 76, 60, 0.15); }
-.btn-warning:hover { background: rgba(243, 156, 18, 0.15); }
-.btn-info:hover { background: rgba(22, 160, 133, 0.15); }
+/* تدرجات ألوان مختلفة حسب الفئة */
+.btn-primary { color: #1e90ff; }
+.btn-danger { color: #e74c3c; }
+.btn-warning { color: #f39c12; }
+.btn-info { color: #16a085; }
 
+/* خلفية الصفحة */
+body {
+  font-family: "Tahoma", Arial, sans-serif;
+  text-align: center;
+  background: #f5f7fa;
+  padding: 30px;
+}
 
+#menuContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+h1 {
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  color: #333;
+}
 /* ==================== حاويات الأزرار ==================== */
 #navControls, #pdfControls, #menuContainer {
   display: flex;
@@ -145,6 +171,18 @@ fetch(`/api/menu/${role}`)
     console.error("خطأ في تحميل القائمة:", err);
     menuContainer.innerHTML = "<p style='color:red;'>❌ تعذر تحميل القائمة.</p>";
   });
+// ================= تغيير شكل الايقومات ===============================
+function getIcon(title) {
+  if (title.includes("جدول")) return "📅";
+  if (title.includes("الخطة")) return "🗓️";
+  if (title.includes("أرقام")) return "☎️";
+  if (title.includes("تقرير")) return "📊";
+  if (title.includes("سياسات")) return "📘";
+  if (title.includes("منصة")) return "💻";
+  if (title.includes("وزارة")) return "🏛️";
+  if (title.includes("بوابة")) return "🌐";
+  return "📄";
+}
 
 // ==================== عرض القائمة ====================
 function renderMenu(menu) {
@@ -152,7 +190,7 @@ function renderMenu(menu) {
   menu.forEach(item => {
     const btn = document.createElement("button");
     btn.className = "button btn-primary";
-    btn.textContent = item.title;
+    btn.innerHTML = `${getIcon(item.title)}<span>${item.title}</span>`;
     btn.onclick = () => handleMenuClick(item);
     menuContainer.appendChild(btn);
   });
