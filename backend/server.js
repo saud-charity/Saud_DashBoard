@@ -224,13 +224,14 @@ app.get("/api/report/:id", (req, res) => {
 
 // ===================== E-mail REPORT =====================
 
+const EXCEL_PATH2 = path.join(__dirname, "data", "emails.xlsx");
 function loadEmailsFromExcel() {
-  if (!fs.existsSync(EXCEL_PATH)) {
-    console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH);
+  if (!fs.existsSync(EXCEL_PATH2)) {
+    console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH2);
     return {};
   }
 
-  const workbook = xlsx.readFile(EXCEL_PATH);
+  const workbook = xlsx.readFile(EXCEL_PATH2);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" });
 
