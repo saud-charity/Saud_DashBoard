@@ -266,18 +266,18 @@ function loadEmailsFromExcel() {
   return students;
 }
 
-let studentsData = loadEmailsFromExcel();
+let studentsemail = loadEmailsFromExcel();
 
 // 🔁 إعادة تحميل البيانات
 app.post("/api/reload-students", (req, res) => {
-  studentsData = loadEmailsFromExcel();
-  return res.json({ ok: true, count: Object.keys(studentsData).length });
+  studentsemail = loadEmailsFromExcel();
+  return res.json({ ok: true, count: Object.keys(studentsemail).length });
 });
 
 // 🔍 جلب بيانات طالب واحد
 app.get("/api/emails/:id", (req, res) => {
   const id = String(req.params.id || "").replace(/\s/g, "").trim();
-  const report = studentsData[id];
+  const report = studentsemail[id];
   if (!report) {
     console.warn(`⚠️ رقم الهوية ${id} غير موجود`);
     return res.status(404).send("❌ الطالب غير موجود");
