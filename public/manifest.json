@@ -1,11 +1,11 @@
 {
-  "name": "منصة مدرسة الشيخ سعود الخيرية - فرع1",
+  "name": "الجُعبة الرقمية لمدرسة الشيخ سعود الخيرية - فرع1",
   "short_name": "فرع1",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#f5f6fa",
   "theme_color": "#2c3e50",
-  "description": "منصة مدرسة الشيخ سعود الخيرية - فرع1",
+  "description": "الجُعبة الرقمية لمدرسة الشيخ سعود الخيرية - فرع1",
   "icons": [
     {
       "src": "icons/icon-192.png",
