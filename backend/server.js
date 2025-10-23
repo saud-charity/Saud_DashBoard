@@ -224,8 +224,6 @@ app.get("/api/report/:id", (req, res) => {
 
 // ===================== E-mail REPORT =====================
 
-const EXCEL_PATH = path.join(__dirname, "data", "emails.xlsx");
-
 function loadEmailsFromExcel() {
   if (!fs.existsSync(EXCEL_PATH)) {
     console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH);
