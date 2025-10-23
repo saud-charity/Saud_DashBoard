@@ -18,6 +18,7 @@ const studentMenu = [
   { title: "📗 جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
   { title: "⏰ التوقيت الزمني لدوام الطلبة", type: "pdf", filename: "timings.pdf" },
   { title: "📞 أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
+  { title: "✉️ ايميل طالب", type: "page", path: "/emails.html" },
   { title: "📄 تقرير طالب", type: "page", path: "/report.html" },
   { title: "📑 السياسات", type: "submenu", role: "student" },
   { title: "💻 منصة ألف", type: "external", url: "https://www.alefed.com" },
@@ -220,6 +221,72 @@ app.get("/api/report/:id", (req, res) => {
   }
   return res.json(report);
 });
+
+// ===================== E-mail REPORT =====================
+
+const EXCEL_PATH = path.join(__dirname, "data", "emails.xlsx");
+
+function loadEmailsFromExcel() {
+  if (!fs.existsSync(EXCEL_PATH)) {
+    console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH);
+    return {};
+  }
+
+  const workbook = xlsx.readFile(EXCEL_PATH);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+  if (!rows || rows.length < 3) {
+    console.warn("⚠️ بنية ملف Excel غير كافية (نحتاج 3 صفوف على الأقل).");
+    return {};
+  }
+
+  const dataRows = rows.slice(2);
+  const students = {};
+
+  dataRows.forEach((row) => {
+    const studentIdRaw = row[0];
+    if (!studentIdRaw || String(studentIdRaw).trim() === "") return;
+
+    const studentId = String(studentIdRaw).replace(/\s/g, "").trim();
+    const studentName = String(row[1] || "-").trim();
+    const studentClass = String(row[2] || "-").trim();
+    const studentEmail = String(row[3] || "-").trim();
+    const studentPw = String(row[4] || "-").trim();
+
+    students[studentId] = {
+      student: {
+        "الاسم": studentName,
+        "الصف": studentClass,
+        "الايميل": studentEmail,
+        "الباسوورد": studentPw
+      },
+    };
+  });
+
+  console.log(`✅ تم تحميل ${Object.keys(students).length} طالب من Excel.`);
+  return students;
+}
+
+let studentsData = loadEmailsFromExcel();
+
+// 🔁 إعادة تحميل البيانات
+app.post("/api/reload-students", (req, res) => {
+  studentsData = loadEmailsFromExcel();
+  return res.json({ ok: true, count: Object.keys(studentsData).length });
+});
+
+// 🔍 جلب بيانات طالب واحد
+app.get("/api/emails/:id", (req, res) => {
+  const id = String(req.params.id || "").replace(/\s/g, "").trim();
+  const report = studentsData[id];
+  if (!report) {
+    console.warn(`⚠️ رقم الهوية ${id} غير موجود`);
+    return res.status(404).send("❌ الطالب غير موجود");
+  }
+  return res.json(report);
+});
+
 
 // ===================== START SERVER =====================
 app.listen(PORT, () => {
