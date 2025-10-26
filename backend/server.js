@@ -55,11 +55,11 @@ const studentPolicies = [
   { title: "🚪 سياسة المغادرة", filename: "leave_policy.pdf" },
   { title: "💻 سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
   { title: "👶 سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
-  { title: "⏰ الدليل الاجرائي لحضور وغياب الطلبة", filename: "attendance_policy.pdf" },
-  { title: "⏰ دليل إجراءات التبليغ", filename: "processes.pdf" },
-  { title: "⏰ سياسة التنمر", filename: "pullying.pdf" },
-  { title: "⏰ دليل الوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
-  { title: "⏰ التقويم الاكاديمي", filename: "calendar.pdf" },
+  { title: "👨‍🏫 الدليل الاجرائي لحضور وغياب الطلبة", filename: "attendance_policy.pdf" },
+  { title: "🛎️ دليل إجراءات التبليغ", filename: "processes.pdf" },
+  { title: "🚫 سياسة التنمر", filename: "pullying.pdf" },
+  { title: "🛡️ دليل الوقاية من المخدرات", filename: "Drug_Prevention_Guide.pdf" },
+  { title: "🗓️ التقويم الاكاديمي", filename: "calendar.pdf" },
 ];
 
 const staffPolicies = [
@@ -69,8 +69,8 @@ const staffPolicies = [
   { title: "💻 سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
   { title: "👶 سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
   { title: "⏰ سياسة الحضور والانصراف", filename: "attendance_policy.pdf" },  
-  { title: "⏰ دليل إجراءات التبليغ", filename: "processes.pdf" },
-  { title: "⏰ التقويم الاكاديمي", filename: "calendar.pdf" },
+  { title: "🛎️ دليل إجراءات التبليغ", filename: "processes.pdf" },
+  { title: "🗓️ التقويم الاكاديمي", filename: "calendar.pdf" },
   { title: "📊 إطار معايير الرقابة والتقييم المدرسية", filename: "framework.pdf" },
   { title: "⚖️ السياسات المهنية والأخلاقية", filename: "ethics_charter_policy.pdf" }
 ];
