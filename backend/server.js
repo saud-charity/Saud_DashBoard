@@ -51,10 +51,10 @@ app.get("/api/menu/:role", (req, res) => {
 // ===================== POLICIES =====================
 const studentPolicies = [
   { title: "اللائحة السلوكية", filename: "behavior_policy.pdf" },
-  { title: "🧾 1سياسة التقييم", filename: "assessment_policy.pdf" },
+  { title: "🧾 سياسة التقييم1", filename: "assessment_policy.pdf" },
   { title: "🧾 سياسة التقييم2", filename: "assess_policy.pdf" },
   { title: "🚪 سياسة المغادرة", filename: "leave_policy.pdf" },
-  { title: "💻 سياسة استخدام الذكاء الاصطناعي في العملية التعليمية الرقمي", filename: "ai.pdf" },
+  { title: "💻 سياسة استخدام الذكاء الاصطناعي في العملية التعليمية , filename: "ai.pdf" },
   { title: "🌍 سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
   { title: "👶 سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
   { title: "👨‍🏫 الدليل الاجرائي لحضور وغياب الطلبة", filename: "attendance_policy.pdf" },
