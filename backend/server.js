@@ -54,7 +54,7 @@ const studentPolicies = [
   { title: "🧾 سياسة التقييم1", filename: "assessment_policy.pdf" },
   { title: "🧾 سياسة التقييم2", filename: "assess_policy.pdf" },
   { title: "🚪 سياسة المغادرة", filename: "leave_policy.pdf" },
-  { title: "💻 سياسة استخدام الذكاء الاصطناعي في العملية التعليمية , filename: "artificial.pdf" },
+  { title: "💻 سياسة استخدام الذكاء الاصطناعي في العملية التعليمية" , filename: "artificial.pdf" },
   { title: "🌍 سياسة الأمن الرقمي", filename: "digital_safety_policy.pdf" },
   { title: "👶 سياسة حقوق الطفل", filename: "child_rights_policy.pdf" },
   { title: "👨‍🏫 الدليل الاجرائي لحضور وغياب الطلبة", filename: "attendance_policy.pdf" },
