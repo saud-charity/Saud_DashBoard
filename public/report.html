@@ -278,6 +278,68 @@ document.getElementById("exitBtn").onclick = () => {
     `;
   }
 };
+// ================= Second type of reports ==============
+try {
+        const res = await fetch(`/api/report1/${id}`);
+        if (!res.ok) {
+          errorDiv.textContent = "❌ الطالب غير موجود.";
+          return;
+        }
+
+        const data = await res.json();
+
+        let html = `
+          <div class="school-header">
+            <img src="./icons/logo.png" alt="شعار المدرسة" width="80">
+                    <p><strong>مدرسة الشيخ سعود الخيرية - فرع1</p>
+            <p><strong>الاسم:</strong> ${data.student["الاسم"]}</p>
+            <p><strong>الشعبة:</strong> ${data.student["الشعبة"]}</p>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>المادة</th>
+                <th>الاختبارات التكوينية</th>
+                <th>المشاركة الصفية</th>
+                <th>إنجاز المهام</th>
+                <th>الحضور والالتزام</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        let notes = [];
+        data.subjects.forEach(sub => {
+          html += `
+            <tr>
+              <td>${sub.name}</td>
+              <td>${sub.formative}</td>
+              <td>${sub.participation}</td>
+              <td>${sub.task}</td>
+              <td>${sub.commitment}</td>
+            </tr>`;
+          if (sub.note && sub.note !== "-") notes.push(`${sub.name}: ${sub.note}`);
+        });
+
+        html += "</tbody></table>";
+
+        if (notes.length > 0) {
+          html += `
+            <div class="notes-box">
+              <h3>📝 الملاحظات:</h3>
+              <ul>${notes.map(n => `<li>${n}</li>`).join("")}</ul>
+            </div>`;
+        }
+
+        reportDiv.innerHTML = html;
+        printBtn.style.display = "inline-block";
+      } catch (err) {
+        errorDiv.textContent = "❌ حدث خطأ أثناء تحميل التقرير.";
+      }
+    }
+
+// =================
 </script>
 
 </body>

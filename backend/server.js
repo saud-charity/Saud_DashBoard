@@ -237,6 +237,78 @@ app.get("/api/report/:id", (req, res) => {
   return res.json(report);
 });
 
+// ===================== SUBJECT NAMES =====================
+const subject_names = [
+  "اللغة العربية",
+  "اللغة الإنجليزية",
+  "التربية الإسلامية",
+  "الرياضيات",
+  "العلوم",
+  "الدراسات الاجتماعية"
+
+];
+// ===================== LOAD STUDENTS FUNCTION =====================
+function loadStudentsFromExcel1() {
+  const EXCEL_PATH1 = path.join(__dirname, "data", "students.xlsx");
+
+  if (!fs.existsSync(EXCEL_PATH1)) {
+    console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH1);
+    return {};
+  }
+
+  const workbook = xlsx.readFile(EXCEL_PATH1, { cellText: false, cellDates: false });
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "-" });
+
+  const students = {};
+  const dataRows = rows.slice(1);
+
+  dataRows.forEach((row) => {
+    let studentId = row[0];
+    if (!studentId || studentId === "-") return;
+    studentId = String(studentId).replace(/[^\d]/g, "").trim();
+    if (!studentId) return;
+
+    const name = row[1] ? String(row[1]).trim() : "-";
+    const className = row[3] ? String(row[3]).trim() : "-";
+
+    const subjects = subject_names.map((sub, i) => {
+      const base = 4 + i * 5; // من العمود الرابع تبدأ المواد
+      return {
+        name: sub,
+        formative: row[base] || "-",
+        participation: row[base + 1] || "-",
+        task: row[base + 2] || "-",
+        commitment: row[base + 3] || "-",
+        note: row[base + 4] || ""
+      };
+    });
+
+    students[studentId] = {
+      student: { "الاسم": name, "الشعبة": className },
+      subjects
+    };
+  });
+
+  return students;
+}
+
+// ===================== LOAD DATA ON START =====================
+let studentReports1 = loadStudentsFromExcel1();
+
+// ===================== API: GET REPORT =====================
+app.get("/api/report1/:id", (req, res) => {
+  const id = String(req.params.id).trim();
+
+  const student1 = studentReports1[id];
+  if (!student1) {
+    return res.status(404).json({ error: "❌ الطالب غير موجود" });
+  }
+
+  res.json(student1);
+});
+
+
 // ===================== E-mail REPORT =====================
 
 const EXCEL_PATH2 = path.join(__dirname, "data", "emails.xlsx");
