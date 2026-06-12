@@ -19,7 +19,8 @@ const studentMenu = [
   { title: "⏰ التوقيت الزمني لدوام الطلبة", type: "pdf", filename: "timings.pdf" },
   { title: "📞 أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
   { title: "✉️ ايميل طالب", type: "page", path: "/emails.html" },
-  { title: "📄 تقرير طالب", type: "page", path: "/report.html" },
+  { title: "📄 تقرير طالب ف2", type: "page", path: "/report.html" },
+  { title: "📄 تقرير طالب ف3", type: "page", path: "/report1.html" },
   { title: "📑 السياسات", type: "submenu", role: "student" },
   { title: "💻 منصة ألف", type: "external", url: "https://www.alefed.com" },
   { title: "🏛️ وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" },
@@ -144,7 +145,7 @@ const gradeSubjects = {
 };
 
 // ===================== STUDENT REPORT =====================
-const EXCEL_PATH = path.join(__dirname, "data", "students.xlsx");
+const EXCEL_PATH = path.join(__dirname, "data", "students1.xlsx");
 
 function loadStudentsFromExcel() {
   if (!fs.existsSync(EXCEL_PATH)) {
@@ -270,10 +271,10 @@ function loadStudentsFromExcel1() {
     if (!studentId) return;
 
     const name = row[1] ? String(row[1]).trim() : "-";
-    const className = row[3] ? String(row[3]).trim() : "-";
+    const className = row[2] ? String(row[2]).trim() : "-";
 
     const subjects = subject_names.map((sub, i) => {
-      const base = 4 + i * 5; // من العمود الرابع تبدأ المواد
+      const base = 3 + i * 5; // من العمود الرابع تبدأ المواد
       return {
         name: sub,
         formative: row[base] || "-",
