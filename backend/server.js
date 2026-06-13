@@ -29,7 +29,7 @@ const studentMenu = [
 ];
 
 const staffMenu = [
-  { title: "🧑‍💼 حقيبة المعلم", type: "page", path:"https://teacher-toolkit-app.vercel.app/"},  
+  { title: "🧑‍💼 حقيبة المعلم", type: "external", url:"https://teacher-toolkit-app.vercel.app/"},  
   { title: "📘 جداول الحلقة الأولى", type: "pdf", filename: "cycle1.pdf" },
   { title: "📗 جداول الحلقة الثانية", type: "pdf", filename: "cycle2.pdf" },
   { title: "👩‍🏫 جداول المعلمين", type: "pdf", filename: "teachers.pdf" },
