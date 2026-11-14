@@ -21,6 +21,7 @@ const studentMenu = [
   { title: "✉️ ايميل طالب", type: "page", path: "/emails.html" },
   { title: "📄 تقرير طالب شهر فبراير", type: "page", path: "/report.html" },
   { title: "📄 تقرير طالب شهر مايو", type: "page", path: "/report1.html" },
+  { title: "📄 تقرير طالب شهر نوفمبر", type: "page", path: "/report2.html" },
   { title: "📑 السياسات", type: "submenu", role: "student" },
   { title: "💻 منصة ألف", type: "external", url: "https://www.alefed.com" },
   { title: "🏛️ وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" },
@@ -375,6 +376,101 @@ app.get("/api/emails/:id", (req, res) => {
   return res.json(report);
 });
 
+
+// ===================== NOVEMBER REPORT (report2) =====================
+// بنية الملف: الصف 1 = أسماء المواد (كل مادة 7 أعمدة مدموجة تبدأ من العمود D)
+// الصف 2 = عناوين الحقول: 4 حقول تقييم ثم نقاط قوة، نقاط تحتاج إلى تحسين، ملاحظات سلوكية
+// من الصف 3 = بيانات الطلبة (A رقم الهوية، B الاسم، C الصف)
+const EXCEL_PATH_NOV = path.join(__dirname, "data", "students_nov.xlsx");
+const NOV_BLOCK = 7;      // عدد أعمدة كل مادة
+const NOV_FIELDS = 4;     // عدد حقول التقييم قبل النصوص
+
+function cellText(v) {
+  return v === undefined || v === null ? "" : String(v).trim();
+}
+
+function loadNovemberReports() {
+  if (!fs.existsSync(EXCEL_PATH_NOV)) {
+    console.warn("⚠️ ملف Excel غير موجود:", EXCEL_PATH_NOV);
+    return {};
+  }
+
+  const workbook = xlsx.readFile(EXCEL_PATH_NOV);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+
+  if (!rows || rows.length < 3) {
+    console.warn("⚠️ بنية ملف تقرير نوفمبر غير كافية (نحتاج 3 صفوف على الأقل).");
+    return {};
+  }
+
+  const subjectRow = rows[0];
+  const titlesRow = rows[1];
+
+  // تحديد بدايات المواد من الصف الأول
+  const blocks = [];
+  for (let col = 3; col < subjectRow.length; col += NOV_BLOCK) {
+    const name = cellText(subjectRow[col]);
+    if (!name) continue;
+    const fieldTitles = [];
+    for (let i = 0; i < NOV_FIELDS; i++) {
+      fieldTitles.push(cellText(titlesRow[col + i]) || `حقل ${i + 1}`);
+    }
+    blocks.push({ name, col, fieldTitles });
+  }
+
+  const students = {};
+
+  rows.slice(2).forEach((row) => {
+    const studentId = cellText(row[0]).replace(/[^\d]/g, "");
+    if (!studentId) return;
+
+    const subjects = [];
+    blocks.forEach(({ name, col, fieldTitles }) => {
+      const fields = fieldTitles.map((title, i) => ({
+        title,
+        value: cellText(row[col + i]) || "-"
+      }));
+      const strengths = cellText(row[col + NOV_FIELDS]);
+      const improvements = cellText(row[col + NOV_FIELDS + 1]);
+      const behavior = cellText(row[col + NOV_FIELDS + 2]);
+
+      // تجاهل المادة إذا كانت فارغة تمامًا لهذا الطالب (مثل الدراسات الاجتماعية حاليًا)
+      const hasData = fields.some(f => f.value !== "-") || strengths || improvements || behavior;
+      if (!hasData) return;
+
+      subjects.push({ name, fields, strengths, improvements, behavior });
+    });
+
+    students[studentId] = {
+      student: {
+        "الاسم": cellText(row[1]) || "-",
+        "الصف": cellText(row[2]) || "-"
+      },
+      subjects
+    };
+  });
+
+  console.log(`✅ تم تحميل ${Object.keys(students).length} تقرير طالب (نوفمبر) من Excel.`);
+  return students;
+}
+
+let novemberReports = loadNovemberReports();
+
+app.post("/api/reload-report2", (req, res) => {
+  novemberReports = loadNovemberReports();
+  return res.json({ ok: true, count: Object.keys(novemberReports).length });
+});
+
+app.get("/api/report2/:id", (req, res) => {
+  const id = String(req.params.id || "").replace(/[^\d]/g, "");
+  const report = novemberReports[id];
+  if (!report) {
+    console.warn(`⚠️ رقم الهوية ${id} غير موجود (نوفمبر)`);
+    return res.status(404).json({ error: "❌ الطالب غير موجود" });
+  }
+  return res.json(report);
+});
 
 // ===================== START SERVER =====================
 app.listen(PORT, () => {
