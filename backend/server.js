@@ -19,9 +19,9 @@ const studentMenu = [
   { title: "⏰ التوقيت الزمني لدوام الطلبة", type: "pdf", filename: "timings.pdf" },
   { title: "📞 أرقام التواصل", type: "pdf", filename: "numbers.pdf" },
   { title: "✉️ ايميل طالب", type: "page", path: "/emails.html" },
-  { title: "📄 تقرير طالب شهر فبراير", type: "page", path: "/report.html" },
-  { title: "📄 تقرير طالب شهر مايو", type: "page", path: "/report1.html" },
-  { title: "📄 تقرير طالب شهر نوفمبر", type: "page", path: "/report2.html" },
+  // { title: "📄 تقرير طالب شهر فبراير", type: "page", path: "/report.html" },   // مخفي مؤقتًا
+  // { title: "📄 تقرير طالب شهر مايو", type: "page", path: "/report1.html" },    // مخفي مؤقتًا
+  { title: "📄 تقرير طالب أكتوبر 2026-2027", type: "page", path: "/report2.html" },
   { title: "📑 السياسات", type: "submenu", role: "student" },
   { title: "💻 منصة ألف", type: "external", url: "https://www.alefed.com" },
   { title: "🏛️ وزارة التربية والتعليم", type: "external", url: "https://moe.gov.ae/ar/Pages/home.aspx" },
